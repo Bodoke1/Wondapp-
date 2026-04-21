@@ -1,2 +1,1124 @@
 
-<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Wondapp Milano</title><style>body{margin:0;background:#050a0e;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;}h1{color:#00ff88;font-size:2rem;letter-spacing:4px;}p{color:#7bb3c8;}</style></head><body><h1>🌐 WONDAPP</h1><p>Milano H24 — In arrivo!</p></body></html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WONDAPP – Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon: #00e676;
+    --neon-dim: #00e67640;
+    --neon-glow: 0 0 10px #00e676, 0 0 30px #00e67680, 0 0 60px #00e67640;
+    --bg: #060d12;
+    --bg2: #0a1520;
+    --card: #0d1e2b;
+    --border: #00e67630;
+    --text: #c8e6d0;
+    --text-dim: #5a8a6a;
+    --red: #ff4444;
+    --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,230,118,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,230,118,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOBE GLOW BG ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #00e67615 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  }
+
+  /* ── FLOATING PARTICLES ── */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--neon);
+    border-radius: 50%;
+    opacity: 0;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    display: none;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SPLASH SCREEN ── */
+  #splash {
+    flex-direction: column;
+    text-align: center;
+  }
+  .globe-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 30px;
+  }
+  .globe-svg {
+    width: 160px;
+    height: 160px;
+    filter: drop-shadow(0 0 20px #00e676) drop-shadow(0 0 40px #00e67680);
+    animation: rotate 20s linear infinite;
+  }
+  @keyframes rotate {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  .globe-ring {
+    position: absolute;
+    inset: -10px;
+    border: 1px solid var(--neon-dim);
+    border-radius: 50%;
+    animation: spin 8s linear infinite;
+  }
+  .globe-ring:nth-child(2) {
+    inset: -20px;
+    border-color: #00e67620;
+    animation-duration: 12s;
+    animation-direction: reverse;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .app-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: var(--neon-glow);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+  .app-tagline {
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+  .splash-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 14px;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .splash-btn:active::after { opacity: 0.1; }
+  .btn-primary {
+    background: var(--neon);
+    color: #000;
+    box-shadow: 0 0 20px #00e67660, 0 4px 20px #00e67640;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px #00e676, 0 8px 30px #00e67660; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--neon-dim); border-color: var(--neon); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 30px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 40px #00e67610, 0 20px 60px #00000060;
+    backdrop-filter: blur(10px);
+  }
+  .card-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .card-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: 0 0 10px #00e676;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+  .card-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* ── FORM ── */
+  .form-group {
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .form-input:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 0 3px var(--neon-dim), 0 0 15px #00e67620;
+  }
+  .form-input::placeholder { color: var(--text-dim); }
+
+  .password-wrapper { position: relative; }
+  .toggle-pw {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  .toggle-pw:hover { color: var(--neon); }
+
+  .form-error {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+  }
+  .form-error.show { display: block; }
+
+  .forgot-link {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 18px;
+  }
+  .forgot-link a {
+    color: var(--neon);
+    font-size: 13px;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .forgot-link a:hover { opacity: 1; }
+
+  .form-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--neon);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px #00e67640;
+  }
+  .form-btn:hover { transform: translateY(-2px); box-shadow: 0 0 30px #00e676, 0 8px 20px #00e67640; }
+  .form-btn:active { transform: translateY(0); }
+  .form-btn.loading { pointer-events: none; opacity: 0.7; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .divider span { color: var(--text-dim); font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
+
+  /* ── SOCIAL BTNS ── */
+  .social-btns { display: flex; gap: 10px; }
+  .social-btn {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .social-btn:hover { border-color: var(--neon); color: var(--neon); background: var(--neon-dim); }
+
+  .switch-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+  .switch-link a {
+    color: var(--neon);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .switch-link a:hover { text-shadow: 0 0 8px var(--neon); }
+
+  /* ── TERMS CHECK ── */
+  .terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .terms-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--neon);
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .terms-check label {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    cursor: pointer;
+  }
+  .terms-check label a { color: var(--neon); text-decoration: none; }
+
+  /* ── PROFILE SCREEN ── */
+  #profile { flex-direction: column; padding: 0; align-items: stretch; }
+  .profile-header {
+    background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 20px 30px;
+    text-align: center;
+    position: relative;
+  }
+  .profile-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    padding: 8px 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .profile-back:hover { border-color: var(--neon); color: var(--neon); }
+
+  .avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--bg2), var(--card));
+    border: 2px solid var(--neon);
+    box-shadow: 0 0 20px #00e67640;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 16px;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .avatar:hover { box-shadow: 0 0 30px #00e676; }
+  .avatar-edit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 26px;
+    height: 26px;
+    background: var(--neon);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #000;
+  }
+  .profile-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .profile-email {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .profile-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: var(--neon-dim);
+    border: 1px solid var(--border);
+    color: var(--neon);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Orbitron', monospace;
+  }
+
+  .profile-body { padding: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin: 24px 0 12px;
+  }
+
+  .menu-list { display: flex; flex-direction: column; gap: 8px; }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    color: var(--text);
+  }
+  .menu-item:hover { border-color: var(--neon); background: #0d2030; transform: translateX(4px); }
+  .menu-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .menu-item:hover .menu-icon { border-color: var(--neon); box-shadow: 0 0 10px #00e67630; }
+  .menu-info { flex: 1; }
+  .menu-label { font-weight: 600; font-size: 15px; }
+  .menu-desc { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .menu-arrow { color: var(--text-dim); font-size: 16px; transition: transform 0.2s; }
+  .menu-item:hover .menu-arrow { transform: translateX(4px); color: var(--neon); }
+
+  .tier-card {
+    background: linear-gradient(135deg, #0d2030, #071520);
+    border: 1px solid var(--neon);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 0 20px #00e67620;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 8px;
+  }
+  .tier-card:hover { box-shadow: 0 0 30px #00e67640; transform: translateY(-2px); }
+  .tier-icon { font-size: 32px; }
+  .tier-info { flex: 1; }
+  .tier-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    color: var(--neon);
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--neon);
+  }
+  .tier-desc { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .tier-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    color: var(--neon);
+    font-weight: 700;
+  }
+  .tier-price span { font-size: 11px; color: var(--text-dim); }
+
+  .logout-btn {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    color: var(--red);
+    border: 1px solid #ff444430;
+    border-radius: 12px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 10px;
+  }
+  .logout-btn:hover { background: #ff444415; border-color: var(--red); box-shadow: 0 0 15px #ff444430; }
+
+  /* ── RIPPLE ── */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0,230,118,0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+  }
+  @keyframes ripple {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--card);
+    border: 1px solid var(--neon);
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 14px;
+    color: var(--neon);
+    z-index: 999;
+    box-shadow: 0 0 20px #00e67640;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+  }
+  .lang-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    padding: 6px 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .lang-btn:hover { border-color: var(--neon); color: var(--neon); }
+
+  /* ── FORGOT SCREEN ── */
+  #forgot { flex-direction: column; }
+
+  /* ── PROGRESS DOT ── */
+  .step-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: var(--transition);
+  }
+  .dot.active { background: var(--neon); box-shadow: 0 0 6px var(--neon); width: 18px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Language selector -->
+<div class="lang-selector">
+  <button class="lang-btn" onclick="cycleLang()">🌐 IT</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ SPLASH SCREEN ══ -->
+<div class="screen active" id="splash">
+  <div>
+    <div class="globe-container">
+      <div class="globe-ring"></div>
+      <div class="globe-ring"></div>
+      <svg class="globe-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="90" stroke="#00e676" stroke-width="1.5" fill="none" opacity="0.8"/>
+        <!-- Latitude lines -->
+        <ellipse cx="100" cy="100" rx="90" ry="30" stroke="#00e676" stroke-width="1" fill="none" opacity="0.5"/>
+        <ellipse cx="100" cy="100" rx="90" ry="60" stroke="#00e676" stroke-width="1" fill="none" opacity="0.4"/>
+        <line x1="10" y1="100" x2="190" y2="100" stroke="#00e676" stroke-width="1" opacity="0.5"/>
+        <!-- Longitude lines -->
+        <ellipse cx="100" cy="100" rx="30" ry="90" stroke="#00e676" stroke-width="1" fill="none" opacity="0.5"/>
+        <ellipse cx="100" cy="100" rx="60" ry="90" stroke="#00e676" stroke-width="1" fill="none" opacity="0.4"/>
+        <line x1="100" y1="10" x2="100" y2="190" stroke="#00e676" stroke-width="1" opacity="0.5"/>
+        <!-- Continents rough -->
+        <path d="M70 70 Q80 60 95 65 Q110 60 120 70 Q125 80 115 90 Q105 95 95 88 Q80 90 70 80 Z" fill="#00e676" opacity="0.25"/>
+        <path d="M105 80 Q115 75 125 82 Q130 90 122 95 Q112 98 105 90 Z" fill="#00e676" opacity="0.2"/>
+        <path d="M60 105 Q75 100 85 108 Q90 118 80 124 Q68 126 62 116 Z" fill="#00e676" opacity="0.2"/>
+        <path d="M115 105 Q128 102 135 112 Q138 122 128 128 Q118 130 113 120 Z" fill="#00e676" opacity="0.2"/>
+        <path d="M78 130 Q92 126 100 135 Q102 145 90 148 Q78 148 75 138 Z" fill="#00e676" opacity="0.15"/>
+      </svg>
+    </div>
+
+    <div class="app-title">WONDAPP</div>
+    <div class="app-tagline">Universal Service Platform</div>
+
+    <button class="splash-btn btn-primary" onclick="showScreen('login'); addRipple(event)">
+      ⚡ ACCEDI
+    </button>
+    <button class="splash-btn btn-secondary" onclick="showScreen('register'); addRipple(event)">
+      CREA ACCOUNT
+    </button>
+
+    <div style="margin-top:30px;font-size:12px;color:var(--text-dim);letter-spacing:1px;">
+      🌍 Disponibile in tutto il mondo
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div class="screen" id="login">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-logo">WONDAPP</div>
+      <div class="card-title">Bentornato</div>
+      <div class="card-sub">Accedi al tuo account</div>
+    </div>
+
+    <div class="step-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="login-email" placeholder="tuaemail@esempio.com" autocomplete="email">
+      <div class="form-error" id="login-email-err">Inserisci un'email valida</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="password-wrapper">
+        <input class="form-input" type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password">
+        <button class="toggle-pw" onclick="togglePw('login-pw', this)">👁</button>
+      </div>
+      <div class="form-error" id="login-pw-err">Password troppo corta</div>
+    </div>
+
+    <div class="forgot-link">
+      <a onclick="showScreen('forgot')">Password dimenticata?</a>
+    </div>
+
+    <button class="form-btn" id="login-btn" onclick="doLogin()">
+      ACCEDI
+    </button>
+
+    <div class="divider"><span>oppure continua con</span></div>
+
+    <div class="social-btns">
+      <button class="social-btn" onclick="socialLogin('Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google
+      </button>
+      <button class="social-btn" onclick="socialLogin('Apple')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Apple
+      </button>
+    </div>
+
+    <div class="switch-link">
+      Non hai un account? <a onclick="showScreen('register')">Registrati</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REGISTER SCREEN ══ -->
+<div class="screen" id="register">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-logo">WONDAPP</div>
+      <div class="card-title">Crea Account</div>
+      <div class="card-sub">Inizia gratis — 7 giorni di prova</div>
+    </div>
+
+    <div class="step-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Nome completo</label>
+      <input class="form-input" type="text" id="reg-name" placeholder="Mario Rossi" autocomplete="name">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="reg-email" placeholder="tuaemail@esempio.com" autocomplete="email">
+      <div class="form-error" id="reg-email-err">Email non valida</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="password-wrapper">
+        <input class="form-input" type="password" id="reg-pw" placeholder="Min. 8 caratteri" autocomplete="new-password">
+        <button class="toggle-pw" onclick="togglePw('reg-pw', this)">👁</button>
+      </div>
+      <div class="form-error" id="reg-pw-err">Minimo 8 caratteri</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tipo account</label>
+      <div style="display:flex;gap:8px;">
+        <button class="social-btn active-type" id="type-customer" onclick="selectType('customer')" style="flex:1;padding:12px 8px;">
+          👤 Cliente
+        </button>
+        <button class="social-btn" id="type-merchant" onclick="selectType('merchant')" style="flex:1;padding:12px 8px;">
+          🏪 Merchant
+        </button>
+      </div>
+    </div>
+
+    <div class="terms-check">
+      <input type="checkbox" id="terms-cb">
+      <label for="terms-cb">Accetto i <a href="#">Termini di Servizio</a> e la <a href="#">Privacy Policy</a> di WONDAPP</label>
+    </div>
+
+    <button class="form-btn" onclick="doRegister()">
+      CREA ACCOUNT GRATUITO
+    </button>
+
+    <div class="switch-link">
+      Hai già un account? <a onclick="showScreen('login')">Accedi</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FORGOT SCREEN ══ -->
+<div class="screen" id="forgot">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-logo">WONDAPP</div>
+      <div class="card-title">Reset Password</div>
+      <div class="card-sub">Riceverai un link via email</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email account</label>
+      <input class="form-input" type="email" id="forgot-email" placeholder="tuaemail@esempio.com">
+    </div>
+
+    <button class="form-btn" onclick="doForgot()">
+      INVIA LINK DI RESET
+    </button>
+
+    <div class="switch-link" style="margin-top:16px;">
+      <a onclick="showScreen('login')">← Torna al login</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE SCREEN ══ -->
+<div class="screen" id="profile">
+  <div style="width:100%;max-width:500px;margin:0 auto;">
+    <div class="profile-header">
+      <button class="profile-back" onclick="showScreen('splash')">← Esci</button>
+      <div class="avatar" onclick="showToast('📸 Carica foto profilo')">
+        🌍
+        <div class="avatar-edit">✏️</div>
+      </div>
+      <div class="profile-name" id="profile-name">Mario Rossi</div>
+      <div class="profile-email" id="profile-email">mario@esempio.com</div>
+      <div class="profile-badge" id="profile-badge">FREE PLAN</div>
+    </div>
+
+    <div class="profile-body">
+      <!-- Tier -->
+      <div class="section-title">Il tuo Piano</div>
+      <div class="tier-card" onclick="showToast('💎 Upgrade disponibile a breve!')">
+        <div class="tier-icon">⚡</div>
+        <div class="tier-info">
+          <div class="tier-name">FREE PLAN</div>
+          <div class="tier-desc">Commissione 15% · Funzioni base</div>
+        </div>
+        <div>
+          <div class="tier-price">€0<span>/mese</span></div>
+          <div style="font-size:11px;color:var(--neon);text-align:right;margin-top:4px;">Upgrade →</div>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div class="section-title">Account</div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="showToast('✏️ Modifica profilo')">
+          <div class="menu-icon">👤</div>
+          <div class="menu-info">
+            <div class="menu-label">Modifica Profilo</div>
+            <div class="menu-desc">Nome, foto, informazioni personali</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('🔒 Sicurezza account')">
+          <div class="menu-icon">🔒</div>
+          <div class="menu-info">
+            <div class="menu-label">Sicurezza</div>
+            <div class="menu-desc">Password, autenticazione 2FA</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('💳 Metodi di pagamento')">
+          <div class="menu-icon">💳</div>
+          <div class="menu-info">
+            <div class="menu-label">Pagamenti</div>
+            <div class="menu-desc">Carte, fatturazione, storico</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+
+      <!-- Preferenze -->
+      <div class="section-title">Preferenze</div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="showToast('🔔 Notifiche')">
+          <div class="menu-icon">🔔</div>
+          <div class="menu-info">
+            <div class="menu-label">Notifiche</div>
+            <div class="menu-desc">Push, email, SMS</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('🌐 Lingua cambiata')">
+          <div class="menu-icon">🌐</div>
+          <div class="menu-info">
+            <div class="menu-label">Lingua</div>
+            <div class="menu-desc">Italiano · 7 lingue disponibili</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('🌍 Regione')">
+          <div class="menu-icon">📍</div>
+          <div class="menu-info">
+            <div class="menu-label">Regione & Valuta</div>
+            <div class="menu-desc">Worldwide · EUR</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+
+      <!-- Supporto -->
+      <div class="section-title">Supporto</div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="showToast('🤖 WOND-AI pronto!')">
+          <div class="menu-icon">🤖</div>
+          <div class="menu-info">
+            <div class="menu-label">Assistenza AI</div>
+            <div class="menu-desc">WOND-AI 24/7</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('📄 Privacy Policy')">
+          <div class="menu-icon">📄</div>
+          <div class="menu-info">
+            <div class="menu-label">Privacy & Termini</div>
+            <div class="menu-desc">GDPR compliant · Worldwide</div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="doLogout()">
+        🚪 DISCONNETTI
+      </button>
+
+      <div style="text-align:center;margin-top:20px;padding-bottom:30px;font-size:11px;color:var(--text-dim);letter-spacing:1px;">
+        WONDAPP v1.0.0 · © 2026 WONDAPP · Worldwide
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── PARTICLES ──
+const pContainer = document.getElementById('particles');
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.cssText = `
+    left: ${Math.random()*100}%;
+    width: ${Math.random()*3+1}px;
+    height: ${Math.random()*3+1}px;
+    animation-duration: ${Math.random()*10+8}s;
+    animation-delay: ${Math.random()*10}s;
+    opacity: ${Math.random()*0.5};
+  `;
+  pContainer.appendChild(p);
+}
+
+// ── SCREEN NAVIGATION ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── RIPPLE ──
+function addRipple(e) {
+  const btn = e.currentTarget;
+  const ripple = document.createElement('div');
+  ripple.className = 'ripple';
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── TOGGLE PASSWORD ──
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+// ── ACCOUNT TYPE ──
+let accountType = 'customer';
+function selectType(type) {
+  accountType = type;
+  document.querySelectorAll('[id^="type-"]').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.color = 'var(--text)';
+    b.style.background = 'var(--bg2)';
+  });
+  const active = document.getElementById('type-'+type);
+  active.style.borderColor = 'var(--neon)';
+  active.style.color = 'var(--neon)';
+  active.style.background = 'var(--neon-dim)';
+}
+selectType('customer');
+
+// ── LOGIN ──
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  let ok = true;
+  if (!email.includes('@')) {
+    document.getElementById('login-email-err').classList.add('show'); ok = false;
+  } else document.getElementById('login-email-err').classList.remove('show');
+  if (pw.length < 6) {
+    document.getElementById('login-pw-err').classList.add('show'); ok = false;
+  } else document.getElementById('login-pw-err').classList.remove('show');
+  if (!ok) return;
+
+  const btn = document.getElementById('login-btn');
+  btn.textContent = '⏳ Accesso in corso...';
+  btn.classList.add('loading');
+
+  setTimeout(() => {
+    document.getElementById('profile-email').textContent = email;
+    const name = email.split('@')[0];
+    document.getElementById('profile-name').textContent = name.charAt(0).toUpperCase()+name.slice(1);
+    btn.textContent = 'ACCEDI';
+    btn.classList.remove('loading');
+    showScreen('profile');
+    showToast('✅ Benvenuto su WONDAPP!');
+  }, 1400);
+}
+
+// ── REGISTER ──
+function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  const terms = document.getElementById('terms-cb').checked;
+  let ok = true;
+
+  if (!email.includes('@')) {
+    document.getElementById('reg-email-err').classList.add('show'); ok = false;
+  } else document.getElementById('reg-email-err').classList.remove('show');
+  if (pw.length < 8) {
+    document.getElementById('reg-pw-err').classList.add('show'); ok = false;
+  } else document.getElementById('reg-pw-err').classList.remove('show');
+  if (!terms) { showToast('⚠️ Accetta i termini per continuare'); ok = false; }
+  if (!ok) return;
+
+  setTimeout(() => {
+    document.getElementById('profile-name').textContent = name || 'Utente';
+    document.getElementById('profile-email').textContent = email;
+    showScreen('profile');
+    showToast('🎉 Account creato! 7 giorni gratis attivati');
+  }, 1000);
+}
+
+// ── FORGOT ──
+function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email.includes('@')) { showToast('⚠️ Inserisci un\'email valida'); return; }
+  showToast('📧 Email di reset inviata!');
+  setTimeout(() => showScreen('login'), 1500);
+}
+
+// ── SOCIAL LOGIN ──
+function socialLogin(provider) {
+  showToast(`🔄 Login con ${provider}...`);
+  setTimeout(() => {
+    document.getElementById('profile-name').textContent = 'Utente ' + provider;
+    document.getElementById('profile-email').textContent = 'via' + provider.toLowerCase() + '@wondapp.com';
+    showScreen('profile');
+    showToast(`✅ Loggato con ${provider}!`);
+  }, 1200);
+}
+
+// ── LOGOUT ──
+function doLogout() {
+  if (confirm('Vuoi davvero disconnetterti?')) {
+    showScreen('splash');
+    showToast('👋 Disconnesso. A presto!');
+  }
+}
+
+// ── LANG CYCLE ──
+const langs = ['🌐 IT','🌐 EN','🌐 ES','🌐 FR','🌐 DE','🌐 ZH','🌐 JA'];
+let langIdx = 0;
+function cycleLang() {
+  langIdx = (langIdx + 1) % langs.length;
+  document.querySelector('.lang-btn').textContent = langs[langIdx];
+  showToast('🌐 Lingua: ' + langs[langIdx].split(' ')[1]);
+}
+</script>
+</body>
+</html>
