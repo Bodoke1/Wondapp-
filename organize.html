@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WONDAPP — Launcher</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root {
+    --green:#00ff88;--green-dim:rgba(0,255,136,0.08);--green-glow:rgba(0,255,136,0.25);
+    --dark:#0a0a0f;--card:#12121a;--card2:#16162a;--border:#1e1e2e;--border2:#2a2a40;
+    --text:#e0e0f0;--muted:#666680;--orange:#ff8c00;--blue:#00aaff;--red:#ff4455;--purple:#aa55ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+  /* BG GLOW */
+  body::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,255,136,0.04),transparent 70%);pointer-events:none;z-index:0;}
+
+  /* TOPBAR */
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;position:relative;z-index:10;}
+  .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green);letter-spacing:3px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
+  .logo span{color:#fff;}
+  .topbar-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+  .topbar-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+  .topbar-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+  .pulse{width:6px;height:6px;background:var(--green);border-radius:50%;animation:p 1.4s infinite;box-shadow:0 0 6px var(--green);}
+  @keyframes p{0%,100%{opacity:1}50%{opacity:0.3}}
+
+  /* HERO */
+  .hero{text-align:center;padding:10px 24px 28px;position:relative;z-index:1;}
+  .hero-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+  .progress-mini{display:flex;align-items:center;gap:10px;justify-content:center;}
+  .prog-track{width:140px;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;}
+  .prog-fill{height:100%;width:80%;background:linear-gradient(90deg,var(--green),#00ffaa);border-radius:3px;box-shadow:0 0 8px rgba(0,255,136,0.4);}
+  .prog-pct{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--green);font-weight:700;}
+
+  /* SEARCH */
+  .search-bar{margin:0 24px 28px;background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:13px 18px;display:flex;align-items:center;gap:10px;position:relative;z-index:1;}
+  .search-bar input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;}
+  .search-bar input::placeholder{color:var(--muted);}
+  .search-icon{font-size:18px;color:var(--muted);}
+
+  /* SECTION LABEL */
+  .sec-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:0 24px 12px;position:relative;z-index:1;}
+
+  /* APP GRID */
+  .app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 16px;position:relative;z-index:1;}
+
+  .app-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;border-radius:18px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;position:relative;}
+  .app-item:hover{background:rgba(255,255,255,0.04);}
+  .app-item:active{transform:scale(0.92);}
+
+  .app-icon{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s;}
+  .app-item:hover .app-icon{transform:translateY(-2px);}
+
+  .app-name{font-size:11px;color:var(--text);text-align:center;font-weight:600;letter-spacing:0.3px;line-height:1.3;}
+
+  /* ICON COLORS */
+  .ic-green{background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,200,100,0.08));}
+  .ic-blue{background:linear-gradient(135deg,rgba(0,170,255,0.15),rgba(0,100,200,0.08));}
+  .ic-orange{background:linear-gradient(135deg,rgba(255,140,0,0.15),rgba(200,90,0,0.08));}
+  .ic-purple{background:linear-gradient(135deg,rgba(170,85,255,0.15),rgba(100,50,200,0.08));}
+  .ic-red{background:linear-gradient(135deg,rgba(255,68,85,0.15),rgba(200,40,60,0.08));}
+  .ic-teal{background:linear-gradient(135deg,rgba(0,210,200,0.15),rgba(0,150,140,0.08));}
+  .ic-yellow{background:linear-gradient(135deg,rgba(255,220,0,0.15),rgba(200,160,0,0.08));}
+  .ic-pink{background:linear-gradient(135deg,rgba(255,100,180,0.15),rgba(200,60,140,0.08));}
+  .ic-dark{background:linear-gradient(135deg,rgba(60,60,90,0.4),rgba(30,30,50,0.3));}
+
+  /* BADGE */
+  .app-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;border:2px solid var(--dark);}
+  .app-badge.green-badge{background:var(--green);color:#000;}
+  .app-badge.orange-badge{background:var(--orange);}
+
+  /* FASE DIVIDER */
+  .fase-divider{display:flex;align-items:center;gap:12px;padding:20px 24px 12px;position:relative;z-index:1;}
+  .fase-line{flex:1;height:1px;background:var(--border);}
+  .fase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;white-space:nowrap;}
+  .fase-tag.done{color:var(--green);}
+  .fase-tag.active{color:var(--orange);}
+
+  /* FOLDER */
+  .app-folder{background:rgba(255,255,255,0.04);border-radius:16px;}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,20,0.95);border-top:1px solid var(--border);display:flex;padding:10px 0 20px;z-index:100;backdrop-filter:blur(20px);}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;opacity:0.35;transition:opacity 0.2s;}
+  .nav-item.active{opacity:1;}
+  .nav-item.active .nav-lbl{color:var(--green);}
+  .nav-icon{font-size:22px;}
+  .nav-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(8px);}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  .modal-sheet{background:var(--card2);border:1px solid var(--border2);border-radius:28px 28px 0 0;padding:28px 24px 48px;width:100%;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
+  .modal-overlay.open .modal-sheet{transform:translateY(0);}
+  .modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px;}
+  .modal-app-icon{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;}
+  .modal-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:8px;font-weight:300;}
+  .modal-fase{font-family:'JetBrains Mono',monospace;font-size:11px;text-align:center;margin-bottom:20px;}
+  .modal-open-btn{width:100%;padding:16px;border-radius:16px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-bottom:10px;}
+  .modal-open-btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.4);}
+  .modal-cancel{width:100%;padding:12px;background:none;border:none;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:14px;cursor:pointer;}
+
+  /* SPACER */
+  .spacer{height:100px;}
+
+  /* RIPPLE */
+  .ripple-effect{position:absolute;border-radius:50%;background:rgba(0,255,136,0.15);transform:scale(0);animation:rpl 0.5s linear;pointer-events:none;}
+  @keyframes rpl{to{transform:scale(4);opacity:0;}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">WOND<span>APP</span></div>
+  <div class="topbar-right">
+    <div class="topbar-date" id="dateDisplay">23 Apr 2026</div>
+    <div class="topbar-status"><div class="pulse"></div>SERV-AI LIVE</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-title">Progetto WONDAPP</div>
+  <div class="progress-mini">
+    <div class="prog-track"><div class="prog-fill"></div></div>
+    <div class="prog-pct">80%</div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+  <div class="search-icon">🔍</div>
+  <input type="text" placeholder="Cerca modulo...">
+</div>
+
+<!-- ═══════ FASE 1-2 ═══════ -->
+<div class="fase-divider">
+  <div class="fase-line"></div>
+  <div class="fase-tag done">✅ FASE 1 · 2 — COMPLETATE</div>
+  <div class="fase-line"></div>
+</div>
+<div class="sec-label">Core Platform</div>
+
+<div class="app-grid">
+  <div class="app-item" onclick="openApp('ordina')">
+    <div class="app-icon ic-green">🛍️</div>
+    <div class="app-name">Ordina</div>
+  </div>
+  <div class="app-item" onclick="openApp('tracking')">
+    <div class="app-icon ic-blue">📍</div>
+    <div class="app-name">Tracking</div>
+  </div>
+  <div class="app-item" onclick="openApp('memori')">
+    <div class="app-icon ic-purple">🤖</div>
+    <div class="app-name">MEMORI-AI</div>
+  </div>
+  <div class="app-item" onclick="openApp('blueprint')">
+    <div class="app-icon ic-dark">📐</div>
+    <div class="app-name">Blueprint</div>
+  </div>
+  <div class="app-item" onclick="openApp('login')">
+    <div class="app-icon ic-teal">👤</div>
+    <div class="app-name">Login</div>
+  </div>
+  <div class="app-item" onclick="openApp('payments')">
+    <div class="app-icon ic-yellow">💳</div>
+    <div class="app-name">Pagamenti</div>
+  </div>
+  <div class="app-item" onclick="openApp('notify')">
+    <div class="app-icon ic-orange">
+      🔔
+      <div class="app-badge">3</div>
+    </div>
+    <div class="app-name">Notifiche</div>
+  </div>
+  <div class="app-item" onclick="openApp('pricing')">
+    <div class="app-icon ic-green">💰</div>
+    <div class="app-name">Pricing</div>
+  </div>
+</div>
+
+<!-- ═══════ FASE 3 ═══════ -->
+<div class="fase-divider">
+  <div class="fase-line"></div>
+  <div class="fase-tag done">✅ FASE 3 — COMPLETATA</div>
+  <div class="fase-line"></div>
+</div>
+<div class="sec-label">Merchant & Subscription</div>
+
+<div class="app-grid">
+  <div class="app-item" onclick="openApp('dashboard')">
+    <div class="app-icon ic-blue">📊</div>
+    <div class="app-name">Dashboard</div>
+  </div>
+  <div class="app-item" onclick="openApp('settings')">
+    <div class="app-icon ic-dark">⚙️</div>
+    <div class="app-name">Impostazioni</div>
+  </div>
+  <div class="app-item" onclick="openApp('subscription')">
+    <div class="app-icon ic-green">💎</div>
+    <div class="app-name">Subscription</div>
+  </div>
+  <div class="app-item" onclick="openApp('aicontrol')">
+    <div class="app-icon ic-purple">🧩</div>
+    <div class="app-name">AI Control</div>
+  </div>
+</div>
+
+<!-- ═══════ FASE 4 ═══════ -->
+<div class="fase-divider">
+  <div class="fase-line"></div>
+  <div class="fase-tag done">✅ FASE 4 — COMPLETATA</div>
+  <div class="fase-line"></div>
+</div>
+<div class="sec-label">SERV-AI System</div>
+
+<div class="app-grid">
+  <div class="app-item" onclick="openApp('servai')">
+    <div class="app-icon ic-purple">
+      🧠
+      <div class="app-badge orange-badge">!</div>
+    </div>
+    <div class="app-name">SERV-AI</div>
+  </div>
+  <div class="app-item" onclick="openApp('intel')">
+    <div class="app-icon ic-red">🌐</div>
+    <div class="app-name">Intel</div>
+  </div>
+  <div class="app-item" onclick="openApp('bibbia')">
+    <div class="app-icon ic-teal">📖</div>
+    <div class="app-name">Bibbia v1.1</div>
+  </div>
+  <div class="app-item" onclick="openApp('github')">
+    <div class="app-icon ic-dark">
+      🐙
+      <div class="app-badge green-badge">✓</div>
+    </div>
+    <div class="app-name">GitHub</div>
+  </div>
+</div>
+
+<!-- ═══════ FASE 5 ═══════ -->
+<div class="fase-divider">
+  <div class="fase-line"></div>
+  <div class="fase-tag active">🔄 FASE 5 — IN CORSO</div>
+  <div class="fase-line"></div>
+</div>
+<div class="sec-label">Business Hub + SaaS</div>
+
+<div class="app-grid">
+  <div class="app-item" onclick="openApp('businesshub')">
+    <div class="app-icon ic-green">
+      🏢
+      <div class="app-badge green-badge">A</div>
+    </div>
+    <div class="app-name">Business Hub</div>
+  </div>
+  <div class="app-item" onclick="openApp('onboarding')">
+    <div class="app-icon ic-orange">🚀</div>
+    <div class="app-name">Onboarding</div>
+  </div>
+  <div class="app-item" onclick="openApp('invoice')">
+    <div class="app-icon ic-blue">🧾</div>
+    <div class="app-name">Fatture</div>
+  </div>
+  <div class="app-item" onclick="openApp('analytics')">
+    <div class="app-icon ic-teal">📈</div>
+    <div class="app-name">Analytics Pro</div>
+  </div>
+  <div class="app-item" onclick="openApp('multiloc')">
+    <div class="app-icon ic-yellow">📍</div>
+    <div class="app-name">Multi-Sede</div>
+  </div>
+  <div class="app-item" onclick="openApp('saas')" style="opacity:0.5;">
+    <div class="app-icon ic-dark">☁️</div>
+    <div class="app-name">SaaS (B)</div>
+  </div>
+  <div class="app-item" onclick="openApp('admin')" style="opacity:0.5;">
+    <div class="app-icon ic-dark">🛡️</div>
+    <div class="app-name">Admin Panel</div>
+  </div>
+  <div class="app-item" onclick="openApp('api')" style="opacity:0.5;">
+    <div class="app-icon ic-dark">🔗</div>
+    <div class="app-name">API Public</div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-lbl">Home</div></div>
+  <div class="nav-item"><div class="nav-icon">📦</div><div class="nav-lbl">Moduli</div></div>
+  <div class="nav-item"><div class="nav-icon">📖</div><div class="nav-lbl">Bibbia</div></div>
+  <div class="nav-item"><div class="nav-icon">🐙</div><div class="nav-lbl">GitHub</div></div>
+  <div class="nav-item"><div class="nav-icon">⚙️</div><div class="nav-lbl">Config</div></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-app-icon" id="modalIcon" style="background:rgba(0,255,136,0.1);">🛍️</div>
+    <div class="modal-title" id="modalTitle">Modulo</div>
+    <div class="modal-sub" id="modalSub">Descrizione</div>
+    <div class="modal-fase" id="modalFase"></div>
+    <button class="modal-open-btn" id="modalBtn" onclick="launchModule()">Apri Modulo →</button>
+    <button class="modal-cancel" onclick="document.getElementById('modal').classList.remove('open')">Chiudi</button>
+  </div>
+</div>
+
+<script>
+  const apps = {
+    ordina:      {icon:'🛍️',color:'rgba(0,255,136,0.1)',  name:'Ordina',        sub:'Home screen · Search bar universale · Servizi vicini',  fase:'✅ FASE 1 · COMPLETO', file:'index.html'},
+    tracking:    {icon:'📍',color:'rgba(0,170,255,0.1)',  name:'Tracking',       sub:'Mappa live · ETA countdown · Vista rider e merchant',   fase:'✅ FASE 1 · COMPLETO', file:'tracking.html'},
+    memori:      {icon:'🤖',color:'rgba(170,85,255,0.1)', name:'MEMORI-AI',      sub:'Chat AI assistant · 5 lingue · Claude API powered',      fase:'✅ FASE 1 · COMPLETO', file:'memori_ai.html'},
+    blueprint:   {icon:'📐',color:'rgba(60,60,90,0.4)',   name:'Blueprint',      sub:'Architettura strutturale dell\'intera piattaforma',       fase:'✅ FASE 2 · COMPLETO', file:'blueprint.html'},
+    login:       {icon:'👤',color:'rgba(0,210,200,0.1)',  name:'Login / Profilo',sub:'Autenticazione · Profilo utente · Gestione account',     fase:'✅ FASE 2 · COMPLETO', file:'login.html'},
+    payments:    {icon:'💳',color:'rgba(255,220,0,0.1)',  name:'Pagamenti',      sub:'Metodi di pagamento · Storico transazioni · Sicurezza',  fase:'✅ FASE 2 · COMPLETO', file:'payments.html'},
+    notify:      {icon:'🔔',color:'rgba(255,140,0,0.1)',  name:'Notifiche Push', sub:'Notifiche real-time · Preferenze · Alert ordini',        fase:'✅ FASE 2 · COMPLETO', file:'notifications.html'},
+    pricing:     {icon:'💰',color:'rgba(0,255,136,0.1)',  name:'Pricing',        sub:'Listino prezzi · Tier Free/Plus/Pro · Commissioni',      fase:'✅ FASE 2 · COMPLETO', file:'pricing.html'},
+    dashboard:   {icon:'📊',color:'rgba(0,170,255,0.1)',  name:'Dashboard',      sub:'Gestione ordini · Statistiche · Fatturazione auto PDF',  fase:'✅ FASE 3 · COMPLETO', file:'dashboard.html'},
+    settings:    {icon:'⚙️',color:'rgba(60,60,90,0.4)',   name:'Merchant Settings',sub:'Profilo negozio · Orari · Zona consegna · Catalogo',  fase:'✅ FASE 3 · COMPLETO', file:'settings.html'},
+    subscription:{icon:'💎',color:'rgba(0,255,136,0.1)',  name:'Subscription',   sub:'Free · Plus · Pro · Toggle annuale · Trial 7gg',         fase:'✅ FASE 3 · COMPLETO', file:'subscription_tier.html'},
+    aicontrol:   {icon:'🧩',color:'rgba(170,85,255,0.1)', name:'AI Control Center',sub:'Controllo parametri AI · Soglie · Automazioni',        fase:'✅ FASE 2 · COMPLETO', file:'ai_control.html'},
+    servai:      {icon:'🧠',color:'rgba(170,85,255,0.1)', name:'SERV-AI',        sub:'Auto-learning H24 · Alert decisioni · Log attività',     fase:'✅ FASE 4 · COMPLETO', file:'serv_ai.html'},
+    intel:       {icon:'🌐',color:'rgba(255,68,85,0.1)',  name:'Intel',          sub:'Monitor competitor globali · Amazon · Glovo · Uber Eats', fase:'✅ FASE 4 · COMPLETO', file:'intel.html'},
+    bibbia:      {icon:'📖',color:'rgba(0,210,200,0.1)',  name:'Bibbia di WONDAPP',sub:'Documento fondamenta v1.1 · Carica ad ogni sessione', fase:'✅ PUBBLICATA SU GITHUB PAGES', file:'BIBBIA_WONDAPP_v1.1.html'},
+    github:      {icon:'🐙',color:'rgba(60,60,90,0.4)',   name:'GitHub — Bodoke1',sub:'Repository wondapp- · GitHub Pages attivo',           fase:'✅ FASE 5 · ONLINE', file:'https://github.com/Bodoke1'},
+    businesshub: {icon:'🏢',color:'rgba(0,255,136,0.1)',  name:'Business Hub',   sub:'Onboarding · Fatture · Analytics Pro · Multi-Sede',     fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
+    onboarding:  {icon:'🚀',color:'rgba(255,140,0,0.1)',  name:'Onboarding',     sub:'5 passi guidati per attivare il negozio',                fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
+    invoice:     {icon:'🧾',color:'rgba(0,170,255,0.1)',  name:'Invoice Manager',sub:'Fatture · PDF · Storico · Nuova fattura',               fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
+    analytics:   {icon:'📈',color:'rgba(0,210,200,0.1)',  name:'Analytics Pro',  sub:'Revenue · Geografica · Report scaricabile',             fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
+    multiloc:    {icon:'📍',color:'rgba(255,220,0,0.1)',  name:'Multi-Sede',     sub:'Gestione più sedi · Report consolidato',                fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
+    saas:        {icon:'☁️',color:'rgba(60,60,90,0.4)',   name:'SaaS Layer',     sub:'Infrastruttura SaaS · Blocco B in arrivo',              fase:'⏳ FASE 5B · PROSSIMO', file:null},
+    admin:       {icon:'🛡️',color:'rgba(60,60,90,0.4)',   name:'Admin Panel',    sub:'Pannello Orion · Revenue globale · Tutti i merchant',   fase:'⏳ FASE 5B · PROSSIMO', file:null},
+    api:         {icon:'🔗',color:'rgba(60,60,90,0.4)',   name:'API Pubbliche',  sub:'Integrazioni esterne · ERP · Gestionali · ecommerce',   fase:'⏳ FASE 5B · PROSSIMO', file:null},
+  };
+
+  let currentApp = null;
+
+  function openApp(id) {
+    const app = apps[id];
+    if (!app) return;
+    currentApp = app;
+    document.getElementById('modalIcon').textContent = app.icon;
+    document.getElementById('modalIcon').style.background = app.color;
+    document.getElementById('modalTitle').textContent = app.name;
+    document.getElementById('modalSub').textContent = app.sub;
+    const faseEl = document.getElementById('modalFase');
+    faseEl.textContent = app.fase;
+    faseEl.style.color = app.fase.includes('✅') ? 'var(--green)' : app.fase.includes('🔄') ? 'var(--orange)' : 'var(--muted)';
+    const btn = document.getElementById('modalBtn');
+    if (!app.file) {
+      btn.textContent = 'In arrivo — Fase 5B';
+      btn.style.background = 'var(--border2)';
+      btn.style.color = 'var(--muted)';
+      btn.onclick = null;
+    } else {
+      btn.textContent = 'Apri Modulo →';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#000';
+      btn.onclick = launchModule;
+    }
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function launchModule() {
+    if (currentApp && currentApp.file) {
+      if (currentApp.file.startsWith('http')) {
+        window.open(currentApp.file, '_blank');
+      } else {
+        window.open(currentApp.file, '_blank');
+      }
+    }
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal')) {
+      document.getElementById('modal').classList.remove('open');
+    }
+  }
+
+  // Date live
+  const d = new Date();
+  document.getElementById('dateDisplay').textContent =
+    d.toLocaleDateString('it-IT', {day:'numeric', month:'short', year:'numeric'});
+
+  // Search filter
+  document.querySelector('.search-bar input').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.app-item').forEach(el => {
+      const name = el.querySelector('.app-name').textContent.toLowerCase();
+      el.style.opacity = (!q || name.includes(q)) ? '' : '0.15';
+    });
+  });
+</script>
+</body>
+</html>
