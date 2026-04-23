@@ -19,6 +19,9 @@
   .logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--green);letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
   .logo span{color:#fff;}
   .topbar-badge{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(170,85,255,0.1);border:1px solid rgba(170,85,255,0.2);color:var(--purple);padding:5px 12px;border-radius:10px;letter-spacing:1px;}
+  .topbar-back{display:none;align-items:center;gap:8px;background:none;border:none;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:color 0.2s;}
+  .topbar-back:hover{color:var(--green);}
+  .topbar-back.show{display:flex;}
 
   /* TABS */
   .tabs{display:flex;gap:8px;padding:16px 20px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
@@ -26,11 +29,77 @@
   .tab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:10px 18px;border-radius:12px;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
   .tab.active{background:rgba(170,85,255,0.1);border-color:rgba(170,85,255,0.3);color:var(--purple);}
 
+  /* MAIN VIEWS */
+  .main-dashboard{transition:all 0.3s;}
+  .main-dashboard.hidden{display:none;}
+
   /* PANELS */
   .panel{display:none;padding:20px;}
   .panel.active{display:block;}
 
-  /* METRICS */
+  /* ═══ GESTIONE PRODOTTI ═══ */
+  .prodotti-view{display:none;padding:20px;}
+  .prodotti-view.show{display:block;}
+
+  .prodotti-header{margin-bottom:24px;}
+  .prodotti-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:6px;}
+  .prodotti-sub{font-size:13px;color:var(--muted);font-weight:300;}
+
+  /* FORM AGGIUNGI */
+  .form-card{background:var(--card);border:1px solid rgba(0,255,136,0.2);border-radius:20px;padding:24px;margin-bottom:24px;}
+  .form-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;}
+
+  .form-group{margin-bottom:16px;}
+  .form-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;margin-bottom:8px;display:block;}
+  .form-input{width:100%;background:var(--dark);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
+  .form-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,255,136,0.08);}
+  .form-input::placeholder{color:var(--muted);}
+
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  /* IMAGE UPLOAD */
+  .img-upload{width:100%;background:var(--dark);border:2px dashed var(--border2);border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+  .img-upload:hover{border-color:var(--green);background:rgba(0,255,136,0.03);}
+  .img-upload.has-img{border-style:solid;border-color:rgba(0,255,136,0.3);padding:0;}
+  .img-upload-icon{font-size:32px;margin-bottom:8px;}
+  .img-upload-text{font-size:13px;color:var(--muted);}
+  .img-upload-text strong{color:var(--green);}
+  .img-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .img-preview{width:100%;height:160px;object-fit:cover;border-radius:10px;display:none;}
+
+  /* CATEGORY CHIPS */
+  .cat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .cat-chip{background:var(--card2);border:1px solid var(--border2);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:13px;cursor:pointer;transition:all 0.2s;font-weight:600;}
+  .cat-chip.selected{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
+
+  /* SUBMIT BTN */
+  .submit-btn{width:100%;padding:16px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:8px;}
+  .submit-btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.4);}
+  .submit-btn:active{transform:scale(0.98);}
+
+  /* PRODOTTI LIST */
+  .prodotti-list-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+  .prodotti-count{font-size:11px;background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;}
+
+  .prodotti-grid{display:flex;flex-direction:column;gap:12px;}
+  .prodotto-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;transition:border-color 0.2s;}
+  .prodotto-card:hover{border-color:var(--border2);}
+  .prodotto-thumb{width:58px;height:58px;border-radius:12px;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden;}
+  .prodotto-thumb img{width:100%;height:100%;object-fit:cover;}
+  .prodotto-info{flex:1;min-width:0;}
+  .prodotto-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .prodotto-cat{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+  .prodotto-price{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--green);}
+  .prodotto-actions{display:flex;gap:8px;flex-shrink:0;}
+  .action-icon{width:34px;height:34px;border-radius:10px;border:1px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all 0.2s;}
+  .action-icon:hover{border-color:var(--red);background:rgba(255,68,85,0.08);}
+  .action-icon.edit:hover{border-color:var(--orange);background:rgba(255,140,0,0.08);}
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+  .empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4;}
+  .empty-text{font-size:14px;}
+
+  /* ═══ METRICS / ADMIN ═══ */
   .metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
   .metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
   .metric-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:var(--green);margin-bottom:4px;}
@@ -39,7 +108,6 @@
   .metric-val.purple{color:var(--purple);}
   .metric-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
 
-  /* CARDS */
   .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;}
   .card.purple-card{border-color:rgba(170,85,255,0.2);background:linear-gradient(135deg,var(--card),rgba(170,85,255,0.03));}
   .card.green-card{border-color:rgba(0,255,136,0.2);background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.03));}
@@ -47,10 +115,15 @@
 
   .sec-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
 
-  /* MERCHANT TABLE */
+  .rev-chart{display:flex;flex-direction:column;gap:8px;}
+  .rev-row{display:flex;align-items:center;gap:10px;}
+  .rev-label{font-size:12px;color:var(--text);width:80px;flex-shrink:0;}
+  .rev-track{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden;}
+  .rev-fill{height:100%;border-radius:4px;}
+  .rev-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--green);width:50px;text-align:right;}
+
   .merchant-list{display:flex;flex-direction:column;gap:10px;}
-  .merchant-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:border-color 0.2s;}
-  .merchant-row:hover{border-color:var(--border2);}
+  .merchant-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
   .merchant-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
   .av-green{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);}
   .av-blue{background:rgba(0,170,255,0.1);border:1px solid rgba(0,170,255,0.2);}
@@ -61,19 +134,12 @@
   .merchant-meta{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
   .merchant-revenue{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--green);margin-right:8px;}
   .tier-badge{font-size:10px;padding:3px 9px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:600;}
-  .tier-free{background:rgba(102,102,128,0.15);color:var(--muted);}
   .tier-plus{background:rgba(0,170,255,0.1);color:var(--blue);}
   .tier-pro{background:rgba(0,255,136,0.1);color:var(--green);}
 
-  /* REVENUE BARS */
-  .rev-chart{display:flex;flex-direction:column;gap:8px;}
-  .rev-row{display:flex;align-items:center;gap:10px;}
-  .rev-label{font-size:12px;color:var(--text);width:80px;flex-shrink:0;}
-  .rev-track{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden;}
-  .rev-fill{height:100%;border-radius:4px;transition:width 0.6s;}
-  .rev-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--green);width:50px;text-align:right;}
+  .api-key-box{background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .copy-btn{background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Exo 2',sans-serif;font-weight:600;}
 
-  /* API ENDPOINTS */
   .endpoint-list{display:flex;flex-direction:column;gap:10px;}
   .endpoint{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;}
   .method{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:700;flex-shrink:0;margin-top:1px;}
@@ -89,23 +155,14 @@
   .status-beta{background:rgba(255,140,0,0.1);color:var(--orange);}
   .status-soon{background:rgba(102,102,128,0.15);color:var(--muted);}
 
-  /* API KEY BOX */
-  .api-key-box{background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-  .copy-btn{background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Exo 2',sans-serif;font-weight:600;transition:all 0.2s;}
-  .copy-btn:hover{background:rgba(0,255,136,0.15);}
-
-  /* WHITE LABEL */
   .wl-list{display:flex;flex-direction:column;gap:12px;}
-  .wl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;transition:border-color 0.2s;cursor:pointer;}
-  .wl-card:hover{border-color:var(--border2);}
-  .wl-card.active-wl{border-color:rgba(170,85,255,0.3);}
+  .wl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;}
   .wl-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
   .wl-info{flex:1;}
   .wl-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
   .wl-meta{font-size:12px;color:var(--muted);}
   .wl-revenue{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--purple);}
 
-  /* TOGGLE */
   .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
   .toggle-row:last-child{border-bottom:none;}
   .toggle-label-text{font-size:14px;font-weight:600;color:var(--text);}
@@ -115,26 +172,21 @@
   .toggle-thumb{width:20px;height:20px;background:var(--muted);border-radius:50%;position:absolute;top:3px;left:3px;transition:all 0.3s;}
   .toggle.on .toggle-thumb{left:25px;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,0.5);}
 
-  /* SYSTEM STATUS */
   .status-list{display:flex;flex-direction:column;gap:8px;}
   .status-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;}
   .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
   .dot-green{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,0.5);}
   .dot-orange{background:var(--orange);}
-  .dot-muted{background:var(--muted);}
   .status-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
   .status-val{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
   .uptime{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;}
 
-  /* HIGHLIGHT */
   .hl-box{background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);border-left:3px solid var(--green);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:16px;}
   .hl-box.purple{background:rgba(170,85,255,0.06);border-color:rgba(170,85,255,0.2);border-left-color:var(--purple);}
   .hl-box.blue{background:rgba(0,170,255,0.06);border-color:rgba(0,170,255,0.2);border-left-color:var(--blue);}
 
-  /* DIVIDER */
   .divider{height:1px;background:var(--border);margin:16px 0;}
 
-  /* BUTTONS */
   .btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:14px;}
   .btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.35);}
   .btn.purple-btn{background:rgba(170,85,255,0.15);color:var(--purple);border:1px solid rgba(170,85,255,0.3);}
@@ -151,335 +203,228 @@
   .nav-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
 
   /* TOAST */
-  .toast{position:fixed;bottom:90px;left:20px;right:20px;background:rgba(10,10,25,0.97);border:1px solid rgba(170,85,255,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
+  .toast{position:fixed;bottom:90px;left:20px;right:20px;background:rgba(10,10,25,0.97);border:1px solid rgba(0,255,136,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
   .toast.show{transform:translateY(0);opacity:1;}
-  .toast-msg{font-size:14px;font-weight:600;color:var(--purple);}
+  .toast-msg{font-size:14px;font-weight:600;color:var(--green);}
   .toast-sub{font-size:12px;color:var(--muted);}
+
+  /* SLIDE ANIMATION */
+  @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+  .prodotti-view.show{animation:slideIn 0.3s ease;}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">WOND<span>APP</span></div>
-  <div class="topbar-badge">SAAS CONTROL</div>
+  <div class="logo" id="mainLogo">WOND<span>APP</span></div>
+  <button class="topbar-back" id="backBtn" onclick="tornaDashboard()">← Torna alla Dashboard</button>
+  <div class="topbar-badge" id="topbarBadge">SAAS CONTROL</div>
 </div>
 
-<!-- TABS -->
-<div class="tabs">
-  <button class="tab active" onclick="showTab('admin',this)">🛡️ Admin Panel</button>
-  <button class="tab" onclick="showTab('api',this)">🔗 API Pubbliche</button>
-  <button class="tab" onclick="showTab('whitelabel',this)">🏷️ White Label</button>
-  <button class="tab" onclick="showTab('system',this)">⚙️ Sistema</button>
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- DASHBOARD PRINCIPALE -->
+<!-- ═══════════════════════════════════ -->
+<div class="main-dashboard" id="mainDashboard">
 
-<!-- ═══════════════ ADMIN PANEL ═══════════════ -->
-<div class="panel active" id="panel-admin">
-
-  <div class="hl-box purple">🛡️ <strong>Pannello Orion.</strong> Visione completa su tutta la piattaforma in tempo reale.</div>
-
-  <div class="metrics-grid">
-    <div class="metric"><div class="metric-val">€ 284K</div><div class="metric-lbl">Revenue totale</div></div>
-    <div class="metric"><div class="metric-val blue">1.847</div><div class="metric-lbl">Merchant attivi</div></div>
-    <div class="metric"><div class="metric-val orange">42.3K</div><div class="metric-lbl">Ordini oggi</div></div>
-    <div class="metric"><div class="metric-val purple">97%</div><div class="metric-lbl">Uptime</div></div>
+  <div class="tabs" id="mainTabs">
+    <button class="tab active" onclick="showTab('admin',this)">🛡️ Admin Panel</button>
+    <button class="tab" onclick="showTab('api',this)">🔗 API Pubbliche</button>
+    <button class="tab" onclick="showTab('whitelabel',this)">🏷️ White Label</button>
+    <button class="tab" onclick="showTab('system',this)">⚙️ Sistema</button>
   </div>
 
-  <!-- REVENUE PER TIER -->
-  <div class="card purple-card">
-    <div class="sec-title">Revenue per Tier</div>
-    <div class="rev-chart">
-      <div class="rev-row">
-        <div class="rev-label">PRO</div>
-        <div class="rev-track"><div class="rev-fill" style="width:82%;background:var(--green);"></div></div>
-        <div class="rev-val">€ 181K</div>
+  <!-- ADMIN -->
+  <div class="panel active" id="panel-admin">
+    <div class="hl-box purple">🛡️ <strong>Pannello Orion.</strong> Visione completa su tutta la piattaforma in tempo reale.</div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-val">€ 284K</div><div class="metric-lbl">Revenue totale</div></div>
+      <div class="metric"><div class="metric-val blue">1.847</div><div class="metric-lbl">Merchant attivi</div></div>
+      <div class="metric"><div class="metric-val orange">42.3K</div><div class="metric-lbl">Ordini oggi</div></div>
+      <div class="metric"><div class="metric-val purple">97%</div><div class="metric-lbl">Uptime</div></div>
+    </div>
+    <div class="card purple-card">
+      <div class="sec-title">Revenue per Tier</div>
+      <div class="rev-chart">
+        <div class="rev-row"><div class="rev-label">PRO</div><div class="rev-track"><div class="rev-fill" style="width:82%;background:var(--green);"></div></div><div class="rev-val">€ 181K</div></div>
+        <div class="rev-row"><div class="rev-label">PLUS</div><div class="rev-track"><div class="rev-fill" style="width:54%;background:var(--blue);"></div></div><div class="rev-val">€ 74K</div></div>
+        <div class="rev-row"><div class="rev-label">FREE</div><div class="rev-track"><div class="rev-fill" style="width:21%;background:var(--muted);"></div></div><div class="rev-val">€ 29K</div></div>
       </div>
-      <div class="rev-row">
-        <div class="rev-label">PLUS</div>
-        <div class="rev-track"><div class="rev-fill" style="width:54%;background:var(--blue);"></div></div>
-        <div class="rev-val">€ 74K</div>
+    </div>
+    <div class="sec-title">Top Merchant</div>
+    <div class="merchant-list">
+      <div class="merchant-row"><div class="merchant-avatar av-green">🏬</div><div class="merchant-info"><div class="merchant-name">GroceryFast Italia</div><div class="merchant-meta">40 sedi · Milano</div></div><div class="merchant-revenue">€ 24K</div><div class="tier-badge tier-pro">PRO</div></div>
+      <div class="merchant-row"><div class="merchant-avatar av-blue">🏨</div><div class="merchant-info"><div class="merchant-name">Grand Hotel Group</div><div class="merchant-meta">12 hotel · Italia</div></div><div class="merchant-revenue">€ 18K</div><div class="tier-badge tier-pro">PRO</div></div>
+      <div class="merchant-row"><div class="merchant-avatar av-orange">💊</div><div class="merchant-info"><div class="merchant-name">FarmaRete</div><div class="merchant-meta">85 farmacie · Nord Italia</div></div><div class="merchant-revenue">€ 12K</div><div class="tier-badge tier-plus">PLUS</div></div>
+    </div>
+    <button class="btn purple-btn" onclick="toast('Report globale generato!','Tutti i dati esportati.')">⬇ Esporta Report Globale</button>
+    <button class="btn" onclick="toast('Direttiva inviata!','SERV-AI ha ricevuto l\'aggiornamento.')">🧠 Invia Direttiva a SERV-AI</button>
+  </div>
+
+  <!-- API -->
+  <div class="panel" id="panel-api">
+    <div class="hl-box blue">🔗 <strong>API WONDAPP v1.0.</strong> Integrazioni per ERP, gestionali, ecommerce e partner esterni.</div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-val">18</div><div class="metric-lbl">Endpoint attivi</div></div>
+      <div class="metric"><div class="metric-val blue">342</div><div class="metric-lbl">Chiamate/min</div></div>
+      <div class="metric"><div class="metric-val orange">99.9%</div><div class="metric-lbl">Uptime API</div></div>
+      <div class="metric"><div class="metric-val purple">7</div><div class="metric-lbl">Partner attivi</div></div>
+    </div>
+    <div class="sec-title">La tua API Key</div>
+    <div class="api-key-box"><span>wnd_live_•••••••••••••••••••4f2a</span><button class="copy-btn" onclick="toast('Copiata!','API Key negli appunti.')">Copia</button></div>
+    <div class="sec-title">Endpoint principali</div>
+    <div class="endpoint-list">
+      <div class="endpoint"><div class="method get">GET</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/orders</div><div class="endpoint-desc">Lista ordini filtrabili per stato, data, merchant</div><div class="endpoint-status status-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/orders/create</div><div class="endpoint-desc">Crea un nuovo ordine programmaticamente</div><div class="endpoint-status status-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/invoice/generate</div><div class="endpoint-desc">Genera fattura PDF da ordine o parametri</div><div class="endpoint-status status-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method put">PUT</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/merchant/settings</div><div class="endpoint-desc">Aggiorna impostazioni merchant via API</div><div class="endpoint-status status-beta">BETA</div></div></div>
+      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/ai/query</div><div class="endpoint-desc">Interroga SERV-AI direttamente via API</div><div class="endpoint-status status-soon">PRESTO</div></div></div>
+    </div>
+    <button class="btn blue-btn" onclick="toast('Documentazione aperta!','Docs completi disponibili.')">📄 Documentazione Completa</button>
+  </div>
+
+  <!-- WHITE LABEL -->
+  <div class="panel" id="panel-whitelabel">
+    <div class="hl-box purple">🏷️ <strong>White Label.</strong> Vendi WONDAPP con il brand dei tuoi clienti enterprise.</div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-val purple">3</div><div class="metric-lbl">Clienti WL</div></div>
+      <div class="metric"><div class="metric-val">€ 48K</div><div class="metric-lbl">Revenue WL/mese</div></div>
+      <div class="metric"><div class="metric-val blue">12K</div><div class="metric-lbl">Utenti totali</div></div>
+      <div class="metric"><div class="metric-val orange">2</div><div class="metric-lbl">In negoziazione</div></div>
+    </div>
+    <div class="wl-list">
+      <div class="wl-card"><div class="wl-icon" style="background:rgba(0,170,255,0.1);border:1px solid rgba(0,170,255,0.2);">🏦</div><div class="wl-info"><div class="wl-name">BancaServ App</div><div class="wl-meta">4.200 utenti · Pro plan</div></div><div class="wl-revenue">€ 22K/m</div></div>
+      <div class="wl-card"><div class="wl-icon" style="background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.15);">🏥</div><div class="wl-info"><div class="wl-name">MedicoApp Pro</div><div class="wl-meta">2.800 utenti · Pro plan</div></div><div class="wl-revenue">€ 16K/m</div></div>
+      <div class="wl-card"><div class="wl-icon" style="background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);">🏗️</div><div class="wl-info"><div class="wl-name">EdilOrder</div><div class="wl-meta">5.100 utenti · Pro plan</div></div><div class="wl-revenue">€ 10K/m</div></div>
+    </div>
+    <button class="btn purple-btn" onclick="toast('Richiesta inviata!','Il team riceverà la proposta.')">+ Nuovo Cliente White Label</button>
+  </div>
+
+  <!-- SISTEMA -->
+  <div class="panel" id="panel-system">
+    <div class="hl-box">⚙️ <strong>Stato sistema globale.</strong> Tutti i servizi WONDAPP monitorati H24 da SERV-AI.</div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-val">99.9%</div><div class="metric-lbl">Uptime globale</div></div>
+      <div class="metric"><div class="metric-val blue">38ms</div><div class="metric-lbl">Latenza media</div></div>
+      <div class="metric"><div class="metric-val orange">7</div><div class="metric-lbl">Region attive</div></div>
+      <div class="metric"><div class="metric-val purple">0</div><div class="metric-lbl">Incidenti aperti</div></div>
+    </div>
+    <div class="sec-title">Servizi Core</div>
+    <div class="status-list">
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">API Gateway</div><div class="status-val">38ms</div><div class="uptime">99.99%</div></div>
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">SERV-AI Engine</div><div class="status-val">H24 attivo</div><div class="uptime">100%</div></div>
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Database principale</div><div class="status-val">12ms</div><div class="uptime">99.99%</div></div>
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Pagamenti</div><div class="status-val">Stripe live</div><div class="uptime">99.99%</div></div>
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">MEMORI-AI</div><div class="status-val">Claude API</div><div class="uptime">99.8%</div></div>
+      <div class="status-row"><div class="status-dot dot-orange"></div><div class="status-name">API v1 /ai/query</div><div class="status-val">In sviluppo</div><div class="uptime" style="color:var(--orange);">BETA</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="toggle-row"><div><div class="toggle-label-text">Registrazioni aperte</div><div class="toggle-sub">Nuovi merchant possono registrarsi</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
+    <div class="toggle-row"><div><div class="toggle-label-text">SERV-AI auto-decisioni</div><div class="toggle-sub">AI decide in autonomia le operazioni routine</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
+    <button class="btn" onclick="toast('Backup avviato!','I dati vengono archiviati in modo sicuro.')">💾 Backup Manuale</button>
+  </div>
+
+</div><!-- /main-dashboard -->
+
+
+<!-- ═══════════════════════════════════ -->
+<!-- PANNELLO GESTIONE PRODOTTI         -->
+<!-- ═══════════════════════════════════ -->
+<div class="prodotti-view" id="prodottiView">
+
+  <div class="prodotti-header">
+    <div class="prodotti-title">🛍️ Gestione Prodotti</div>
+    <div class="prodotti-sub">Aggiungi e gestisci il tuo catalogo</div>
+  </div>
+
+  <!-- FORM AGGIUNGI -->
+  <div class="form-card">
+    <div class="form-title">+ Aggiungi Prodotto</div>
+
+    <div class="form-group">
+      <label class="form-label">Nome Prodotto</label>
+      <input class="form-input" id="prodNome" type="text" placeholder="Es. Pizza Margherita, Paracetamolo 500mg…">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Prezzo (€)</label>
+        <input class="form-input" id="prodPrezzo" type="number" placeholder="0.00" step="0.01" min="0">
       </div>
-      <div class="rev-row">
-        <div class="rev-label">FREE</div>
-        <div class="rev-track"><div class="rev-fill" style="width:21%;background:var(--muted);"></div></div>
-        <div class="rev-val">€ 29K</div>
+      <div class="form-group">
+        <label class="form-label">Disponibilità</label>
+        <input class="form-input" id="prodQta" type="number" placeholder="pz" min="0">
       </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Categoria</label>
+      <div class="cat-chips">
+        <div class="cat-chip selected" onclick="selectCat(this)">🍕 Food</div>
+        <div class="cat-chip" onclick="selectCat(this)">💊 Farmacia</div>
+        <div class="cat-chip" onclick="selectCat(this)">🔧 Servizi</div>
+        <div class="cat-chip" onclick="selectCat(this)">🛒 Retail</div>
+        <div class="cat-chip" onclick="selectCat(this)">🏨 Hotel</div>
+        <div class="cat-chip" onclick="selectCat(this)">📦 Altro</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Immagine Prodotto</label>
+      <div class="img-upload" id="imgUpload">
+        <div class="img-upload-icon">📷</div>
+        <div class="img-upload-text">Tocca per aggiungere foto<br><strong>JPG, PNG, WEBP</strong></div>
+        <input type="file" accept="image/*" onchange="previewImg(event)">
+        <img class="img-preview" id="imgPreview">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descrizione (opzionale)</label>
+      <input class="form-input" id="prodDesc" type="text" placeholder="Breve descrizione del prodotto…">
+    </div>
+
+    <button class="submit-btn" onclick="aggiungiProdotto()">✓ Aggiungi al Catalogo</button>
+  </div>
+
+  <!-- LISTA PRODOTTI -->
+  <div class="prodotti-list-title">
+    <span>Catalogo</span>
+    <span class="prodotti-count" id="prodCount">0 prodotti</span>
+  </div>
+
+  <div class="prodotti-grid" id="prodottiGrid">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📦</div>
+      <div class="empty-text">Nessun prodotto ancora.<br>Aggiungine uno qui sopra!</div>
     </div>
   </div>
 
-  <!-- TOP MERCHANT -->
-  <div class="sec-title">Top Merchant</div>
-  <div class="merchant-list">
-    <div class="merchant-row">
-      <div class="merchant-avatar av-green">🏬</div>
-      <div class="merchant-info">
-        <div class="merchant-name">GroceryFast Italia</div>
-        <div class="merchant-meta">40 sedi · Milano · Attivo da 8 mesi</div>
-      </div>
-      <div class="merchant-revenue">€ 24K</div>
-      <div class="tier-badge tier-pro">PRO</div>
-    </div>
-    <div class="merchant-row">
-      <div class="merchant-avatar av-blue">🏨</div>
-      <div class="merchant-info">
-        <div class="merchant-name">Grand Hotel Group</div>
-        <div class="merchant-meta">12 hotel · Italia · Attivo da 1 anno</div>
-      </div>
-      <div class="merchant-revenue">€ 18K</div>
-      <div class="tier-badge tier-pro">PRO</div>
-    </div>
-    <div class="merchant-row">
-      <div class="merchant-avatar av-orange">💊</div>
-      <div class="merchant-info">
-        <div class="merchant-name">FarmaRete</div>
-        <div class="merchant-meta">85 farmacie · Nord Italia</div>
-      </div>
-      <div class="merchant-revenue">€ 12K</div>
-      <div class="tier-badge tier-plus">PLUS</div>
-    </div>
-    <div class="merchant-row">
-      <div class="merchant-avatar av-purple">🍕</div>
-      <div class="merchant-info">
-        <div class="merchant-name">Napoli DOC Group</div>
-        <div class="merchant-meta">22 ristoranti · Sud Italia</div>
-      </div>
-      <div class="merchant-revenue">€ 8.4K</div>
-      <div class="tier-badge tier-plus">PLUS</div>
-    </div>
-  </div>
+</div><!-- /prodottiView -->
 
-  <button class="btn purple-btn" onclick="toast('Report globale generato!','Tutti i dati esportati in PDF.')">⬇ Esporta Report Globale</button>
-  <button class="btn" onclick="toast('SERV-AI notificato!','Il sistema ha ricevuto l\'aggiornamento.')">🧠 Invia Direttiva a SERV-AI</button>
-</div>
-
-<!-- ═══════════════ API PUBBLICHE ═══════════════ -->
-<div class="panel" id="panel-api">
-
-  <div class="hl-box blue">🔗 <strong>API WONDAPP v1.0.</strong> Integrazioni per ERP, gestionali, ecommerce e partner esterni.</div>
-
-  <div class="metrics-grid">
-    <div class="metric"><div class="metric-val">18</div><div class="metric-lbl">Endpoint attivi</div></div>
-    <div class="metric"><div class="metric-val blue">342</div><div class="metric-lbl">Chiamate/min</div></div>
-    <div class="metric"><div class="metric-val orange">99.9%</div><div class="metric-lbl">Uptime API</div></div>
-    <div class="metric"><div class="metric-val purple">7</div><div class="metric-lbl">Partner attivi</div></div>
-  </div>
-
-  <div class="sec-title">La tua API Key</div>
-  <div class="api-key-box">
-    <span>wnd_live_•••••••••••••••••••4f2a</span>
-    <button class="copy-btn" onclick="toast('Copiata!','API Key negli appunti.')">Copia</button>
-  </div>
-
-  <div class="sec-title">Endpoint principali</div>
-  <div class="endpoint-list">
-    <div class="endpoint">
-      <div class="method get">GET</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/orders</div>
-        <div class="endpoint-desc">Lista ordini filtrabili per stato, data, merchant</div>
-        <div class="endpoint-status status-live">LIVE</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method post">POST</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/orders/create</div>
-        <div class="endpoint-desc">Crea un nuovo ordine programmaticamente</div>
-        <div class="endpoint-status status-live">LIVE</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method get">GET</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/merchants</div>
-        <div class="endpoint-desc">Lista merchant con dati, tier e performance</div>
-        <div class="endpoint-status status-live">LIVE</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method post">POST</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/invoice/generate</div>
-        <div class="endpoint-desc">Genera fattura PDF da ordine o parametri</div>
-        <div class="endpoint-status status-live">LIVE</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method put">PUT</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/merchant/settings</div>
-        <div class="endpoint-desc">Aggiorna impostazioni merchant via API</div>
-        <div class="endpoint-status status-beta">BETA</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method get">GET</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/analytics/revenue</div>
-        <div class="endpoint-desc">Dati revenue con filtri granulari</div>
-        <div class="endpoint-status status-beta">BETA</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method post">POST</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/ai/query</div>
-        <div class="endpoint-desc">Interroga SERV-AI direttamente via API</div>
-        <div class="endpoint-status status-soon">PRESTO</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <div class="method del">DEL</div>
-      <div class="endpoint-info">
-        <div class="endpoint-path">/api/v1/orders/{id}</div>
-        <div class="endpoint-desc">Annulla un ordine (solo con permessi admin)</div>
-        <div class="endpoint-status status-soon">PRESTO</div>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn blue-btn" onclick="toast('Documentazione aperta!','Docs completi disponibili.')">📄 Documentazione Completa</button>
-  <button class="btn" onclick="toast('Nuova API Key generata!','La vecchia è stata invalidata.')">🔄 Rigenera API Key</button>
-</div>
-
-<!-- ═══════════════ WHITE LABEL ═══════════════ -->
-<div class="panel" id="panel-whitelabel">
-
-  <div class="hl-box purple">🏷️ <strong>White Label.</strong> Vendi WONDAPP con il brand dei tuoi clienti enterprise. Loro vedono il loro logo, tu incassi.</div>
-
-  <div class="metrics-grid">
-    <div class="metric"><div class="metric-val purple">3</div><div class="metric-lbl">Clienti WL</div></div>
-    <div class="metric"><div class="metric-val">€ 48K</div><div class="metric-lbl">Revenue WL/mese</div></div>
-    <div class="metric"><div class="metric-val blue">12K</div><div class="metric-lbl">Utenti totali</div></div>
-    <div class="metric"><div class="metric-val orange">2</div><div class="metric-lbl">In negoziazione</div></div>
-  </div>
-
-  <div class="sec-title">Clienti White Label Attivi</div>
-  <div class="wl-list">
-
-    <div class="wl-card active-wl">
-      <div class="wl-icon" style="background:rgba(0,170,255,0.1);border:1px solid rgba(0,170,255,0.2);">🏦</div>
-      <div class="wl-info">
-        <div class="wl-name">BancaServ App</div>
-        <div class="wl-meta">Gruppo bancario · 4.200 utenti · Pro plan</div>
-      </div>
-      <div class="wl-revenue">€ 22K/m</div>
-    </div>
-
-    <div class="wl-card active-wl">
-      <div class="wl-icon" style="background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.15);">🏥</div>
-      <div class="wl-info">
-        <div class="wl-name">MedicoApp Pro</div>
-        <div class="wl-meta">Rete cliniche · 2.800 utenti · Pro plan</div>
-      </div>
-      <div class="wl-revenue">€ 16K/m</div>
-    </div>
-
-    <div class="wl-card active-wl">
-      <div class="wl-icon" style="background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);">🏗️</div>
-      <div class="wl-info">
-        <div class="wl-name">EdilOrder</div>
-        <div class="wl-meta">Gruppo edile · 5.100 utenti · Pro plan</div>
-      </div>
-      <div class="wl-revenue">€ 10K/m</div>
-    </div>
-
-  </div>
-
-  <div class="divider"></div>
-  <div class="sec-title">Personalizzazione WL</div>
-
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">Logo personalizzato</div>
-      <div class="toggle-sub">Il cliente carica il proprio logo</div>
-    </div>
-    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">Colori brand custom</div>
-      <div class="toggle-sub">Palette colori del cliente</div>
-    </div>
-    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">Dominio personalizzato</div>
-      <div class="toggle-sub">app.nomecliente.com</div>
-    </div>
-    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">Nascondi brand WONDAPP</div>
-      <div class="toggle-sub">Nessun riferimento a WONDAPP nell'app</div>
-    </div>
-    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-
-  <button class="btn purple-btn" onclick="toast('Proposta inviata!','Il team riceverà la richiesta.')">+ Nuovo Cliente White Label</button>
-</div>
-
-<!-- ═══════════════ SISTEMA ═══════════════ -->
-<div class="panel" id="panel-system">
-
-  <div class="hl-box">⚙️ <strong>Stato sistema globale.</strong> Tutti i servizi WONDAPP monitorati in tempo reale da SERV-AI.</div>
-
-  <div class="metrics-grid">
-    <div class="metric"><div class="metric-val">99.9%</div><div class="metric-lbl">Uptime globale</div></div>
-    <div class="metric"><div class="metric-val blue">38ms</div><div class="metric-lbl">Latenza media</div></div>
-    <div class="metric"><div class="metric-val orange">7</div><div class="metric-lbl">Region attive</div></div>
-    <div class="metric"><div class="metric-val purple">0</div><div class="metric-lbl">Incidenti aperti</div></div>
-  </div>
-
-  <div class="sec-title">Servizi Core</div>
-  <div class="status-list">
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">API Gateway</div><div class="status-val">38ms</div><div class="uptime">99.99%</div></div>
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">SERV-AI Engine</div><div class="status-val">H24 attivo</div><div class="uptime">100%</div></div>
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Database principale</div><div class="status-val">12ms</div><div class="uptime">99.99%</div></div>
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Push Notifications</div><div class="status-val">2.3K/min</div><div class="uptime">99.9%</div></div>
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Pagamenti</div><div class="status-val">Stripe live</div><div class="uptime">99.99%</div></div>
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">MEMORI-AI</div><div class="status-val">Claude API</div><div class="uptime">99.8%</div></div>
-    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Generazione PDF</div><div class="status-val">1.2K/ora</div><div class="uptime">99.9%</div></div>
-    <div class="status-row"><div class="status-dot dot-orange"></div><div class="status-name">API v1 /ai/query</div><div class="status-val">In sviluppo</div><div class="uptime" style="color:var(--orange);">BETA</div></div>
-  </div>
-
-  <div class="divider"></div>
-  <div class="sec-title">Impostazioni Globali</div>
-
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">Manutenzione programmata</div>
-      <div class="toggle-sub">Mostra banner agli utenti</div>
-    </div>
-    <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">Registrazioni aperte</div>
-      <div class="toggle-sub">Nuovi merchant possono registrarsi</div>
-    </div>
-    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-  <div class="toggle-row">
-    <div>
-      <div class="toggle-label-text">SERV-AI auto-decisioni</div>
-      <div class="toggle-sub">AI decide in autonomia le operazioni routine</div>
-    </div>
-    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
-  </div>
-
-  <button class="btn" onclick="toast('Backup avviato!','I dati vengono archiviati in modo sicuro.')">💾 Backup Manuale</button>
-  <button class="btn blue-btn" onclick="toast('Log scaricati!','File disponibile per il download.')">⬇ Scarica Log Sistema</button>
-</div>
 
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <div class="nav-item"><div class="nav-icon">🛍️</div><div class="nav-lbl">Ordina</div></div>
-  <div class="nav-item"><div class="nav-icon">📍</div><div class="nav-lbl">Tracking</div></div>
-  <div class="nav-item"><div class="nav-icon">🤖</div><div class="nav-lbl">Memori-AI</div></div>
-  <div class="nav-item active"><div class="nav-icon">📊</div><div class="nav-lbl">Dashboard</div></div>
-  <div class="nav-item"><div class="nav-icon">🧠</div><div class="nav-lbl">Intel</div></div>
+  <div class="nav-item" id="nav-ordina" onclick="apriProdotti()">
+    <div class="nav-icon">🛍️</div>
+    <div class="nav-lbl">Ordina</div>
+  </div>
+  <div class="nav-item" onclick="toast('Tracking','Modulo tracking in apertura.')">
+    <div class="nav-icon">📍</div>
+    <div class="nav-lbl">Tracking</div>
+  </div>
+  <div class="nav-item" onclick="toast('MEMORI-AI','Assistente AI in apertura.')">
+    <div class="nav-icon">🤖</div>
+    <div class="nav-lbl">Memori-AI</div>
+  </div>
+  <div class="nav-item active" id="nav-dashboard" onclick="tornaDashboard()">
+    <div class="nav-icon">📊</div>
+    <div class="nav-lbl">Dashboard</div>
+  </div>
+  <div class="nav-item" onclick="toast('Intel','Centro intelligence in apertura.')">
+    <div class="nav-icon">🧠</div>
+    <div class="nav-lbl">Intel</div>
+  </div>
 </div>
 
 <!-- TOAST -->
@@ -492,22 +437,159 @@
 </div>
 
 <script>
-  function showTab(id,btn){
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    document.getElementById('panel-'+id).classList.add('active');
+  let prodotti = [];
+  let categoriaSelezionata = 'Food';
+
+  /* ── NAVIGAZIONE ── */
+  function apriProdotti() {
+    document.getElementById('mainDashboard').classList.add('hidden');
+    document.getElementById('prodottiView').classList.add('show');
+    document.getElementById('backBtn').classList.add('show');
+    document.getElementById('topbarBadge').style.display = 'none';
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('nav-ordina').classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function tornaDashboard() {
+    document.getElementById('mainDashboard').classList.remove('hidden');
+    document.getElementById('prodottiView').classList.remove('show');
+    document.getElementById('backBtn').classList.remove('show');
+    document.getElementById('topbarBadge').style.display = '';
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('nav-dashboard').classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  /* ── TABS DASHBOARD ── */
+  function showTab(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
     btn.classList.add('active');
   }
-  function toast(msg,sub){
-    document.getElementById('toastMsg').textContent=msg;
-    document.getElementById('toastSub').textContent=sub;
-    const t=document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),3000);
+
+  /* ── CATEGORIA ── */
+  function selectCat(el) {
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    categoriaSelezionata = el.textContent.trim();
   }
-  function toggleSwitch(el){
+
+  /* ── IMMAGINE PREVIEW ── */
+  function previewImg(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const box = document.getElementById('imgUpload');
+      const img = document.getElementById('imgPreview');
+      img.src = ev.target.result;
+      img.style.display = 'block';
+      box.classList.add('has-img');
+      box.querySelector('.img-upload-icon').style.display = 'none';
+      box.querySelector('.img-upload-text').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ── AGGIUNGI PRODOTTO ── */
+  function aggiungiProdotto() {
+    const nome = document.getElementById('prodNome').value.trim();
+    const prezzo = parseFloat(document.getElementById('prodPrezzo').value);
+    const qta = document.getElementById('prodQta').value.trim();
+    const desc = document.getElementById('prodDesc').value.trim();
+    const imgSrc = document.getElementById('imgPreview').src;
+    const hasImg = document.getElementById('imgPreview').style.display === 'block';
+
+    if (!nome) { toast('Nome mancante!', 'Inserisci il nome del prodotto.'); return; }
+    if (!prezzo || prezzo <= 0) { toast('Prezzo mancante!', 'Inserisci un prezzo valido.'); return; }
+
+    const prod = {
+      id: Date.now(),
+      nome, prezzo, qta: qta || '∞',
+      categoria: categoriaSelezionata,
+      desc,
+      img: hasImg ? imgSrc : null
+    };
+
+    prodotti.push(prod);
+    renderProdotti();
+    resetForm();
+    toast('Prodotto aggiunto!', nome + ' è ora nel tuo catalogo.');
+  }
+
+  function renderProdotti() {
+    const grid = document.getElementById('prodottiGrid');
+    const empty = document.getElementById('emptyState');
+    document.getElementById('prodCount').textContent = prodotti.length + ' prodotto' + (prodotti.length !== 1 ? 'i' : '');
+
+    if (prodotti.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    const cards = prodotti.map(p => `
+      <div class="prodotto-card" id="prod-${p.id}">
+        <div class="prodotto-thumb">
+          ${p.img ? `<img src="${p.img}" alt="${p.nome}">` : getCatEmoji(p.categoria)}
+        </div>
+        <div class="prodotto-info">
+          <div class="prodotto-name">${p.nome}</div>
+          <div class="prodotto-cat">${p.categoria} · ${p.qta} pz</div>
+          <div class="prodotto-price">€ ${p.prezzo.toFixed(2)}</div>
+        </div>
+        <div class="prodotto-actions">
+          <button class="action-icon edit" onclick="toast('Modifica','Funzione modifica in arrivo.')">✏️</button>
+          <button class="action-icon" onclick="eliminaProdotto(${p.id})">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+
+    grid.innerHTML = `<div class="empty-state" id="emptyState" style="display:none"></div>` + cards;
+  }
+
+  function eliminaProdotto(id) {
+    prodotti = prodotti.filter(p => p.id !== id);
+    renderProdotti();
+    toast('Prodotto rimosso!', 'Il prodotto è stato eliminato dal catalogo.');
+  }
+
+  function resetForm() {
+    document.getElementById('prodNome').value = '';
+    document.getElementById('prodPrezzo').value = '';
+    document.getElementById('prodQta').value = '';
+    document.getElementById('prodDesc').value = '';
+    const img = document.getElementById('imgPreview');
+    img.style.display = 'none';
+    img.src = '';
+    const box = document.getElementById('imgUpload');
+    box.classList.remove('has-img');
+    box.querySelector('.img-upload-icon').style.display = '';
+    box.querySelector('.img-upload-text').style.display = '';
+    document.querySelectorAll('.cat-chip').forEach((c,i) => c.classList.toggle('selected', i===0));
+    categoriaSelezionata = 'Food';
+  }
+
+  function getCatEmoji(cat) {
+    const map = {'🍕 Food':'🍕','💊 Farmacia':'💊','🔧 Servizi':'🔧','🛒 Retail':'🛒','🏨 Hotel':'🏨','📦 Altro':'📦'};
+    return map[cat] || '📦';
+  }
+
+  /* ── TOGGLE ── */
+  function toggleSwitch(el) {
     el.classList.toggle('on');
-    toast(el.classList.contains('on')?'Attivato':'Disattivato','Impostazione aggiornata.');
+    toast(el.classList.contains('on') ? 'Attivato' : 'Disattivato', 'Impostazione aggiornata.');
+  }
+
+  /* ── TOAST ── */
+  function toast(msg, sub) {
+    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toastSub').textContent = sub;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 </script>
 </body>
