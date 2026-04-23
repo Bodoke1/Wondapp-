@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WONDAPP — Business Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root {
+    --green:#00ff88;--green-dim:rgba(0,255,136,0.08);--green-glow:rgba(0,255,136,0.25);
+    --dark:#0a0a0f;--card:#12121a;--card2:#16162a;--border:#1e1e2e;--border2:#2a2a40;
+    --text:#e0e0f0;--muted:#666680;--orange:#ff8c00;--blue:#00aaff;--red:#ff4455;--purple:#aa55ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;padding-bottom:100px;}
+
+  /* TOPBAR */
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--green);letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
+  .logo span{color:#fff;}
+  .topbar-title{font-family:'Orbitron',sans-serif;font-size:13px;color:#fff;letter-spacing:2px;}
+
+  /* MODULE TABS */
+  .module-tabs{display:flex;gap:8px;padding:16px 20px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
+  .module-tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:10px 18px;border-radius:12px;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
+  .tab-btn.active{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
+
+  /* PANELS */
+  .panel{display:none;padding:20px;}
+  .panel.active{display:block;}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;}
+  .card.green-card{border-color:rgba(0,255,136,0.2);background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.03));}
+  .card.blue-card{border-color:rgba(0,170,255,0.2);background:linear-gradient(135deg,var(--card),rgba(0,170,255,0.03));}
+  .card.orange-card{border-color:rgba(255,140,0,0.2);background:linear-gradient(135deg,var(--card),rgba(255,140,0,0.03));}
+
+  /* METRICS */
+  .metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+  .metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+  .metric-val{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;color:var(--green);margin-bottom:4px;}
+  .metric-val.blue{color:var(--blue);}
+  .metric-val.orange{color:var(--orange);}
+  .metric-val.purple{color:var(--purple);}
+  .metric-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+
+  /* SECTION TITLE */
+  .sec-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+
+  /* STEPS — ONBOARDING */
+  .step-list{display:flex;flex-direction:column;gap:12px;}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;}
+  .step:hover{border-color:var(--border2);}
+  .step.completed{border-left:3px solid var(--green);}
+  .step.active-step{border-left:3px solid var(--orange);background:rgba(255,140,0,0.03);}
+  .step.locked{opacity:0.45;}
+  .step-num{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .step-num.done{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);}
+  .step-num.current{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);}
+  .step-num.locked{background:var(--border);border:1px solid var(--border2);}
+  .step-info{flex:1;}
+  .step-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .step-desc{font-size:12px;color:var(--muted);}
+  .step-badge{font-size:11px;padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:600;white-space:nowrap;}
+  .step-badge.done{background:rgba(0,255,136,0.1);color:var(--green);}
+  .step-badge.current{background:rgba(255,140,0,0.1);color:var(--orange);}
+  .step-badge.locked{background:rgba(102,102,128,0.15);color:var(--muted);}
+
+  /* PROGRESS BAR */
+  .prog-bar{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;margin-bottom:20px;}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--green),#00ffaa);border-radius:3px;transition:width 0.5s;}
+
+  /* INVOICE */
+  .invoice-list{display:flex;flex-direction:column;gap:10px;}
+  .invoice-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;}
+  .inv-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .inv-icon.paid{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);}
+  .inv-icon.pending{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);}
+  .inv-icon.draft{background:rgba(102,102,128,0.15);border:1px solid var(--border2);}
+  .inv-info{flex:1;}
+  .inv-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px;}
+  .inv-date{font-size:12px;color:var(--muted);}
+  .inv-amount{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--green);margin-right:10px;}
+  .inv-status{font-size:11px;padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;}
+  .inv-status.paid{background:rgba(0,255,136,0.1);color:var(--green);}
+  .inv-status.pending{background:rgba(255,140,0,0.1);color:var(--orange);}
+  .inv-status.draft{background:rgba(102,102,128,0.15);color:var(--muted);}
+
+  /* ANALYTICS */
+  .chart-container{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+  .chart-title{font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-bottom:16px;text-transform:uppercase;}
+  .bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;transition:height 0.5s;}
+  .bar-lbl{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .bar-val{font-size:10px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+
+  .geo-list{display:flex;flex-direction:column;gap:8px;}
+  .geo-item{display:flex;align-items:center;gap:12px;}
+  .geo-flag{font-size:20px;width:28px;}
+  .geo-name{font-size:13px;color:var(--text);flex:1;}
+  .geo-bar-wrap{flex:2;}
+  .geo-bar{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;}
+  .geo-fill{height:100%;background:var(--green);border-radius:3px;}
+  .geo-pct{font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;width:36px;text-align:right;}
+
+  /* MULTI LOCATION */
+  .location-list{display:flex;flex-direction:column;gap:12px;}
+  .loc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
+  .loc-card:hover{border-color:var(--border2);}
+  .loc-card.main-loc{border-color:rgba(0,255,136,0.25);}
+  .loc-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--green-dim);border:1px solid var(--green-glow);}
+  .loc-info{flex:1;}
+  .loc-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .loc-addr{font-size:12px;color:var(--muted);}
+  .loc-stats{display:flex;gap:12px;margin-top:8px;}
+  .loc-stat{font-size:11px;color:var(--muted);}
+  .loc-stat strong{color:var(--green);}
+  .loc-status{font-size:11px;padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;}
+  .loc-status.open{background:rgba(0,255,136,0.1);color:var(--green);}
+  .loc-status.closed{background:rgba(255,68,85,0.1);color:var(--red);}
+
+  .add-btn{width:100%;padding:16px;border-radius:16px;border:2px dashed var(--border2);background:transparent;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+  .add-btn:hover{border-color:var(--green);color:var(--green);}
+
+  /* ACTION BUTTON */
+  .action-btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:14px;}
+  .action-btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.35);}
+  .action-btn.blue-btn{background:rgba(0,170,255,0.15);color:var(--blue);border:1px solid rgba(0,170,255,0.3);}
+  .action-btn.blue-btn:hover{background:rgba(0,170,255,0.25);box-shadow:none;}
+
+  /* HIGHLIGHT */
+  .hl-box{background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);border-left:3px solid var(--green);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:16px;}
+  .hl-box.orange{background:rgba(255,140,0,0.06);border-color:rgba(255,140,0,0.2);border-left-color:var(--orange);}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding:10px 0 14px;z-index:100;}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;opacity:0.35;transition:opacity 0.2s;}
+  .nav-item.active{opacity:1;}
+  .nav-item.active .nav-lbl{color:var(--green);}
+  .nav-icon{font-size:22px;}
+  .nav-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:90px;left:20px;right:20px;background:rgba(0,20,10,0.95);border:1px solid rgba(0,255,136,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast-msg{font-size:14px;font-weight:600;color:var(--green);}
+  .toast-sub{font-size:12px;color:var(--muted);}
+
+  /* DIVIDER */
+  .divider{height:1px;background:var(--border);margin:16px 0;}
+
+  /* TAG */
+  .tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .tag.green{background:rgba(0,255,136,0.1);color:var(--green);}
+  .tag.blue{background:rgba(0,170,255,0.1);color:var(--blue);}
+  .tag.orange{background:rgba(255,140,0,0.1);color:var(--orange);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">WOND<span>APP</span></div>
+  <div class="topbar-title">BUSINESS HUB</div>
+  <div class="tag green">FASE 5A</div>
+</div>
+
+<!-- MODULE TABS -->
+<div class="module-tabs">
+  <button class="tab-btn active" onclick="showPanel('onboarding',this)">🚀 Onboarding</button>
+  <button class="tab-btn" onclick="showPanel('invoice',this)">🧾 Fatture</button>
+  <button class="tab-btn" onclick="showPanel('analytics',this)">📊 Analytics Pro</button>
+  <button class="tab-btn" onclick="showPanel('locations',this)">📍 Multi-Sede</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL 1 — ONBOARDING -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel active" id="panel-onboarding">
+
+  <div class="hl-box">🚀 <strong>Benvenuto su WONDAPP!</strong> Completa i 5 passi per attivare il tuo negozio e iniziare a ricevere ordini.</div>
+
+  <div class="sec-title">Progresso attivazione</div>
+  <div class="prog-bar"><div class="prog-fill" id="onboardProg" style="width:40%"></div></div>
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">2/5</div><div class="metric-lbl">Passi completati</div></div>
+    <div class="metric"><div class="metric-val orange">40%</div><div class="metric-lbl">Avanzamento</div></div>
+  </div>
+
+  <div class="sec-title">Passi di attivazione</div>
+  <div class="step-list">
+
+    <div class="step completed">
+      <div class="step-num done">✓</div>
+      <div class="step-info">
+        <div class="step-name">Profilo creato</div>
+        <div class="step-desc">Nome, email, tipologia attività</div>
+      </div>
+      <div class="step-badge done">FATTO</div>
+    </div>
+
+    <div class="step completed">
+      <div class="step-num done">✓</div>
+      <div class="step-info">
+        <div class="step-name">Piano scelto</div>
+        <div class="step-desc">Free · Plus · Pro selezionato</div>
+      </div>
+      <div class="step-badge done">FATTO</div>
+    </div>
+
+    <div class="step active-step" onclick="completeStep(this,3)">
+      <div class="step-num current">📍</div>
+      <div class="step-info">
+        <div class="step-name">Aggiungi prima sede</div>
+        <div class="step-desc">Indirizzo e orari di apertura</div>
+      </div>
+      <div class="step-badge current">IN CORSO</div>
+    </div>
+
+    <div class="step locked">
+      <div class="step-num locked">🔒</div>
+      <div class="step-info">
+        <div class="step-name">Carica il menu / catalogo</div>
+        <div class="step-desc">Prodotti, prezzi, foto</div>
+      </div>
+      <div class="step-badge locked">BLOCCATO</div>
+    </div>
+
+    <div class="step locked">
+      <div class="step-num locked">🔒</div>
+      <div class="step-info">
+        <div class="step-name">Attiva pagamenti</div>
+        <div class="step-desc">Collega metodo di pagamento</div>
+      </div>
+      <div class="step-badge locked">BLOCCATO</div>
+    </div>
+
+  </div>
+
+  <button class="action-btn" onclick="nextStep()">Continua →</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL 2 — FATTURE -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panel-invoice">
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">€ 12.840</div><div class="metric-lbl">Fatturato mese</div></div>
+    <div class="metric"><div class="metric-val blue">24</div><div class="metric-lbl">Fatture emesse</div></div>
+    <div class="metric"><div class="metric-val orange">3</div><div class="metric-lbl">In attesa</div></div>
+    <div class="metric"><div class="metric-val purple">€ 980</div><div class="metric-lbl">Da incassare</div></div>
+  </div>
+
+  <button class="action-btn blue-btn" onclick="newInvoice()">+ Nuova Fattura</button>
+
+  <div class="divider"></div>
+  <div class="sec-title">Fatture recenti</div>
+
+  <div class="invoice-list">
+    <div class="invoice-item">
+      <div class="inv-icon paid">📄</div>
+      <div class="inv-info">
+        <div class="inv-name">Ordine #4821 — GroceryFast</div>
+        <div class="inv-date">23 Apr 2026</div>
+      </div>
+      <div class="inv-amount">€ 340</div>
+      <div class="inv-status paid">PAGATA</div>
+    </div>
+    <div class="invoice-item">
+      <div class="inv-icon pending">📄</div>
+      <div class="inv-info">
+        <div class="inv-name">Ordine #4798 — Farmacia Salute</div>
+        <div class="inv-date">22 Apr 2026</div>
+      </div>
+      <div class="inv-amount">€ 180</div>
+      <div class="inv-status pending">IN ATTESA</div>
+    </div>
+    <div class="invoice-item">
+      <div class="inv-icon paid">📄</div>
+      <div class="inv-info">
+        <div class="inv-name">Ordine #4755 — Pizzeria Napoli</div>
+        <div class="inv-date">21 Apr 2026</div>
+      </div>
+      <div class="inv-amount">€ 95</div>
+      <div class="inv-status paid">PAGATA</div>
+    </div>
+    <div class="invoice-item">
+      <div class="inv-icon pending">📄</div>
+      <div class="inv-info">
+        <div class="inv-name">Ordine #4710 — Grand Hotel Central</div>
+        <div class="inv-date">20 Apr 2026</div>
+      </div>
+      <div class="inv-amount">€ 460</div>
+      <div class="inv-status pending">IN ATTESA</div>
+    </div>
+    <div class="invoice-item">
+      <div class="inv-icon draft">📄</div>
+      <div class="inv-info">
+        <div class="inv-name">Bozza — Idraulico Pronto</div>
+        <div class="inv-date">19 Apr 2026</div>
+      </div>
+      <div class="inv-amount">€ 210</div>
+      <div class="inv-status draft">BOZZA</div>
+    </div>
+  </div>
+
+  <button class="action-btn" style="margin-top:20px;" onclick="showToast('PDF generato!','Fatture esportate correttamente.')">⬇ Esporta tutto in PDF</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL 3 — ANALYTICS PRO -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panel-analytics">
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">€ 48.2K</div><div class="metric-lbl">Revenue totale</div></div>
+    <div class="metric"><div class="metric-val blue">1.247</div><div class="metric-lbl">Ordini oggi</div></div>
+    <div class="metric"><div class="metric-val orange">+18%</div><div class="metric-lbl">Crescita mese</div></div>
+    <div class="metric"><div class="metric-val purple">94%</div><div class="metric-lbl">Soddisfazione</div></div>
+  </div>
+
+  <!-- BAR CHART -->
+  <div class="chart-container">
+    <div class="chart-title">Revenue settimanale (€)</div>
+    <div class="bar-chart" id="barChart">
+      <div class="bar-wrap"><div class="bar-val">6.2K</div><div class="bar" style="height:70%;background:rgba(0,255,136,0.5);"></div><div class="bar-lbl">Lun</div></div>
+      <div class="bar-wrap"><div class="bar-val">8.4K</div><div class="bar" style="height:95%;background:var(--green);"></div><div class="bar-lbl">Mar</div></div>
+      <div class="bar-wrap"><div class="bar-val">5.1K</div><div class="bar" style="height:58%;background:rgba(0,255,136,0.5);"></div><div class="bar-lbl">Mer</div></div>
+      <div class="bar-wrap"><div class="bar-val">7.8K</div><div class="bar" style="height:88%;background:rgba(0,255,136,0.7);"></div><div class="bar-lbl">Gio</div></div>
+      <div class="bar-wrap"><div class="bar-val">9.1K</div><div class="bar" style="height:100%;background:var(--green);box-shadow:0 0 10px rgba(0,255,136,0.4);"></div><div class="bar-lbl">Ven</div></div>
+      <div class="bar-wrap"><div class="bar-val">7.2K</div><div class="bar" style="height:81%;background:rgba(0,255,136,0.6);"></div><div class="bar-lbl">Sab</div></div>
+      <div class="bar-wrap"><div class="bar-val">4.4K</div><div class="bar" style="height:50%;background:rgba(0,255,136,0.4);"></div><div class="bar-lbl">Dom</div></div>
+    </div>
+  </div>
+
+  <!-- GEO -->
+  <div class="chart-container">
+    <div class="chart-title">Top mercati geografici</div>
+    <div class="geo-list">
+      <div class="geo-item"><div class="geo-flag">🇮🇹</div><div class="geo-name">Italia</div><div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-fill" style="width:78%;"></div></div></div><div class="geo-pct">78%</div></div>
+      <div class="geo-item"><div class="geo-flag">🇫🇷</div><div class="geo-name">Francia</div><div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-fill" style="width:52%;background:var(--blue);"></div></div></div><div class="geo-pct" style="color:var(--blue);">52%</div></div>
+      <div class="geo-item"><div class="geo-flag">🇩🇪</div><div class="geo-name">Germania</div><div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-fill" style="width:38%;background:var(--orange);"></div></div></div><div class="geo-pct" style="color:var(--orange);">38%</div></div>
+      <div class="geo-item"><div class="geo-flag">🇪🇸</div><div class="geo-name">Spagna</div><div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-fill" style="width:24%;background:var(--purple);"></div></div></div><div class="geo-pct" style="color:var(--purple);">24%</div></div>
+      <div class="geo-item"><div class="geo-flag">🇬🇧</div><div class="geo-name">UK</div><div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-fill" style="width:15%;background:var(--muted);"></div></div></div><div class="geo-pct" style="color:var(--muted);">15%</div></div>
+    </div>
+  </div>
+
+  <button class="action-btn" onclick="showToast('Report generato!','Analytics esportate in PDF.')">⬇ Scarica Report Completo</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL 4 — MULTI-SEDE -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panel-locations">
+
+  <div class="hl-box">📍 <strong>3 sedi attive.</strong> Gestisci tutto da un unico account WONDAPP Pro.</div>
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">3</div><div class="metric-lbl">Sedi totali</div></div>
+    <div class="metric"><div class="metric-val blue">2</div><div class="metric-lbl">Online ora</div></div>
+    <div class="metric"><div class="metric-val orange">€ 4.2K</div><div class="metric-lbl">Revenue oggi</div></div>
+    <div class="metric"><div class="metric-val purple">87</div><div class="metric-lbl">Ordini attivi</div></div>
+  </div>
+
+  <div class="sec-title">Le tue sedi</div>
+  <div class="location-list">
+
+    <div class="loc-card main-loc">
+      <div class="loc-icon">🏪</div>
+      <div class="loc-info">
+        <div class="loc-name">Sede Principale — Milano Centro</div>
+        <div class="loc-addr">Via Montenapoleone 12, Milano</div>
+        <div class="loc-stats">
+          <div class="loc-stat">Ordini oggi: <strong>42</strong></div>
+          <div class="loc-stat">Revenue: <strong>€ 2.100</strong></div>
+        </div>
+      </div>
+      <div class="loc-status open">● Aperta</div>
+    </div>
+
+    <div class="loc-card">
+      <div class="loc-icon">🏪</div>
+      <div class="loc-info">
+        <div class="loc-name">Sede 2 — Milano Navigli</div>
+        <div class="loc-addr">Ripa di Porta Ticinese 55, Milano</div>
+        <div class="loc-stats">
+          <div class="loc-stat">Ordini oggi: <strong>31</strong></div>
+          <div class="loc-stat">Revenue: <strong>€ 1.450</strong></div>
+        </div>
+      </div>
+      <div class="loc-status open">● Aperta</div>
+    </div>
+
+    <div class="loc-card">
+      <div class="loc-icon">🏪</div>
+      <div class="loc-info">
+        <div class="loc-name">Sede 3 — Roma Prati</div>
+        <div class="loc-addr">Via Cola di Rienzo 88, Roma</div>
+        <div class="loc-stats">
+          <div class="loc-stat">Ordini oggi: <strong>14</strong></div>
+          <div class="loc-stat">Revenue: <strong>€ 650</strong></div>
+        </div>
+      </div>
+      <div class="loc-status closed">● Chiusa</div>
+    </div>
+
+  </div>
+
+  <button class="add-btn" onclick="showToast('Nuova sede!','Compila i dati della nuova sede.')">+ Aggiungi Sede</button>
+  <button class="action-btn" style="margin-top:12px;" onclick="showToast('Report multi-sede!','Dati consolidati di tutte le sedi.')">📊 Report Consolidato</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item"><div class="nav-icon">🛍️</div><div class="nav-lbl">Ordina</div></div>
+  <div class="nav-item"><div class="nav-icon">📍</div><div class="nav-lbl">Tracking</div></div>
+  <div class="nav-item"><div class="nav-icon">🤖</div><div class="nav-lbl">Memori-AI</div></div>
+  <div class="nav-item active"><div class="nav-icon">📊</div><div class="nav-lbl">Dashboard</div></div>
+  <div class="nav-item"><div class="nav-icon">🧠</div><div class="nav-lbl">Intel</div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div style="font-size:22px;">✅</div>
+  <div>
+    <div class="toast-msg" id="toastMsg">Fatto!</div>
+    <div class="toast-sub" id="toastSub"></div>
+  </div>
+</div>
+
+<script>
+  function showPanel(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function showToast(msg, sub) {
+    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toastSub').textContent = sub;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function nextStep() { showToast('Ottimo!', 'Procedi con il passo successivo.'); }
+  function newInvoice() { showToast('Nuova fattura!', 'Compila i dati per emetterla.'); }
+
+  function completeStep(el, num) {
+    el.classList.remove('active-step');
+    el.classList.add('completed');
+    el.querySelector('.step-num').textContent = '✓';
+    el.querySelector('.step-num').className = 'step-num done';
+    el.querySelector('.step-badge').textContent = 'FATTO';
+    el.querySelector('.step-badge').className = 'step-badge done';
+    const steps = document.querySelectorAll('.step.locked');
+    if (steps.length > 0) {
+      steps[0].classList.remove('locked');
+      steps[0].classList.add('active-step');
+      steps[0].querySelector('.step-num').className = 'step-num current';
+      steps[0].querySelector('.step-badge').textContent = 'IN CORSO';
+      steps[0].querySelector('.step-badge').className = 'step-badge current';
+    }
+    const completed = document.querySelectorAll('.step.completed').length;
+    const total = document.querySelectorAll('.step').length;
+    const pct = Math.round(completed / total * 100);
+    document.getElementById('onboardProg').style.width = pct + '%';
+    showToast('Passo completato!', 'Continua con il passo successivo.');
+  }
+</script>
+</body>
+</html>
