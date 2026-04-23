@@ -3,577 +3,567 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIBBIA DI WONDAPP — Documento Fondamenta v1.1</title>
+<title>WONDAPP — Ricerca Universale</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
-  :root {
-    --green: #00ff88;
-    --green2: #00cc66;
-    --green-dim: rgba(0,255,136,0.1);
-    --green-glow: rgba(0,255,136,0.3);
-    --dark: #07070f;
-    --dark2: #0d0d18;
-    --card: #10101e;
-    --card2: #14142a;
-    --border: #1a1a30;
-    --border2: #222240;
-    --text: #dde0f0;
-    --muted: #55556a;
-    --accent: #00aaff;
-    --orange: #ff8800;
-    --red: #ff4455;
-    --purple: #aa55ff;
+  :root{
+    --green:#00ff88;--green-dim:rgba(0,255,136,0.08);--green-glow:rgba(0,255,136,0.25);
+    --dark:#0a0a0f;--card:#12121a;--card2:#16162a;--border:#1e1e2e;--border2:#2a2a40;
+    --text:#e0e0f0;--muted:#666680;--orange:#ff8c00;--blue:#00aaff;--red:#ff4455;--purple:#aa55ff;
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;padding-bottom:100px;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+  /* TOPBAR */
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green);letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
+  .logo span{color:#fff;}
+  .location-btn{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border2);color:var(--muted);padding:7px 12px;border-radius:12px;font-size:12px;cursor:pointer;}
+  .location-btn span{color:var(--text);font-weight:600;}
 
-  body {
-    background: var(--dark);
-    color: var(--text);
-    font-family: 'Exo 2', sans-serif;
-    min-height: 100vh;
-    line-height: 1.7;
-  }
+  /* SEARCH HERO */
+  .search-hero{padding:24px 20px 16px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,255,136,0.05),transparent);}
+  .search-hero-title{font-size:14px;color:var(--muted);margin-bottom:12px;font-weight:300;}
+  .search-wrap{position:relative;}
+  .search-box{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--green);border-radius:18px;padding:14px 18px;box-shadow:0 0 20px rgba(0,255,136,0.1);transition:box-shadow 0.2s;}
+  .search-box:focus-within{box-shadow:0 0 30px rgba(0,255,136,0.2);}
+  .search-box input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Exo 2',sans-serif;font-size:17px;}
+  .search-box input::placeholder{color:var(--muted);}
+  .search-clear-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;display:none;transition:color 0.2s;padding:0 2px;}
+  .search-clear-btn:hover{color:var(--red);}
+  .search-clear-btn.show{display:block;}
+  .search-icon{font-size:22px;color:var(--green);}
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
+  /* AUTOCOMPLETE DROPDOWN */
+  .autocomplete{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card2);border:1px solid var(--border2);border-radius:16px;overflow:hidden;z-index:50;display:none;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+  .autocomplete.show{display:block;}
+  .ac-item{padding:12px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.15s;}
+  .ac-item:hover{background:rgba(0,255,136,0.05);}
+  .ac-icon{font-size:18px;width:28px;text-align:center;}
+  .ac-text{font-size:14px;color:var(--text);}
+  .ac-cat{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 
-  .hero {
-    position: relative;
-    padding: 80px 40px 60px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,136,0.07), transparent);
-    overflow: hidden;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--green), transparent);
-  }
-  .hero-badge {
-    display: inline-block;
-    background: var(--green-dim);
-    border: 1px solid var(--green-glow);
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    padding: 6px 18px;
-    border-radius: 20px;
-    margin-bottom: 28px;
-    text-transform: uppercase;
-  }
-  .hero-logo {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(42px, 8vw, 72px);
-    font-weight: 900;
-    color: var(--green);
-    letter-spacing: 6px;
-    text-shadow: 0 0 40px rgba(0,255,136,0.4), 0 0 80px rgba(0,255,136,0.15);
-    margin-bottom: 8px;
-  }
-  .hero-logo span { color: #fff; }
-  .hero-subtitle {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    margin-bottom: 32px;
-    text-transform: uppercase;
-  }
-  .hero-tagline {
-    font-size: 18px;
-    color: var(--text);
-    font-weight: 300;
-    max-width: 600px;
-    margin: 0 auto 40px;
-    opacity: 0.8;
-  }
-  .meta-row {
-    display: flex;
-    justify-content: center;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-  .meta-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .meta-value { font-family: 'Orbitron', sans-serif; font-size: 20px; color: var(--green); font-weight: 700; }
-  .meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  /* CHIPS SUGGERITI */
+  .chips-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px 0;}
+  .chips-row::-webkit-scrollbar{display:none;}
+  .chip{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-weight:600;flex-shrink:0;}
+  .chip:hover,.chip.active-chip{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
 
-  /* VERSION BADGE */
-  .version-bar {
-    background: rgba(0,255,136,0.04);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 40px;
-    display: flex;
-    justify-content: center;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-  .version-item { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-  .version-item strong { color: var(--green); }
+  /* SEZIONI */
+  .section{padding:20px 20px 0;}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .section-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .section-count{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;}
 
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 24px;
-    position: relative;
-    z-index: 1;
-  }
+  /* RISULTATI */
+  .results-list{display:flex;flex-direction:column;gap:12px;}
 
-  .section { padding: 60px 0; border-bottom: 1px solid var(--border); }
-  .section:last-child { border-bottom: none; }
+  .result-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+  .result-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);opacity:0;transition:opacity 0.2s;}
+  .result-card:hover{border-color:rgba(0,255,136,0.2);transform:translateX(3px);}
+  .result-card:hover::before{opacity:1;}
 
-  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
-  .section-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--green);
-    background: var(--green-dim);
-    border: 1px solid var(--green-glow);
-    padding: 4px 10px;
-    border-radius: 6px;
-    letter-spacing: 1px;
-  }
-  .section-title { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 2px; }
+  .result-icon{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid rgba(255,255,255,0.06);}
+  .result-body{flex:1;min-width:0;}
+  .result-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .result-cat{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+  .result-desc{font-size:13px;color:var(--text);opacity:0.7;margin-bottom:8px;font-weight:300;}
+  .result-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .meta-pill{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);}
+  .meta-pill.open{color:var(--green);}
+  .meta-pill.closed{color:var(--red);}
+  .result-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
+  .stars{font-size:13px;color:var(--orange);}
+  .rating-num{font-size:12px;color:var(--muted);}
+  .order-btn{background:var(--green);color:#000;border:none;border-radius:10px;padding:8px 14px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .order-btn:hover{background:#00ffaa;box-shadow:0 0 12px rgba(0,255,136,0.4);}
+  .order-btn.blue{background:rgba(0,170,255,0.15);color:var(--blue);border:1px solid rgba(0,170,255,0.3);}
+  .order-btn.blue:hover{background:rgba(0,170,255,0.25);box-shadow:none;}
 
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  @media (max-width: 640px) {
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .hero { padding: 60px 20px 40px; }
-    .meta-row { gap: 20px; }
-    .version-bar { padding: 10px 20px; gap: 16px; }
-  }
+  .highlight{background:rgba(0,255,136,0.18);color:var(--green);border-radius:3px;padding:0 2px;}
 
-  .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: border-color 0.2s; }
-  .info-card:hover { border-color: var(--border2); }
-  .info-card.highlight { border-color: rgba(0,255,136,0.2); background: linear-gradient(135deg, var(--card), rgba(0,255,136,0.04)); }
-  .card-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; }
-  .card-value { font-size: 15px; color: var(--text); font-weight: 600; }
-  .card-value.green { color: var(--green); }
+  /* EMPTY / NO RESULTS */
+  .empty-search{text-align:center;padding:60px 20px;color:var(--muted);}
+  .empty-icon{font-size:52px;margin-bottom:16px;opacity:0.35;}
+  .empty-text{font-size:16px;margin-bottom:6px;color:var(--text);}
+  .empty-sub{font-size:13px;opacity:0.6;}
 
-  .prose { font-size: 15px; color: var(--text); opacity: 0.85; margin-bottom: 20px; font-weight: 300; }
-  .prose strong { color: var(--green); font-weight: 600; }
+  /* HOME STATE */
+  .home-state{padding:16px 20px 0;}
+  .category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+  .cat-tile{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all 0.2s;}
+  .cat-tile:hover{border-color:rgba(0,255,136,0.2);background:var(--green-dim);}
+  .cat-tile:active{transform:scale(0.95);}
+  .cat-tile-icon{font-size:28px;}
+  .cat-tile-name{font-size:11px;color:var(--muted);text-align:center;font-weight:600;letter-spacing:0.5px;}
 
-  .highlight-box {
-    background: var(--green-dim);
-    border: 1px solid rgba(0,255,136,0.2);
-    border-left: 3px solid var(--green);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin: 20px 0;
-    font-size: 14px;
-    color: var(--text);
-  }
-  .highlight-box.blue { background: rgba(0,170,255,0.06); border-color: rgba(0,170,255,0.2); border-left-color: var(--accent); }
-  .highlight-box.orange { background: rgba(255,136,0,0.06); border-color: rgba(255,136,0,0.2); border-left-color: var(--orange); }
-  .highlight-box.purple { background: rgba(170,85,255,0.06); border-color: rgba(170,85,255,0.2); border-left-color: var(--purple); }
+  .nearby-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;}
+  .nearby-scroll::-webkit-scrollbar{display:none;}
+  .nearby-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;min-width:160px;flex-shrink:0;cursor:pointer;transition:all 0.2s;}
+  .nearby-card:hover{border-color:rgba(0,255,136,0.2);}
+  .nearby-icon{font-size:28px;margin-bottom:8px;}
+  .nearby-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .nearby-dist{font-size:11px;color:var(--muted);}
+  .nearby-open{font-size:11px;color:var(--green);margin-top:4px;}
 
-  .nav-display { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
-  .nav-tab { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 90px; flex: 1; }
-  .nav-tab.active-tab { background: var(--green-dim); border-color: rgba(0,255,136,0.3); }
-  .nav-tab-icon { font-size: 22px; }
-  .nav-tab-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .nav-tab.active-tab .nav-tab-label { color: var(--green); }
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding:10px 0 14px;z-index:100;backdrop-filter:blur(12px);}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;opacity:0.35;transition:opacity 0.2s;}
+  .nav-item.active{opacity:1;}
+  .nav-item.active .nav-lbl{color:var(--green);}
+  .nav-icon{font-size:22px;}
+  .nav-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
 
-  .pricing-table { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0; }
-  @media (max-width: 640px) { .pricing-table { grid-template-columns: 1fr; } }
-  .price-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 18px; text-align: center; }
-  .price-card.pro-card { border-color: rgba(0,255,136,0.3); background: linear-gradient(160deg, var(--card), rgba(0,255,136,0.05)); }
-  .price-tier { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--muted); letter-spacing: 2px; margin-bottom: 10px; }
-  .price-tag { font-family: 'Orbitron', sans-serif; font-size: 28px; color: var(--green); font-weight: 700; margin-bottom: 4px; }
-  .price-period { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
-  .price-commission { font-size: 13px; color: var(--text); padding: 8px 0; border-top: 1px solid var(--border); }
-  .price-tag.free-tag { color: var(--text); }
+  /* TOAST */
+  .toast{position:fixed;bottom:90px;left:20px;right:20px;background:rgba(10,10,25,0.97);border:1px solid rgba(0,255,136,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast-msg{font-size:14px;font-weight:600;color:var(--green);}
+  .toast-sub{font-size:12px;color:var(--muted);}
 
-  /* FASE LIST */
-  .fase-list { display: flex; flex-direction: column; gap: 12px; }
-  .fase-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; display: flex; align-items: flex-start; gap: 16px; }
-  .fase-item.done { border-left: 3px solid var(--green); }
-  .fase-item.partial { border-left: 3px solid var(--orange); }
-  .fase-item.todo { border-left: 3px solid var(--muted); }
-  .fase-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
-  .fase-badge.done { background: rgba(0,255,136,0.1); color: var(--green); }
-  .fase-badge.partial { background: rgba(255,136,0,0.1); color: var(--orange); }
-  .fase-badge.todo { background: rgba(85,85,106,0.2); color: var(--muted); }
-  .fase-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-  .fase-desc { font-size: 13px; color: var(--muted); }
-  .fase-modules { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
-  .module-chip { font-size: 11px; background: var(--dark2); border: 1px solid var(--border2); color: var(--text); padding: 3px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; }
-  .module-chip.done { color: var(--green); border-color: rgba(0,255,136,0.2); }
-  .module-chip.todo { color: var(--orange); border-color: rgba(255,136,0,0.2); }
-
-  .competitor-list { display: flex; flex-direction: column; gap: 8px; }
-  .competitor-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
-  .comp-icon { font-size: 20px; width: 28px; text-align: center; }
-  .comp-name { font-weight: 600; font-size: 14px; flex: 1; }
-  .comp-category { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-
-  .ai-box { background: linear-gradient(135deg, #0a0a1f, #0f0f2a); border: 1px solid rgba(170,85,255,0.2); border-radius: 16px; padding: 28px; position: relative; overflow: hidden; }
-  .ai-box::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(170,85,255,0.08), transparent); pointer-events: none; }
-  .ai-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--purple); letter-spacing: 2px; margin-bottom: 12px; }
-
-  .token-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .token-row:last-child { border-bottom: none; }
-  .token-key { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); width: 160px; flex-shrink: 0; }
-  .token-value { font-size: 14px; color: var(--text); flex: 1; }
-  .color-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
-
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--dark); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-  .toc { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin: 40px 0; }
-  .toc-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--green); letter-spacing: 2px; margin-bottom: 16px; }
-  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-  .toc-list li a { color: var(--text); text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 10px; opacity: 0.7; transition: opacity 0.2s; }
-  .toc-list li a:hover { opacity: 1; color: var(--green); }
-  .toc-list li a::before { content: ''; width: 20px; height: 1px; background: var(--green); opacity: 0.4; }
-
-  /* PROGRESS BAR */
-  .progress-section {
-    background: var(--card);
-    border: 1px solid rgba(0,255,136,0.2);
-    border-radius: 16px;
-    padding: 24px;
-    margin: 40px 0;
-  }
-  .progress-label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    color: var(--green);
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .progress-track {
-    height: 8px;
-    background: var(--border2);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green2), var(--green));
-    border-radius: 4px;
-    width: 80%;
-    box-shadow: 0 0 10px rgba(0,255,136,0.4);
-  }
-  .progress-steps {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .progress-steps span.done { color: var(--green); }
-  .progress-steps span.next { color: var(--orange); }
-
-  .doc-footer { text-align: center; padding: 60px 20px 40px; border-top: 1px solid var(--border); background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,255,136,0.04), transparent); }
-  .doc-footer-logo { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; color: var(--green); letter-spacing: 4px; text-shadow: 0 0 30px rgba(0,255,136,0.3); margin-bottom: 10px; }
-  .doc-footer-logo span { color: #fff; }
-  .doc-footer-note { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .result-card{animation:fadeIn 0.25s ease both;}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-badge">📖 DOCUMENTO FONDAMENTA v1.1</div>
-  <div class="hero-logo">WOND<span>APP</span></div>
-  <div class="hero-subtitle">Ex SERVAPP · Ex MEMORIAPP · Bibbia del Progetto</div>
-  <div class="hero-tagline">Piattaforma universale H24 per qualsiasi servizio — Lancio globale dal giorno uno.</div>
-  <div class="meta-row">
-    <div class="meta-item"><div class="meta-value">5</div><div class="meta-label">Tab Nav</div></div>
-    <div class="meta-item"><div class="meta-value">7</div><div class="meta-label">Lingue</div></div>
-    <div class="meta-item"><div class="meta-value">H24</div><div class="meta-label">Operatività</div></div>
-    <div class="meta-item"><div class="meta-value">4/5</div><div class="meta-label">Fasi Complete</div></div>
-    <div class="meta-item"><div class="meta-value">🌍</div><div class="meta-label">Global</div></div>
+<div class="topbar">
+  <div class="logo">WOND<span>APP</span></div>
+  <div class="location-btn">📍 <span>Milano</span> ▾</div>
+</div>
+
+<!-- SEARCH HERO -->
+<div class="search-hero">
+  <div class="search-hero-title">🔍 Cerca qualsiasi servizio, negozio, professionista…</div>
+  <div class="search-wrap">
+    <div class="search-box">
+      <div class="search-icon">🔎</div>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Benzinaio, farmacia, avvocato, hotel…"
+        oninput="onSearch(this.value)"
+        onkeydown="onKey(event)"
+        autocomplete="off"
+      >
+      <button class="search-clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="autocomplete" id="autocomplete"></div>
   </div>
 </div>
 
-<!-- VERSION BAR -->
-<div class="version-bar">
-  <div class="version-item">Versione: <strong>v1.1</strong></div>
-  <div class="version-item">Fasi complete: <strong>1 · 2 · 3 · 4</strong></div>
-  <div class="version-item">Prossimo: <strong>GitHub Deploy</strong></div>
-  <div class="version-item">Owner: <strong>Orion</strong></div>
+<!-- CHIP SUGGERITI -->
+<div class="chips-row" id="chipsRow">
+  <span class="chip" onclick="searchChip(this,'Farmacia')">💊 Farmacia</span>
+  <span class="chip" onclick="searchChip(this,'Ristorante')">🍕 Ristorante</span>
+  <span class="chip" onclick="searchChip(this,'Hotel')">🏨 Hotel</span>
+  <span class="chip" onclick="searchChip(this,'Benzinaio')">⛽ Benzinaio</span>
+  <span class="chip" onclick="searchChip(this,'Medico')">🩺 Medico</span>
+  <span class="chip" onclick="searchChip(this,'Avvocato')">⚖️ Avvocato</span>
+  <span class="chip" onclick="searchChip(this,'Supermercato')">🛒 Supermercato</span>
+  <span class="chip" onclick="searchChip(this,'Idraulico')">🔧 Idraulico</span>
+  <span class="chip" onclick="searchChip(this,'Parrucchiere')">✂️ Parrucchiere</span>
+  <span class="chip" onclick="searchChip(this,'Palestra')">💪 Palestra</span>
+  <span class="chip" onclick="searchChip(this,'Taxi')">🚕 Taxi</span>
+  <span class="chip" onclick="searchChip(this,'Veterinario')">🐾 Veterinario</span>
 </div>
 
-<div class="container">
-
-  <!-- PROGRESS -->
-  <div class="progress-section">
-    <div class="progress-label">
-      <span>AVANZAMENTO PROGETTO</span>
-      <span>80%</span>
+<!-- HOME STATE -->
+<div id="homeState">
+  <div class="home-state">
+    <div class="section-header" style="margin-top:20px;">
+      <div class="section-title">🗂️ Categorie</div>
     </div>
-    <div class="progress-track">
-      <div class="progress-fill"></div>
+    <div class="category-grid">
+      <div class="cat-tile" onclick="searchChip(null,'Farmacia')"><div class="cat-tile-icon">💊</div><div class="cat-tile-name">Farmacia</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Ristorante')"><div class="cat-tile-icon">🍕</div><div class="cat-tile-name">Food</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Hotel')"><div class="cat-tile-icon">🏨</div><div class="cat-tile-name">Hotel</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Medico')"><div class="cat-tile-icon">🩺</div><div class="cat-tile-name">Medico</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Avvocato')"><div class="cat-tile-icon">⚖️</div><div class="cat-tile-name">Legale</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Benzinaio')"><div class="cat-tile-icon">⛽</div><div class="cat-tile-name">Benzina</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Idraulico')"><div class="cat-tile-icon">🔧</div><div class="cat-tile-name">Servizi</div></div>
+      <div class="cat-tile" onclick="searchChip(null,'Supermercato')"><div class="cat-tile-icon">🛒</div><div class="cat-tile-name">Spesa</div></div>
     </div>
-    <div class="progress-steps">
-      <span class="done">F1 ✓</span>
-      <span class="done">F2 ✓</span>
-      <span class="done">F3 ✓</span>
-      <span class="done">F4 ✓</span>
-      <span class="next">GitHub →</span>
-      <span>Bibbia</span>
+
+    <div class="section-header">
+      <div class="section-title">📍 Vicino a te — Aperti ora</div>
     </div>
-  </div>
-
-  <!-- TOC -->
-  <div class="toc">
-    <div class="toc-title">INDICE</div>
-    <ul class="toc-list">
-      <li><a href="#identita">01 — Identità & Visione</a></li>
-      <li><a href="#navigazione">02 — Struttura Navigazione</a></li>
-      <li><a href="#design">03 — Design System</a></li>
-      <li><a href="#business">04 — Modello di Business</a></li>
-      <li><a href="#utenti">05 — Tipologie di Utenti</a></li>
-      <li><a href="#ai">06 — SERV-AI / WOND-AI System</a></li>
-      <li><a href="#competitor">07 — Competitor Monitorati</a></li>
-      <li><a href="#fasi">08 — Fasi di Sviluppo</a></li>
-      <li><a href="#decisioni">09 — Decisioni Chiave Prese</a></li>
-      <li><a href="#prossimi">10 — Prossimi Passi</a></li>
-    </ul>
-  </div>
-
-  <!-- 01 -->
-  <div class="section" id="identita">
-    <div class="section-header"><div class="section-num">01</div><div class="section-title">IDENTITÀ & VISIONE</div></div>
-    <p class="prose">WONDAPP è una <strong>piattaforma universale H24</strong> che connette qualsiasi utente con qualsiasi tipo di servizio o commerciante in qualsiasi parte del mondo. Non si limita a un settore: hotel, farmacia, idraulico, ristorante, industria — tutto su un'unica app.</p>
-    <div class="grid-2" style="margin: 24px 0;">
-      <div class="info-card highlight"><div class="card-label">Nome Corrente</div><div class="card-value green">WONDAPP</div></div>
-      <div class="info-card"><div class="card-label">Nomi Precedenti</div><div class="card-value">SERVAPP → MEMORIAPP → WONDAPP</div></div>
-      <div class="info-card"><div class="card-label">Logo / Brand</div><div class="card-value">Orion</div></div>
-      <div class="info-card"><div class="card-label">Lancio</div><div class="card-value">Globale dal Giorno Uno — nessun branding locale</div></div>
-      <div class="info-card"><div class="card-label">Operatività</div><div class="card-value green">H24 / 7 giorni su 7</div></div>
-      <div class="info-card"><div class="card-label">Filosofia</div><div class="card-value">Poco a poco — incrementale, ma con visione globale</div></div>
-    </div>
-    <div class="highlight-box">🎯 <strong>Visione core:</strong> L'AI gestisce tutte le operazioni di routine in autonomia. Orion interviene solo per le decisioni strategiche. La piattaforma impara da ogni approvazione e rifiuto.</div>
-    <div class="highlight-box blue">📱 <strong>Deployment target:</strong> Web app + Mobile app (preparazione al deployment mobile inclusa in ogni modulo sviluppato).</div>
-  </div>
-
-  <!-- 02 -->
-  <div class="section" id="navigazione">
-    <div class="section-header"><div class="section-num">02</div><div class="section-title">STRUTTURA NAVIGAZIONE</div></div>
-    <p class="prose">Cinque tab nella bottom navigation. Ordine fisso e definitivo, ragionato sul <strong>customer journey</strong> e sul flusso operativo del merchant.</p>
-    <div class="nav-display">
-      <div class="nav-tab active-tab"><div class="nav-tab-icon">🛍️</div><div class="nav-tab-label">Ordina</div></div>
-      <div class="nav-tab"><div class="nav-tab-icon">📍</div><div class="nav-tab-label">Tracking</div></div>
-      <div class="nav-tab"><div class="nav-tab-icon">🤖</div><div class="nav-tab-label">MEMORI-AI</div></div>
-      <div class="nav-tab"><div class="nav-tab-icon">📊</div><div class="nav-tab-label">Dashboard</div></div>
-      <div class="nav-tab"><div class="nav-tab-icon">🧠</div><div class="nav-tab-label">Intel</div></div>
-    </div>
-    <div class="highlight-box">🌐 <strong>Lingue supportate (7):</strong> Italiano · English · Español · Français · Deutsch · Português · 中文</div>
-  </div>
-
-  <!-- 03 -->
-  <div class="section" id="design">
-    <div class="section-header"><div class="section-num">03</div><div class="section-title">DESIGN SYSTEM</div></div>
-    <p class="prose">Identità visiva dark/neon. Coerente su tutti i moduli. Accessibile a tutte le età. Pulsanti grandi, frizioni minime, animazioni fluide.</p>
-    <div class="token-row"><div class="token-key">Brand Color</div><div class="color-dot" style="background:#00ff88;"></div><div class="token-value">#00ff88 — Green Neon</div></div>
-    <div class="token-row"><div class="token-key">Background</div><div class="color-dot" style="background:#0a0a0f; border:1px solid #333;"></div><div class="token-value">#0a0a0f — Dark Ultra</div></div>
-    <div class="token-row"><div class="token-key">Card Background</div><div class="color-dot" style="background:#12121a; border:1px solid #333;"></div><div class="token-value">#12121a — Card Dark</div></div>
-    <div class="token-row"><div class="token-key">Font Display</div><div class="token-value">Orbitron — titoli, logo, numeri</div></div>
-    <div class="token-row"><div class="token-key">Font Body</div><div class="token-value">Exo 2 — testo, UI, descrizioni</div></div>
-    <div class="token-row"><div class="token-key">Font Mono</div><div class="token-value">JetBrains Mono — codici, badge, metriche</div></div>
-    <div class="token-row"><div class="token-key">Interaction</div><div class="token-value">Ripple effect verde su tap/click</div></div>
-    <div class="token-row"><div class="token-key">Sounds</div><div class="token-value">Electronic sounds eleganti sulle interazioni</div></div>
-    <div class="token-row"><div class="token-key">Border Radius</div><div class="token-value">14–20px — bordi arrotondati, mai spigolosi</div></div>
-    <div class="token-row"><div class="token-key">Bottoni</div><div class="token-value">Grandi, touch-friendly — minimo 44px height</div></div>
-  </div>
-
-  <!-- 04 -->
-  <div class="section" id="business">
-    <div class="section-header"><div class="section-num">04</div><div class="section-title">MODELLO DI BUSINESS</div></div>
-    <div class="highlight-box" style="margin-bottom: 28px;">💰 <strong>Regola assoluta:</strong> Tutti pagano WONDAPP — mai il contrario. Clienti, merchant, industrie: tutti contribuiscono alla piattaforma.</div>
-    <div class="pricing-table">
-      <div class="price-card"><div class="price-tier">FREE</div><div class="price-tag free-tag">€0</div><div class="price-period">per sempre</div><div class="price-commission">Commissione: <strong>standard alta</strong></div></div>
-      <div class="price-card"><div class="price-tier">PLUS</div><div class="price-tag" style="color:var(--accent);">€19/mese</div><div class="price-period">7 giorni gratis</div><div class="price-commission">Commissione: <strong>ridotta</strong></div></div>
-      <div class="price-card pro-card"><div class="price-tier">PRO</div><div class="price-tag">€49/mese</div><div class="price-period">7 giorni gratis</div><div class="price-commission">Commissione: <strong>minima</strong></div></div>
-    </div>
-    <div class="highlight-box orange">⚠️ <strong>Nota prezzi:</strong> Le tariffe potranno essere aggiustate verso il basso in base alla reazione degli utenti. Toggle mensile/annuale disponibile (-20% annuale).</div>
-  </div>
-
-  <!-- 05 -->
-  <div class="section" id="utenti">
-    <div class="section-header"><div class="section-num">05</div><div class="section-title">TIPOLOGIE DI UTENTI</div></div>
-    <p class="prose">WONDAPP è universale. La search bar libera permette di cercare qualsiasi servizio senza categorie preimpostate.</p>
-    <div class="grid-2" style="margin: 20px 0;">
-      <div class="info-card"><div class="card-label">👤 Cliente Everyday</div><div class="card-value" style="font-size:13px;margin-top:8px;font-weight:300;">Cerca, ordina, traccia. Usa MEMORI-AI per richieste vocali o testo.</div></div>
-      <div class="info-card"><div class="card-label">🔨 Artigiano / PMI</div><div class="card-value" style="font-size:13px;margin-top:8px;font-weight:300;">Dashboard ordini, fatturazione PDF automatica, calendari.</div></div>
-      <div class="info-card"><div class="card-label">💊 Farmacia / Medico</div><div class="card-value" style="font-size:13px;margin-top:8px;font-weight:300;">H24, prenotazioni, consegna farmaci, ricette digitali.</div></div>
-      <div class="info-card"><div class="card-label">🍕 Ristorante / Food</div><div class="card-value" style="font-size:13px;margin-top:8px;font-weight:300;">Delivery + asporto, menu digitale, tracking rider.</div></div>
-      <div class="info-card"><div class="card-label">🏭 Grande Industria</div><div class="card-value" style="font-size:13px;margin-top:8px;font-weight:300;">Tier dedicato, volumi elevati, API access, account manager AI.</div></div>
-      <div class="info-card highlight"><div class="card-label">💎 Premium Client</div><div class="card-value" style="font-size:13px;margin-top:8px;font-weight:300;">White glove, priorità assoluta, SERV-AI dedicato, reportistica avanzata.</div></div>
+    <div class="nearby-scroll">
+      <div class="nearby-card" onclick="searchChip(null,'Farmacia')"><div class="nearby-icon">💊</div><div class="nearby-name">Farmacia Centrale</div><div class="nearby-dist">120m · Milano</div><div class="nearby-open">● Aperta H24</div></div>
+      <div class="nearby-card" onclick="searchChip(null,'Ristorante')"><div class="nearby-icon">🍕</div><div class="nearby-name">Pizzeria Napoli DOC</div><div class="nearby-dist">280m · Milano</div><div class="nearby-open">● Aperta</div></div>
+      <div class="nearby-card" onclick="searchChip(null,'Benzinaio')"><div class="nearby-icon">⛽</div><div class="nearby-name">ENI Service</div><div class="nearby-dist">350m · Milano</div><div class="nearby-open">● Aperta H24</div></div>
+      <div class="nearby-card" onclick="searchChip(null,'Supermercato')"><div class="nearby-icon">🛒</div><div class="nearby-name">Esselunga Express</div><div class="nearby-dist">500m · Milano</div><div class="nearby-open">● Aperta</div></div>
+      <div class="nearby-card" onclick="searchChip(null,'Medico')"><div class="nearby-icon">🩺</div><div class="nearby-name">Studio Medico Brera</div><div class="nearby-dist">600m · Milano</div><div class="nearby-open">● Aperta</div></div>
     </div>
   </div>
-
-  <!-- 06 -->
-  <div class="section" id="ai">
-    <div class="section-header"><div class="section-num">06</div><div class="section-title">SERV-AI / WOND-AI SYSTEM</div></div>
-    <div class="ai-box">
-      <div class="ai-title">🧠 WOND-AI — Intelligenza Autonoma H24</div>
-      <p class="prose" style="margin-bottom:16px;">Sistema di auto-apprendimento che monitora la piattaforma in tempo reale. Non disturba Orion per le routine. Notifica solo per decisioni strategiche.</p>
-      <div class="grid-2">
-        <div style="padding:14px;background:rgba(170,85,255,0.06);border:1px solid rgba(170,85,255,0.15);border-radius:12px;">
-          <div style="font-size:11px;color:#aa55ff;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;">AUTONOMO</div>
-          <div style="font-size:13px;color:var(--text);opacity:0.8;font-weight:300;">Ordini anomali · Commissioni · Competitor · Report · Notifiche · Frodi · Onboarding merchant</div>
-        </div>
-        <div style="padding:14px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:12px;">
-          <div style="font-size:11px;color:var(--green);letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;">→ ORION DECIDE</div>
-          <div style="font-size:13px;color:var(--text);opacity:0.8;font-weight:300;">Partnership strategiche · Pricing · Nuovi mercati · Policy changes · Feature rollout grandi</div>
-        </div>
-      </div>
-      <div style="margin-top:16px;font-size:13px;color:var(--muted);">🔄 Il sistema <strong style="color:var(--purple);">impara da ogni approvazione e rifiuto</strong> di Orion — costruendo un modello decisionale sempre più allineato.</div>
-    </div>
-    <div class="highlight-box purple" style="margin-top:20px;">
-      🎯 <strong>Modulo Fase 4 completato:</strong> SERV-AI ora mostra alert prioritizzati (Urgente · Strategico · Info), suggerimento AI per ogni decisione, log attività in tempo reale, contatori live H24, e sezione "Gestiti in autonomia" con 6 categorie operative.
-    </div>
-  </div>
-
-  <!-- 07 -->
-  <div class="section" id="competitor">
-    <div class="section-header"><div class="section-num">07</div><div class="section-title">COMPETITOR MONITORATI</div></div>
-    <p class="prose">Il tab Intel monitora H24 questi player globali.</p>
-    <div class="competitor-list">
-      <div class="competitor-item"><div class="comp-icon">📦</div><div class="comp-name">Amazon</div><div class="comp-category">E-commerce · Delivery · Cloud</div></div>
-      <div class="competitor-item"><div class="comp-icon">🛒</div><div class="comp-name">AliExpress</div><div class="comp-category">Marketplace globale</div></div>
-      <div class="competitor-item"><div class="comp-icon">🛵</div><div class="comp-name">Uber Eats</div><div class="comp-category">Food delivery</div></div>
-      <div class="competitor-item"><div class="comp-icon">🟡</div><div class="comp-name">Glovo</div><div class="comp-category">Quick commerce · Delivery</div></div>
-      <div class="competitor-item"><div class="comp-icon">🤖</div><div class="comp-name">ChatGPT</div><div class="comp-category">AI Assistant · OpenAI</div></div>
-      <div class="competitor-item"><div class="comp-icon">💎</div><div class="comp-name">Gemini</div><div class="comp-category">AI Assistant · Google</div></div>
-      <div class="competitor-item"><div class="comp-icon">🎵</div><div class="comp-name">TikTok Shop</div><div class="comp-category">Social commerce</div></div>
-      <div class="competitor-item"><div class="comp-icon">🏨</div><div class="comp-name">Booking.com</div><div class="comp-category">Travel · Hospitality</div></div>
-      <div class="competitor-item"><div class="comp-icon">🛍️</div><div class="comp-name">Shopify</div><div class="comp-category">E-commerce infrastructure</div></div>
-      <div class="competitor-item"><div class="comp-icon">💬</div><div class="comp-name">WhatsApp Business</div><div class="comp-category">Merchant communication</div></div>
-    </div>
-  </div>
-
-  <!-- 08 FASI AGGIORNATE -->
-  <div class="section" id="fasi">
-    <div class="section-header"><div class="section-num">08</div><div class="section-title">FASI DI SVILUPPO</div></div>
-    <div class="fase-list">
-
-      <div class="fase-item done">
-        <div class="fase-badge done">✅ FASE 1</div>
-        <div>
-          <div class="fase-title">Architettura Fondamenta</div>
-          <div class="fase-desc">Interfaccia ordini multilingual, tracking dual-view, MEMORI-AI chat (Claude API).</div>
-          <div class="fase-modules">
-            <span class="module-chip done">Ordina (Home)</span>
-            <span class="module-chip done">Tracking</span>
-            <span class="module-chip done">MEMORI-AI</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="fase-item done">
-        <div class="fase-badge done">✅ FASE 2</div>
-        <div>
-          <div class="fase-title">Core Platform Modules</div>
-          <div class="fase-desc">Blueprint, pricing, AI Control Center, login/profilo, pagamenti, push notifications.</div>
-          <div class="fase-modules">
-            <span class="module-chip done">Blueprint</span>
-            <span class="module-chip done">Pricing</span>
-            <span class="module-chip done">AI Control Center</span>
-            <span class="module-chip done">Login / Profile</span>
-            <span class="module-chip done">Payments</span>
-            <span class="module-chip done">Push Notifications</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="fase-item done">
-        <div class="fase-badge done">✅ FASE 3</div>
-        <div>
-          <div class="fase-title">Merchant Settings & Subscription</div>
-          <div class="fase-desc">Settings merchant + modulo Subscription/Tier completo (Free · Plus · Pro, trial 7gg, toggle mensile/annuale).</div>
-          <div class="fase-modules">
-            <span class="module-chip done">Merchant Settings</span>
-            <span class="module-chip done">Subscription / Tier</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="fase-item done">
-        <div class="fase-badge done">✅ FASE 4</div>
-        <div>
-          <div class="fase-title">SERV-AI Auto-Learning System</div>
-          <div class="fase-desc">Sistema AI autonomo H24. Alert prioritizzati, suggerimenti AI, log attività live, contatori real-time, gestione autonoma 6 categorie operative.</div>
-          <div class="fase-modules">
-            <span class="module-chip done">Alert Engine</span>
-            <span class="module-chip done">Decision Logger</span>
-            <span class="module-chip done">Auto-Learning</span>
-            <span class="module-chip done">Intel Feed Live</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="fase-item todo">
-        <div class="fase-badge todo">⏳ FASE 5</div>
-        <div>
-          <div class="fase-title">GitHub Deploy — Archivio Ufficiale</div>
-          <div class="fase-desc">Tutti i moduli caricati su GitHub. Repository WONDAPP come archivio sicuro, accessibile da qualsiasi dispositivo. Struttura organizzata per fasi.</div>
-          <div class="fase-modules">
-            <span class="module-chip todo">Repository setup</span>
-            <span class="module-chip todo">File upload</span>
-            <span class="module-chip todo">README</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- 09 -->
-  <div class="section" id="decisioni">
-    <div class="section-header"><div class="section-num">09</div><div class="section-title">DECISIONI CHIAVE PRESE</div></div>
-    <p class="prose">Decisioni già prese e non da rimettere in discussione senza motivazione forte.</p>
-    <div class="fase-list">
-      <div class="fase-item done"><div class="fase-badge done">✅ DEF</div><div><div class="fase-title">Search bar libera — non categorie fisse</div><div class="fase-desc">Input universale per qualsiasi servizio. Nessun menu preimpostato.</div></div></div>
-      <div class="fase-item done"><div class="fase-badge done">✅ DEF</div><div><div class="fase-title">Ordine tab: Ordina → Tracking → MEMORI-AI → Dashboard → Intel</div><div class="fase-desc">Ragionato sul customer journey. Ordine fisso e definitivo.</div></div></div>
-      <div class="fase-item done"><div class="fase-badge done">✅ DEF</div><div><div class="fase-title">Lancio globale dal giorno uno — nessun branding locale</div><div class="fase-desc">WONDAPP non è un'app italiana. È globale.</div></div></div>
-      <div class="fase-item done"><div class="fase-badge done">✅ DEF</div><div><div class="fase-title">Tutti pagano WONDAPP — mai il contrario</div><div class="fase-desc">Il flusso monetario è sempre verso la piattaforma.</div></div></div>
-      <div class="fase-item done"><div class="fase-badge done">✅ DEF</div><div><div class="fase-title">Design: dark + green neon #00ff88 · Font: Orbitron + Exo 2</div><div class="fase-desc">Identità visiva definitiva. Ripple effects, animazioni, large buttons.</div></div></div>
-      <div class="fase-item done"><div class="fase-badge done">✅ DEF</div><div><div class="fase-title">Filosofia poco a poco — sviluppo incrementale per fasi</div><div class="fase-desc">Ogni modulo completato e validato prima di passare al successivo.</div></div></div>
-    </div>
-  </div>
-
-  <!-- 10 -->
-  <div class="section" id="prossimi">
-    <div class="section-header"><div class="section-num">10</div><div class="section-title">PROSSIMI PASSI</div></div>
-    <div class="highlight-box orange">⚡ <strong>Priorità immediata:</strong> Caricare tutti i moduli su GitHub (Fase 5) — archivio sicuro, mai più rischio di perdere i file.</div>
-    <div class="fase-list" style="margin-top:20px;">
-      <div class="fase-item todo"><div class="fase-badge todo">1°</div><div><div class="fase-title">GitHub — Setup repository WONDAPP</div><div class="fase-desc">Creare account, repository, caricare tutti i file HTML per fase. README incluso.</div></div></div>
-      <div class="fase-item todo"><div class="fase-badge todo">2°</div><div><div class="fase-title">Consolidare Bibbia di WONDAPP</div><div class="fase-desc">Versione finale del documento fondamenta incluso nel repository.</div></div></div>
-      <div class="fase-item todo"><div class="fase-badge todo">3°</div><div><div class="fase-title">Mobile App Preparation</div><div class="fase-desc">Revisione di tutti i moduli per deployment mobile (React Native / PWA).</div></div></div>
-    </div>
-    <div class="highlight-box" style="margin-top:24px;">💡 <strong>Come usare questo documento:</strong> Carica questo file HTML all'inizio di ogni nuova sessione AI. Il contesto è già completo — nessun briefing necessario.</div>
-  </div>
-
 </div>
 
-<!-- FOOTER -->
-<div class="doc-footer">
-  <div class="doc-footer-logo">WOND<span>APP</span></div>
-  <div class="doc-footer-note">BIBBIA v1.1 · Fasi 1·2·3·4 Complete · Prossimo: GitHub</div>
-  <div style="margin-top:20px;font-size:11px;color:#333;font-family:'JetBrains Mono',monospace;">SERVAPP → MEMORIAPP → WONDAPP</div>
+<!-- RESULTS STATE -->
+<div id="resultsState" style="display:none;">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title" id="resultsTitle">Risultati</div>
+      <div class="section-count" id="resultsCount"></div>
+    </div>
+    <div class="results-list" id="resultsList"></div>
+  </div>
 </div>
 
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active"><div class="nav-icon">🛍️</div><div class="nav-lbl">Ordina</div></div>
+  <div class="nav-item"><div class="nav-icon">📍</div><div class="nav-lbl">Tracking</div></div>
+  <div class="nav-item"><div class="nav-icon">🤖</div><div class="nav-lbl">Memori-AI</div></div>
+  <div class="nav-item"><div class="nav-icon">📊</div><div class="nav-lbl">Dashboard</div></div>
+  <div class="nav-item"><div class="nav-icon">🧠</div><div class="nav-lbl">Intel</div></div>
+</div>
+
+<div class="toast" id="toast">
+  <div style="font-size:22px;">✅</div>
+  <div><div class="toast-msg" id="toastMsg"></div><div class="toast-sub" id="toastSub"></div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATABASE UNIVERSALE WONDAPP
+// ═══════════════════════════════════════════════════════
+const DB = [
+  // ── FARMACIE ──
+  {id:1, nome:'Farmacia Centrale Milano', cat:'Farmacia', icon:'💊', ic_bg:'rgba(0,200,100,0.12)', desc:'Farmacia H24 · Medicinali · Parafarmaco · Consegna a domicilio', tags:['farmacia','medicinali','medicina','salute','h24','parafarmaco','farmaco','pillole'], dist:'120m', rating:4.8, rev:312, aperto:true, h24:true, city:'Milano', btn:'Ordina'},
+  {id:2, nome:'Farmacia Salute & Benessere', cat:'Farmacia', icon:'💊', ic_bg:'rgba(0,200,100,0.12)', desc:'Farmaco su ricetta · Omeopatia · Integratori · Cosmetici', tags:['farmacia','medicinali','salute','omeopatia','integratori','cosmetici'], dist:'340m', rating:4.6, rev:198, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:3, nome:'FarmaRete Express', cat:'Farmacia', icon:'💊', ic_bg:'rgba(0,200,100,0.12)', desc:'Consegna farmaci in 30 minuti · Ricette digitali · H24', tags:['farmacia','medicinali','salute','h24','consegna','ricetta'], dist:'800m', rating:4.7, rev:421, aperto:true, h24:true, city:'Milano', btn:'Ordina'},
+
+  // ── RISTORANTI / FOOD ──
+  {id:10, nome:'Pizzeria Napoli DOC', cat:'Ristorante', icon:'🍕', ic_bg:'rgba(255,100,0,0.12)', desc:'Pizza napoletana · Forno a legna · Delivery · Asporto', tags:['ristorante','pizza','cibo','food','mangiare','delivery','asporto','napoletana','forno'], dist:'280m', rating:4.9, rev:854, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:11, nome:'Sushi Sakura', cat:'Ristorante', icon:'🍣', ic_bg:'rgba(255,50,80,0.12)', desc:'Sushi · Sashimi · Ramen · Consegna a domicilio in 45 min', tags:['ristorante','sushi','giapponese','cibo','food','ramen','sashimi','mangiare','delivery'], dist:'450m', rating:4.7, rev:632, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:12, nome:'Burger Factory', cat:'Ristorante', icon:'🍔', ic_bg:'rgba(200,120,0,0.12)', desc:'Hamburger artigianali · Patatine · Consegna rapida', tags:['ristorante','burger','hamburger','cibo','food','mangiare','delivery','fast food'], dist:'600m', rating:4.5, rev:445, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:13, nome:'Trattoria da Mario', cat:'Ristorante', icon:'🍝', ic_bg:'rgba(200,80,0,0.12)', desc:'Cucina italiana tradizionale · Pasta fresca · Vini selezionati', tags:['ristorante','italiano','pasta','cibo','food','mangiare','trattoria','tradizionale'], dist:'720m', rating:4.8, rev:289, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:14, nome:'Kebab Palace', cat:'Ristorante', icon:'🥙', ic_bg:'rgba(150,100,0,0.12)', desc:'Kebab · Piadine · Panini · Aperto fino alle 3:00', tags:['ristorante','kebab','cibo','food','mangiare','piadina','panino','notturno'], dist:'300m', rating:4.3, rev:567, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:15, nome:'Gelateria Artigianale Fiore', cat:'Gelateria', icon:'🍦', ic_bg:'rgba(200,150,200,0.12)', desc:'Gelato artigianale · 40 gusti · Yogurt · Granite', tags:['gelateria','gelato','cibo','dolci','granite','yogurt','dessert'], dist:'200m', rating:4.9, rev:1240, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+
+  // ── HOTEL ──
+  {id:20, nome:'Grand Hotel Central', cat:'Hotel', icon:'🏨', ic_bg:'rgba(0,100,200,0.12)', desc:'5 stelle · Spa · Ristorante gourmet · Room service H24 · Centro città', tags:['hotel','albergo','soggiorno','dormire','camera','vacanza','spa','lusso','5 stelle'], dist:'1.2km', rating:4.9, rev:2100, aperto:true, h24:true, city:'Milano', btn:'Prenota'},
+  {id:21, nome:'Hotel Brera Boutique', cat:'Hotel', icon:'🏨', ic_bg:'rgba(0,100,200,0.12)', desc:'4 stelle · Design · Colazione inclusa · Quartiere Brera', tags:['hotel','albergo','soggiorno','dormire','camera','vacanza','boutique','design'], dist:'800m', rating:4.7, rev:890, aperto:true, h24:true, city:'Milano', btn:'Prenota'},
+  {id:22, nome:'B&B Navigli', cat:'Hotel', icon:'🛏️', ic_bg:'rgba(0,80,160,0.12)', desc:'Bed & Breakfast · Colazione artigianale · Zona Navigli', tags:['hotel','bb','bed breakfast','soggiorno','dormire','camera','navigli','economico'], dist:'2.1km', rating:4.5, rev:342, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── BENZINAI ──
+  {id:30, nome:'ENI Service Station', cat:'Benzinaio', icon:'⛽', ic_bg:'rgba(0,150,255,0.12)', desc:'Benzina · Diesel · GPL · Autolavaggio · Bar · H24', tags:['benzinaio','benzina','diesel','carburante','gpl','metano','autolavaggio','h24','distributore'], dist:'350m', rating:4.4, rev:234, aperto:true, h24:true, city:'Milano', btn:'Naviga'},
+  {id:31, nome:'Q8 Distributore', cat:'Benzinaio', icon:'⛽', ic_bg:'rgba(255,200,0,0.12)', desc:'Benzina · Diesel · Ricarica elettrica · Convenience store', tags:['benzinaio','benzina','diesel','carburante','elettrico','ricarica','distributore','q8'], dist:'900m', rating:4.2, rev:187, aperto:true, h24:true, city:'Milano', btn:'Naviga'},
+  {id:32, nome:'IP Station con Lavaggio', cat:'Benzinaio', icon:'⛽', ic_bg:'rgba(200,50,0,0.12)', desc:'Benzina · Diesel · Metano · Autolavaggio automatico', tags:['benzinaio','benzina','diesel','metano','autolavaggio','lavaggio','distributore'], dist:'1.4km', rating:4.3, rev:156, aperto:true, h24:false, city:'Milano', btn:'Naviga'},
+
+  // ── MEDICI ──
+  {id:40, nome:'Studio Medico Brera', cat:'Medico', icon:'🩺', ic_bg:'rgba(0,180,180,0.12)', desc:'Medico di base · Specialisti · Prenotazione online · Telemedicina', tags:['medico','dottore','salute','visita','specialista','medico di base','clinica','telemedicina'], dist:'600m', rating:4.8, rev:456, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:41, nome:'Pronto Soccorso H24 Privato', cat:'Medico', icon:'🏥', ic_bg:'rgba(255,50,50,0.12)', desc:'Emergenze · Pronto soccorso · Radiologia · Analisi del sangue · H24', tags:['medico','pronto soccorso','ospedale','emergenza','urgenza','h24','analisi','radiologia'], dist:'1.8km', rating:4.6, rev:789, aperto:true, h24:true, city:'Milano', btn:'Chiama'},
+  {id:42, nome:'Dentista Sorriso Perfetto', cat:'Dentista', icon:'🦷', ic_bg:'rgba(0,200,220,0.12)', desc:'Odontoiatria · Ortodonzia · Impianti · Prima visita gratuita', tags:['dentista','denti','odontoiatria','ortodonzia','impianti','medico','salute'], dist:'750m', rating:4.7, rev:312, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:43, nome:'Pediatra Dottor Rossi', cat:'Medico', icon:'👶', ic_bg:'rgba(100,200,255,0.12)', desc:'Pediatra · Visite bambini · Vaccini · Certificati scolastici', tags:['medico','pediatra','bambini','bimbi','vaccini','pediatria','salute'], dist:'420m', rating:4.9, rev:234, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── AVVOCATI ──
+  {id:50, nome:'Studio Legale Colombo & Associati', cat:'Avvocato', icon:'⚖️', ic_bg:'rgba(100,80,200,0.12)', desc:'Diritto civile · Commerciale · Divorzio · Consulenza legale online', tags:['avvocato','legale','studio legale','diritto','consulenza','divorzio','civile','commerciale'], dist:'1.1km', rating:4.7, rev:178, aperto:true, h24:false, city:'Milano', btn:'Consulta'},
+  {id:51, nome:'Avvocato Penalista Milano', cat:'Avvocato', icon:'⚖️', ic_bg:'rgba(80,60,180,0.12)', desc:'Diritto penale · Difesa in giudizio · Consulenza urgente', tags:['avvocato','penalista','diritto penale','difesa','legale','consulenza'], dist:'900m', rating:4.5, rev:134, aperto:true, h24:false, city:'Milano', btn:'Consulta'},
+  {id:52, nome:'Notaio Studio Bianchi', cat:'Notaio', icon:'📜', ic_bg:'rgba(150,120,0,0.12)', desc:'Atti notarili · Compravendita immobili · Testamenti · Successioni', tags:['notaio','atto notarile','immobili','testamento','successione','legale','diritto'], dist:'700m', rating:4.8, rev:89, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── IDRAULICI / ARTIGIANI ──
+  {id:60, nome:'Idraulico Pronto H24', cat:'Idraulico', icon:'🔧', ic_bg:'rgba(0,100,180,0.12)', desc:'Emergenze idriche · Perdite · Scarichi · Boiler · Intervento rapido', tags:['idraulico','perdita acqua','tubo rotto','guasto','emergenza','boiler','scarico','h24'], dist:'400m', rating:4.6, rev:567, aperto:true, h24:true, city:'Milano', btn:'Chiama'},
+  {id:61, nome:'Elettricista Certificato', cat:'Elettricista', icon:'⚡', ic_bg:'rgba(255,200,0,0.12)', desc:'Impianti elettrici · Guasti · Certificazioni · Pronto intervento', tags:['elettricista','elettrico','guasto corrente','impianto','luce','certificazione'], dist:'550m', rating:4.7, rev:389, aperto:true, h24:false, city:'Milano', btn:'Chiama'},
+  {id:62, nome:'Fabbro Serrature 24/7', cat:'Fabbro', icon:'🔑', ic_bg:'rgba(150,150,150,0.12)', desc:'Apertura porte · Serrature · Blindature · Emergenze h24', tags:['fabbro','serratura','chiave','porta bloccata','apertura porta','emergenza','h24'], dist:'300m', rating:4.5, rev:234, aperto:true, h24:true, city:'Milano', btn:'Chiama'},
+  {id:63, nome:'Imbianchino Professionale', cat:'Imbianchino', icon:'🎨', ic_bg:'rgba(0,180,100,0.12)', desc:'Tinteggiatura · Carta da parati · Stucchi · Preventivo gratuito', tags:['imbianchino','pittura','verniciatura','tinteggiatura','pareti','casa','ristrutturazione'], dist:'1.2km', rating:4.4, rev:156, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── SUPERMERCATI ──
+  {id:70, nome:'Esselunga Express', cat:'Supermercato', icon:'🛒', ic_bg:'rgba(0,150,50,0.12)', desc:'Spesa online · Consegna in 1 ora · Frutta · Verdura · Surgelati', tags:['supermercato','spesa','alimentari','frutta','verdura','surgelati','grocery','esselunga'], dist:'500m', rating:4.7, rev:1456, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:71, nome:'Carrefour Express', cat:'Supermercato', icon:'🛒', ic_bg:'rgba(0,100,200,0.12)', desc:'Supermercato · Prodotti freschi · Vino · Biologico · Click&Collect', tags:['supermercato','spesa','alimentari','frutta','verdura','biologico','vino','carrefour'], dist:'750m', rating:4.5, rev:987, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+  {id:72, nome:'Lidl Consegna a Domicilio', cat:'Supermercato', icon:'🛒', ic_bg:'rgba(255,200,0,0.12)', desc:'Conveniente · Prodotti freschi · Offerte settimanali · Consegna rapida', tags:['supermercato','spesa','alimentari','lidl','conveniente','offerte','economico'], dist:'1.1km', rating:4.4, rev:678, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+
+  // ── PARRUCCHIERI ──
+  {id:80, nome:'Salon Prestige', cat:'Parrucchiere', icon:'✂️', ic_bg:'rgba(200,0,150,0.12)', desc:'Taglio · Colore · Piega · Trattamenti · Prenotazione online', tags:['parrucchiere','taglio','capelli','colore','piega','salon','bellezza','hairstyle'], dist:'250m', rating:4.8, rev:445, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:81, nome:'Barbershop Old Style', cat:'Barbiere', icon:'💈', ic_bg:'rgba(150,0,200,0.12)', desc:'Taglio barba · Rasatura · Trattamenti viso · Ambiente vintage', tags:['barbiere','barba','taglio','rasatura','uomo','barbershop'], dist:'380m', rating:4.9, rev:567, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── PALESTRE ──
+  {id:90, nome:'FitLife Gym Milano', cat:'Palestra', icon:'💪', ic_bg:'rgba(255,80,0,0.12)', desc:'Pesi · Cardio · CrossFit · Personal trainer · Piscina · H24', tags:['palestra','gym','fitness','sport','crossfit','pesi','cardio','personal trainer','piscina'], dist:'700m', rating:4.6, rev:789, aperto:true, h24:true, city:'Milano', btn:'Abbonati'},
+  {id:91, nome:'Yoga & Pilates Studio', cat:'Palestra', icon:'🧘', ic_bg:'rgba(150,0,200,0.12)', desc:'Yoga · Pilates · Meditazione · Classi per tutti i livelli', tags:['palestra','yoga','pilates','meditazione','fitness','sport','benessere','relax'], dist:'400m', rating:4.8, rev:312, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── TAXI / TRASPORTI ──
+  {id:100, nome:'TaxiMilano H24', cat:'Taxi', icon:'🚕', ic_bg:'rgba(255,200,0,0.12)', desc:'Taxi · NCC · Aeroporto · H24 · Pagamento cashless', tags:['taxi','trasporto','auto','ncc','aeroporto','malpensa','linate','h24','ride','passaggio'], dist:'500m', rating:4.5, rev:2345, aperto:true, h24:true, city:'Milano', btn:'Chiama'},
+  {id:101, nome:'Noleggio Auto Europcar', cat:'Noleggio Auto', icon:'🚗', ic_bg:'rgba(0,150,200,0.12)', desc:'Noleggio auto · Furgoni · SUV · Consegna a domicilio', tags:['noleggio auto','auto','macchina','furgone','trasporto','viaggio'], dist:'1.5km', rating:4.4, rev:456, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:102, nome:'Bici & Monopattini City', cat:'Mobilità', icon:'🛴', ic_bg:'rgba(0,200,100,0.12)', desc:'Noleggio bici · Monopattini · E-bike · Abbonamenti', tags:['bici','monopattino','mobilita','bicicletta','ebike','elettrico','trasporto'], dist:'150m', rating:4.3, rev:234, aperto:true, h24:true, city:'Milano', btn:'Noleggia'},
+
+  // ── VETERINARI ──
+  {id:110, nome:'Clinica Veterinaria Felice', cat:'Veterinario', icon:'🐾', ic_bg:'rgba(150,100,0,0.12)', desc:'Veterinario · Cani · Gatti · Visite · Vaccini · Urgenze', tags:['veterinario','animali','cane','gatto','pet','veterinaria','vaccini','urgenza'], dist:'600m', rating:4.8, rev:345, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:111, nome:'Pet Shop & Toelettatura', cat:'Veterinario', icon:'🐶', ic_bg:'rgba(200,150,0,0.12)', desc:'Toelettatura · Cibo per animali · Accessori · Giochi', tags:['veterinario','pet','cane','gatto','toelettatura','animali','cibo animali','accessori'], dist:'400m', rating:4.6, rev:234, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── PULIZIE ──
+  {id:120, nome:'CleanPro Pulizie', cat:'Pulizie', icon:'🧹', ic_bg:'rgba(0,180,220,0.12)', desc:'Pulizie appartamenti · Uffici · Post cantiere · Sanificazione', tags:['pulizie','pulizia','casa','appartamento','ufficio','sanificazione','domestico'], dist:'800m', rating:4.5, rev:289, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:121, nome:'Lavanderia Express', cat:'Lavanderia', icon:'👕', ic_bg:'rgba(0,150,255,0.12)', desc:'Lavaggio · Stiratura · Tintoria · Ritiro e consegna a domicilio', tags:['lavanderia','stiratura','tintoria','lavaggio','vestiti','abiti','pulizia'], dist:'300m', rating:4.4, rev:178, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+
+  // ── CONSEGNE / CORRIERI ──
+  {id:130, nome:'Corriere Espresso Milano', cat:'Corriere', icon:'📦', ic_bg:'rgba(255,130,0,0.12)', desc:'Spedizioni · Pacchi · Consegna in giornata · Tracking live', tags:['corriere','spedizione','pacco','consegna','delivery','tracking','spedire'], dist:'900m', rating:4.5, rev:567, aperto:true, h24:false, city:'Milano', btn:'Spedisci'},
+
+  // ── BANCHE / FINANZA ──
+  {id:140, nome:'Banca Intesa Sportello', cat:'Banca', icon:'🏦', ic_bg:'rgba(0,80,200,0.12)', desc:'Filiale bancaria · ATM · Mutui · Investimenti · Consulenza', tags:['banca','bancomat','atm','mutuo','prestito','finanza','investimento','conto'], dist:'400m', rating:4.2, rev:234, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── SCUOLA / RIPETIZIONI ──
+  {id:150, nome:'Ripetizioni Prof Online', cat:'Istruzione', icon:'📚', ic_bg:'rgba(100,0,200,0.12)', desc:'Ripetizioni · Matematica · Lingue · Preparazione esami · Online', tags:['ripetizioni','scuola','matematica','inglese','lingue','istruzione','esame','lezioni'], dist:'Online', rating:4.8, rev:445, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── BELLEZZA / SPA ──
+  {id:160, nome:'Spa & Centro Benessere Zen', cat:'Spa & Benessere', icon:'💆', ic_bg:'rgba(200,0,150,0.12)', desc:'Massaggi · Sauna · Hammam · Trattamenti viso · Relax totale', tags:['spa','massaggio','benessere','sauna','hammam','relax','bellezza','estetica'], dist:'1.0km', rating:4.9, rev:567, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:161, nome:'Centro Estetico Glamour', cat:'Estetica', icon:'💅', ic_bg:'rgba(255,100,200,0.12)', desc:'Unghie · Ceretta · Trattamenti viso · Sopracciglia · Laminazione', tags:['estetica','unghie','manicure','pedicure','ceretta','sopracciglia','bellezza'], dist:'350m', rating:4.7, rev:389, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── MECCANICO / AUTO ──
+  {id:170, nome:'Officina Meccanica Rosi', cat:'Meccanico', icon:'🔩', ic_bg:'rgba(100,100,100,0.2)', desc:'Tagliando · Freni · Gomme · Diagnosi · Carrozzeria · Preventivo gratuito', tags:['meccanico','auto','officina','tagliando','freni','gomme','carrozzeria','riparazione','macchina'], dist:'1.3km', rating:4.6, rev:345, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+  {id:171, nome:'Gommista Rapido', cat:'Meccanico', icon:'🔄', ic_bg:'rgba(80,80,80,0.2)', desc:'Cambio gomme · Equilibratura · Convergenza · Pneumatici', tags:['meccanico','gomme','gommista','pneumatici','cambio gomme','auto','ruote'], dist:'700m', rating:4.5, rev:234, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── INFORMATICA ──
+  {id:180, nome:'Tech Repair Milano', cat:'Informatica', icon:'💻', ic_bg:'rgba(0,150,255,0.12)', desc:'Riparazione PC · Mac · iPhone · Schermo rotto · Recupero dati', tags:['informatica','computer','pc','mac','iphone','cellulare','riparazione','schermo rotto','tecnico'], dist:'500m', rating:4.7, rev:456, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── FOTOGRAFIA ──
+  {id:190, nome:'Studio Fotografico Luce', cat:'Fotografia', icon:'📷', ic_bg:'rgba(200,100,0,0.12)', desc:'Foto professionali · Matrimoni · Portfolio · Ritratti · Lasciapassare', tags:['fotografo','fotografia','foto','matrimonio','ritratto','portfolio','studio'], dist:'900m', rating:4.8, rev:234, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── BABY SITTER ──
+  {id:200, nome:'BabySitter Certificata', cat:'Baby sitter', icon:'👶', ic_bg:'rgba(100,200,255,0.12)', desc:'Baby sitter · DopoScuola · Nanna · Certificata · Referenze verificate', tags:['baby sitter','babysitter','bambini','bimbi','nanna','doposcuola','assistenza'], dist:'600m', rating:4.9, rev:178, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── PSICOLOGIA ──
+  {id:210, nome:'Psicologo Dr. Ferretti', cat:'Psicologia', icon:'🧠', ic_bg:'rgba(150,0,200,0.12)', desc:'Psicoterapia · Ansia · Depressione · Sedute online e in studio', tags:['psicologo','psicologa','psicoterapia','ansia','depressione','terapia','salute mentale'], dist:'800m', rating:4.9, rev:234, aperto:true, h24:false, city:'Milano', btn:'Prenota'},
+
+  // ── PIZZERIE AGGIUNTIVE ──
+  {id:220, nome:'Pizza al Taglio Roma Style', cat:'Ristorante', icon:'🍕', ic_bg:'rgba(255,80,0,0.12)', desc:'Pizza al taglio · Focacce · Supplì · Aperto dalle 10:00', tags:['ristorante','pizza','cibo','food','pizza al taglio','focaccia','romano'], dist:'180m', rating:4.6, rev:345, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+
+  // ── ORTOFRUTTA ──
+  {id:230, nome:'Frutteria Bio Locale', cat:'Frutta & Verdura', icon:'🥦', ic_bg:'rgba(0,180,50,0.12)', desc:'Frutta · Verdura · Biologico · Km0 · Cassette personalizzate', tags:['frutta','verdura','ortofrutta','biologico','km0','alimentari','spesa'], dist:'220m', rating:4.8, rev:456, aperto:true, h24:false, city:'Milano', btn:'Ordina'},
+];
+
+// ── SINONIMI INTELLIGENTI ──
+const SINONIMI = {
+  'mangiare':['ristorante','pizza','sushi','burger','cibo','food'],
+  'cibo':['ristorante','pizza','sushi','burger','food','mangiare'],
+  'acqua':['idraulico','perdita','tubo'],
+  'guasto':['idraulico','elettricista','meccanico'],
+  'emergenza':['idraulico','pronto soccorso','h24','fabbro'],
+  'dormire':['hotel','albergo','bb','soggiorno'],
+  'notte':['hotel','h24','notturno'],
+  'carburante':['benzinaio','benzina','diesel'],
+  'muoversi':['taxi','bici','monopattino','auto'],
+  'spostamento':['taxi','ncc','auto'],
+  'salute':['medico','farmacia','ospedale','pronto soccorso'],
+  'mal di':['medico','farmacia','salute'],
+  'gatto':['veterinario','pet'],
+  'cane':['veterinario','pet'],
+  'animale':['veterinario','pet'],
+  'casa':['pulizie','imbianchino','idraulico','elettricista'],
+  'capelli':['parrucchiere','barbiere','salon'],
+  'sport':['palestra','yoga','fitness'],
+  'formazione':['istruzione','ripetizioni','scuola'],
+  'studio':['istruzione','ripetizioni','avvocato'],
+  'relax':['spa','massaggio','yoga','benessere'],
+  'bellezza':['parrucchiere','estetica','spa','unghie'],
+  'iphone':['informatica','riparazione','tech'],
+  'smartphone':['informatica','riparazione','tech'],
+  'bambino':['baby sitter','pediatra','bambini'],
+  'ansia':['psicologo','salute mentale'],
+  'legge':['avvocato','notaio','legale'],
+  'contratto':['avvocato','notaio','legale'],
+};
+
+let queryAttiva = '';
+
+function getSinonimi(q) {
+  const extra = [];
+  Object.entries(SINONIMI).forEach(([k, v]) => {
+    if (q.includes(k)) extra.push(...v);
+  });
+  return extra;
+}
+
+function search(q) {
+  if (!q || q.trim().length < 1) return [];
+  const terms = q.toLowerCase().trim().split(/\s+/);
+  const extra = getSinonimi(q.toLowerCase());
+  const allTerms = [...new Set([...terms, ...extra])];
+
+  const scored = DB.map(item => {
+    let score = 0;
+    const haystack = [item.nome, item.cat, item.desc, ...item.tags, item.city].join(' ').toLowerCase();
+    allTerms.forEach(t => {
+      if (item.nome.toLowerCase().includes(t)) score += 10;
+      else if (item.cat.toLowerCase().includes(t)) score += 8;
+      else if (item.tags.some(tag => tag.includes(t) || t.includes(tag))) score += 6;
+      else if (item.desc.toLowerCase().includes(t)) score += 3;
+      else if (haystack.includes(t)) score += 1;
+    });
+    return { item, score };
+  }).filter(x => x.score > 0).sort((a,b) => b.score - a.score);
+
+  return scored.map(x => x.item);
+}
+
+function getAutocomplete(q) {
+  if (!q || q.length < 2) return [];
+  const results = search(q);
+  const cats = [...new Set(results.map(r => r.cat))].slice(0, 4);
+  const suggestions = [];
+  cats.forEach(cat => {
+    const item = results.find(r => r.cat === cat);
+    if (item) suggestions.push({ icon: item.icon, text: cat, sub: results.filter(r => r.cat === cat).length + ' risultati' });
+  });
+  return suggestions.slice(0, 5);
+}
+
+function onSearch(val) {
+  queryAttiva = val.trim();
+  document.getElementById('clearBtn').classList.toggle('show', queryAttiva.length > 0);
+  showAutocomplete(queryAttiva);
+  if (queryAttiva.length >= 2) {
+    renderResults(queryAttiva);
+  } else if (queryAttiva.length === 0) {
+    showHome();
+  }
+}
+
+function onKey(e) {
+  if (e.key === 'Enter') {
+    hideAutocomplete();
+    renderResults(queryAttiva);
+    e.target.blur();
+  }
+}
+
+function showAutocomplete(q) {
+  const box = document.getElementById('autocomplete');
+  if (!q || q.length < 2) { box.classList.remove('show'); return; }
+  const items = getAutocomplete(q);
+  if (!items.length) { box.classList.remove('show'); return; }
+  box.innerHTML = items.map(i => `
+    <div class="ac-item" onclick="searchFrom('${i.text}')">
+      <div class="ac-icon">${i.icon}</div>
+      <div>
+        <div class="ac-text">${i.text}</div>
+        <div class="ac-cat">${i.sub}</div>
+      </div>
+    </div>
+  `).join('');
+  box.classList.add('show');
+}
+
+function hideAutocomplete() {
+  document.getElementById('autocomplete').classList.remove('show');
+}
+
+function searchFrom(q) {
+  document.getElementById('searchInput').value = q;
+  queryAttiva = q;
+  hideAutocomplete();
+  renderResults(q);
+}
+
+function searchChip(el, q) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-chip'));
+  if (el) el.classList.add('active-chip');
+  document.getElementById('searchInput').value = q;
+  queryAttiva = q;
+  document.getElementById('clearBtn').classList.add('show');
+  hideAutocomplete();
+  renderResults(q);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  queryAttiva = '';
+  document.getElementById('clearBtn').classList.remove('show');
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-chip'));
+  hideAutocomplete();
+  showHome();
+}
+
+function showHome() {
+  document.getElementById('homeState').style.display = '';
+  document.getElementById('resultsState').style.display = 'none';
+}
+
+function renderResults(q) {
+  const results = search(q);
+  document.getElementById('homeState').style.display = 'none';
+  document.getElementById('resultsState').style.display = '';
+
+  const title = document.getElementById('resultsTitle');
+  const count = document.getElementById('resultsCount');
+  const list  = document.getElementById('resultsList');
+
+  title.textContent = results.length > 0 ? `Risultati per "${q}"` : 'Nessun risultato';
+  count.textContent = results.length > 0 ? results.length + ' trovati' : '';
+
+  if (results.length === 0) {
+    list.innerHTML = `
+      <div class="empty-search">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">Nessun risultato per "<strong style="color:var(--green);">${escHTML(q)}</strong>"</div>
+        <div class="empty-sub">Prova con: farmacia, ristorante, hotel, idraulico…</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = results.map((r, idx) => {
+    const stars = '★'.repeat(Math.floor(r.rating)) + (r.rating % 1 >= 0.5 ? '½' : '');
+    const openTag = r.aperto
+      ? `<span class="meta-pill open">● Aperto${r.h24 ? ' H24' : ''}</span>`
+      : `<span class="meta-pill closed">● Chiuso</span>`;
+    return `
+      <div class="result-card" style="animation-delay:${idx*0.04}s" onclick="apriScheda(${r.id})">
+        <div class="result-icon" style="background:${r.ic_bg};">${r.icon}</div>
+        <div class="result-body">
+          <div class="result-name">${evidenzia(r.nome, q)}</div>
+          <div class="result-cat">${r.cat}</div>
+          <div class="result-desc">${r.desc}</div>
+          <div class="result-meta">
+            ${openTag}
+            <span class="meta-pill">📍 ${r.dist}</span>
+            <span class="meta-pill">⭐ ${r.rating}</span>
+          </div>
+        </div>
+        <div class="result-right">
+          <div>
+            <div class="stars">${stars}</div>
+            <div class="rating-num">${r.rev} rec.</div>
+          </div>
+          <button class="order-btn" onclick="event.stopPropagation();ordinaDa(${r.id})">${r.btn}</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function evidenzia(testo, q) {
+  const s = escHTML(testo);
+  const terms = q.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+  let result = s;
+  terms.forEach(t => {
+    const r = t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    result = result.replace(new RegExp('('+r+')','gi'),'<span class="highlight">$1</span>');
+  });
+  return result;
+}
+
+function apriScheda(id) {
+  const r = DB.find(x => x.id === id);
+  if (!r) return;
+  toast(r.nome, r.cat + ' · ' + r.dist + ' · ' + (r.aperto ? 'Aperto' : 'Chiuso'));
+}
+
+function ordinaDa(id) {
+  const r = DB.find(x => x.id === id);
+  if (!r) return;
+  toast(r.btn + ' da ' + r.nome + '!', 'Connessione in corso…');
+}
+
+function escHTML(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function toast(msg, sub) {
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastSub').textContent = sub;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// chiudi autocomplete cliccando fuori
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) hideAutocomplete();
+});
+</script>
 </body>
 </html>
