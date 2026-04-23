@@ -3,402 +3,512 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WONDAPP — Launcher</title>
+<title>WONDAPP — SaaS Control</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-  :root {
+  :root{
     --green:#00ff88;--green-dim:rgba(0,255,136,0.08);--green-glow:rgba(0,255,136,0.25);
     --dark:#0a0a0f;--card:#12121a;--card2:#16162a;--border:#1e1e2e;--border2:#2a2a40;
     --text:#e0e0f0;--muted:#666680;--orange:#ff8c00;--blue:#00aaff;--red:#ff4455;--purple:#aa55ff;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
-
-  /* BG GLOW */
-  body::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,255,136,0.04),transparent 70%);pointer-events:none;z-index:0;}
+  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;padding-bottom:100px;}
 
   /* TOPBAR */
-  .topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;position:relative;z-index:10;}
-  .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green);letter-spacing:3px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--green);letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
   .logo span{color:#fff;}
-  .topbar-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-  .topbar-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
-  .topbar-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;}
-  .pulse{width:6px;height:6px;background:var(--green);border-radius:50%;animation:p 1.4s infinite;box-shadow:0 0 6px var(--green);}
-  @keyframes p{0%,100%{opacity:1}50%{opacity:0.3}}
+  .topbar-badge{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(170,85,255,0.1);border:1px solid rgba(170,85,255,0.2);color:var(--purple);padding:5px 12px;border-radius:10px;letter-spacing:1px;}
 
-  /* HERO */
-  .hero{text-align:center;padding:10px 24px 28px;position:relative;z-index:1;}
-  .hero-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
-  .progress-mini{display:flex;align-items:center;gap:10px;justify-content:center;}
-  .prog-track{width:140px;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;}
-  .prog-fill{height:100%;width:80%;background:linear-gradient(90deg,var(--green),#00ffaa);border-radius:3px;box-shadow:0 0 8px rgba(0,255,136,0.4);}
-  .prog-pct{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--green);font-weight:700;}
+  /* TABS */
+  .tabs{display:flex;gap:8px;padding:16px 20px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:10px 18px;border-radius:12px;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
+  .tab.active{background:rgba(170,85,255,0.1);border-color:rgba(170,85,255,0.3);color:var(--purple);}
 
-  /* SEARCH */
-  .search-bar{margin:0 24px 28px;background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:13px 18px;display:flex;align-items:center;gap:10px;position:relative;z-index:1;}
-  .search-bar input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;}
-  .search-bar input::placeholder{color:var(--muted);}
-  .search-icon{font-size:18px;color:var(--muted);}
+  /* PANELS */
+  .panel{display:none;padding:20px;}
+  .panel.active{display:block;}
 
-  /* SECTION LABEL */
-  .sec-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:0 24px 12px;position:relative;z-index:1;}
+  /* METRICS */
+  .metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+  .metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+  .metric-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:var(--green);margin-bottom:4px;}
+  .metric-val.blue{color:var(--blue);}
+  .metric-val.orange{color:var(--orange);}
+  .metric-val.purple{color:var(--purple);}
+  .metric-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
 
-  /* APP GRID */
-  .app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 16px;position:relative;z-index:1;}
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;}
+  .card.purple-card{border-color:rgba(170,85,255,0.2);background:linear-gradient(135deg,var(--card),rgba(170,85,255,0.03));}
+  .card.green-card{border-color:rgba(0,255,136,0.2);background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.03));}
+  .card.blue-card{border-color:rgba(0,170,255,0.2);background:linear-gradient(135deg,var(--card),rgba(0,170,255,0.03));}
 
-  .app-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;border-radius:18px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;position:relative;}
-  .app-item:hover{background:rgba(255,255,255,0.04);}
-  .app-item:active{transform:scale(0.92);}
+  .sec-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
 
-  .app-icon{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s;}
-  .app-item:hover .app-icon{transform:translateY(-2px);}
+  /* MERCHANT TABLE */
+  .merchant-list{display:flex;flex-direction:column;gap:10px;}
+  .merchant-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:border-color 0.2s;}
+  .merchant-row:hover{border-color:var(--border2);}
+  .merchant-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .av-green{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);}
+  .av-blue{background:rgba(0,170,255,0.1);border:1px solid rgba(0,170,255,0.2);}
+  .av-orange{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);}
+  .av-purple{background:rgba(170,85,255,0.1);border:1px solid rgba(170,85,255,0.2);}
+  .merchant-info{flex:1;min-width:0;}
+  .merchant-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px;}
+  .merchant-meta{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .merchant-revenue{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--green);margin-right:8px;}
+  .tier-badge{font-size:10px;padding:3px 9px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .tier-free{background:rgba(102,102,128,0.15);color:var(--muted);}
+  .tier-plus{background:rgba(0,170,255,0.1);color:var(--blue);}
+  .tier-pro{background:rgba(0,255,136,0.1);color:var(--green);}
 
-  .app-name{font-size:11px;color:var(--text);text-align:center;font-weight:600;letter-spacing:0.3px;line-height:1.3;}
+  /* REVENUE BARS */
+  .rev-chart{display:flex;flex-direction:column;gap:8px;}
+  .rev-row{display:flex;align-items:center;gap:10px;}
+  .rev-label{font-size:12px;color:var(--text);width:80px;flex-shrink:0;}
+  .rev-track{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden;}
+  .rev-fill{height:100%;border-radius:4px;transition:width 0.6s;}
+  .rev-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--green);width:50px;text-align:right;}
 
-  /* ICON COLORS */
-  .ic-green{background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,200,100,0.08));}
-  .ic-blue{background:linear-gradient(135deg,rgba(0,170,255,0.15),rgba(0,100,200,0.08));}
-  .ic-orange{background:linear-gradient(135deg,rgba(255,140,0,0.15),rgba(200,90,0,0.08));}
-  .ic-purple{background:linear-gradient(135deg,rgba(170,85,255,0.15),rgba(100,50,200,0.08));}
-  .ic-red{background:linear-gradient(135deg,rgba(255,68,85,0.15),rgba(200,40,60,0.08));}
-  .ic-teal{background:linear-gradient(135deg,rgba(0,210,200,0.15),rgba(0,150,140,0.08));}
-  .ic-yellow{background:linear-gradient(135deg,rgba(255,220,0,0.15),rgba(200,160,0,0.08));}
-  .ic-pink{background:linear-gradient(135deg,rgba(255,100,180,0.15),rgba(200,60,140,0.08));}
-  .ic-dark{background:linear-gradient(135deg,rgba(60,60,90,0.4),rgba(30,30,50,0.3));}
+  /* API ENDPOINTS */
+  .endpoint-list{display:flex;flex-direction:column;gap:10px;}
+  .endpoint{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;}
+  .method{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:700;flex-shrink:0;margin-top:1px;}
+  .method.get{background:rgba(0,255,136,0.1);color:var(--green);}
+  .method.post{background:rgba(0,170,255,0.1);color:var(--blue);}
+  .method.put{background:rgba(255,140,0,0.1);color:var(--orange);}
+  .method.del{background:rgba(255,68,85,0.1);color:var(--red);}
+  .endpoint-info{flex:1;}
+  .endpoint-path{font-family:'JetBrains Mono',monospace;font-size:13px;color:#fff;margin-bottom:3px;}
+  .endpoint-desc{font-size:12px;color:var(--muted);}
+  .endpoint-status{font-size:10px;padding:2px 8px;border-radius:6px;margin-top:4px;display:inline-block;font-family:'JetBrains Mono',monospace;}
+  .status-live{background:rgba(0,255,136,0.1);color:var(--green);}
+  .status-beta{background:rgba(255,140,0,0.1);color:var(--orange);}
+  .status-soon{background:rgba(102,102,128,0.15);color:var(--muted);}
 
-  /* BADGE */
-  .app-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;border:2px solid var(--dark);}
-  .app-badge.green-badge{background:var(--green);color:#000;}
-  .app-badge.orange-badge{background:var(--orange);}
+  /* API KEY BOX */
+  .api-key-box{background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .copy-btn{background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Exo 2',sans-serif;font-weight:600;transition:all 0.2s;}
+  .copy-btn:hover{background:rgba(0,255,136,0.15);}
 
-  /* FASE DIVIDER */
-  .fase-divider{display:flex;align-items:center;gap:12px;padding:20px 24px 12px;position:relative;z-index:1;}
-  .fase-line{flex:1;height:1px;background:var(--border);}
-  .fase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;white-space:nowrap;}
-  .fase-tag.done{color:var(--green);}
-  .fase-tag.active{color:var(--orange);}
+  /* WHITE LABEL */
+  .wl-list{display:flex;flex-direction:column;gap:12px;}
+  .wl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;transition:border-color 0.2s;cursor:pointer;}
+  .wl-card:hover{border-color:var(--border2);}
+  .wl-card.active-wl{border-color:rgba(170,85,255,0.3);}
+  .wl-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+  .wl-info{flex:1;}
+  .wl-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .wl-meta{font-size:12px;color:var(--muted);}
+  .wl-revenue{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--purple);}
 
-  /* FOLDER */
-  .app-folder{background:rgba(255,255,255,0.04);border-radius:16px;}
+  /* TOGGLE */
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-label-text{font-size:14px;font-weight:600;color:var(--text);}
+  .toggle-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .toggle{width:48px;height:26px;background:var(--border2);border-radius:13px;position:relative;cursor:pointer;transition:background 0.3s;flex-shrink:0;}
+  .toggle.on{background:rgba(0,255,136,0.3);border:1px solid rgba(0,255,136,0.4);}
+  .toggle-thumb{width:20px;height:20px;background:var(--muted);border-radius:50%;position:absolute;top:3px;left:3px;transition:all 0.3s;}
+  .toggle.on .toggle-thumb{left:25px;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,0.5);}
+
+  /* SYSTEM STATUS */
+  .status-list{display:flex;flex-direction:column;gap:8px;}
+  .status-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+  .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .dot-green{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,0.5);}
+  .dot-orange{background:var(--orange);}
+  .dot-muted{background:var(--muted);}
+  .status-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
+  .status-val{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .uptime{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+
+  /* HIGHLIGHT */
+  .hl-box{background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);border-left:3px solid var(--green);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:16px;}
+  .hl-box.purple{background:rgba(170,85,255,0.06);border-color:rgba(170,85,255,0.2);border-left-color:var(--purple);}
+  .hl-box.blue{background:rgba(0,170,255,0.06);border-color:rgba(0,170,255,0.2);border-left-color:var(--blue);}
+
+  /* DIVIDER */
+  .divider{height:1px;background:var(--border);margin:16px 0;}
+
+  /* BUTTONS */
+  .btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:14px;}
+  .btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.35);}
+  .btn.purple-btn{background:rgba(170,85,255,0.15);color:var(--purple);border:1px solid rgba(170,85,255,0.3);}
+  .btn.purple-btn:hover{background:rgba(170,85,255,0.25);box-shadow:none;}
+  .btn.blue-btn{background:rgba(0,170,255,0.15);color:var(--blue);border:1px solid rgba(0,170,255,0.3);}
+  .btn.blue-btn:hover{background:rgba(0,170,255,0.25);box-shadow:none;}
 
   /* BOTTOM NAV */
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,20,0.95);border-top:1px solid var(--border);display:flex;padding:10px 0 20px;z-index:100;backdrop-filter:blur(20px);}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding:10px 0 14px;z-index:100;}
   .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;opacity:0.35;transition:opacity 0.2s;}
   .nav-item.active{opacity:1;}
   .nav-item.active .nav-lbl{color:var(--green);}
   .nav-icon{font-size:22px;}
   .nav-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
 
-  /* MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(8px);}
-  .modal-overlay.open{opacity:1;pointer-events:all;}
-  .modal-sheet{background:var(--card2);border:1px solid var(--border2);border-radius:28px 28px 0 0;padding:28px 24px 48px;width:100%;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
-  .modal-overlay.open .modal-sheet{transform:translateY(0);}
-  .modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px;}
-  .modal-app-icon{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;}
-  .modal-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;}
-  .modal-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:8px;font-weight:300;}
-  .modal-fase{font-family:'JetBrains Mono',monospace;font-size:11px;text-align:center;margin-bottom:20px;}
-  .modal-open-btn{width:100%;padding:16px;border-radius:16px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-bottom:10px;}
-  .modal-open-btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.4);}
-  .modal-cancel{width:100%;padding:12px;background:none;border:none;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:14px;cursor:pointer;}
-
-  /* SPACER */
-  .spacer{height:100px;}
-
-  /* RIPPLE */
-  .ripple-effect{position:absolute;border-radius:50%;background:rgba(0,255,136,0.15);transform:scale(0);animation:rpl 0.5s linear;pointer-events:none;}
-  @keyframes rpl{to{transform:scale(4);opacity:0;}}
+  /* TOAST */
+  .toast{position:fixed;bottom:90px;left:20px;right:20px;background:rgba(10,10,25,0.97);border:1px solid rgba(170,85,255,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast-msg{font-size:14px;font-weight:600;color:var(--purple);}
+  .toast-sub{font-size:12px;color:var(--muted);}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo">WOND<span>APP</span></div>
-  <div class="topbar-right">
-    <div class="topbar-date" id="dateDisplay">23 Apr 2026</div>
-    <div class="topbar-status"><div class="pulse"></div>SERV-AI LIVE</div>
-  </div>
+  <div class="topbar-badge">SAAS CONTROL</div>
 </div>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-title">Progetto WONDAPP</div>
-  <div class="progress-mini">
-    <div class="prog-track"><div class="prog-fill"></div></div>
-    <div class="prog-pct">80%</div>
-  </div>
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('admin',this)">🛡️ Admin Panel</button>
+  <button class="tab" onclick="showTab('api',this)">🔗 API Pubbliche</button>
+  <button class="tab" onclick="showTab('whitelabel',this)">🏷️ White Label</button>
+  <button class="tab" onclick="showTab('system',this)">⚙️ Sistema</button>
 </div>
 
-<!-- SEARCH -->
-<div class="search-bar">
-  <div class="search-icon">🔍</div>
-  <input type="text" placeholder="Cerca modulo...">
-</div>
+<!-- ═══════════════ ADMIN PANEL ═══════════════ -->
+<div class="panel active" id="panel-admin">
 
-<!-- ═══════ FASE 1-2 ═══════ -->
-<div class="fase-divider">
-  <div class="fase-line"></div>
-  <div class="fase-tag done">✅ FASE 1 · 2 — COMPLETATE</div>
-  <div class="fase-line"></div>
-</div>
-<div class="sec-label">Core Platform</div>
+  <div class="hl-box purple">🛡️ <strong>Pannello Orion.</strong> Visione completa su tutta la piattaforma in tempo reale.</div>
 
-<div class="app-grid">
-  <div class="app-item" onclick="openApp('ordina')">
-    <div class="app-icon ic-green">🛍️</div>
-    <div class="app-name">Ordina</div>
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">€ 284K</div><div class="metric-lbl">Revenue totale</div></div>
+    <div class="metric"><div class="metric-val blue">1.847</div><div class="metric-lbl">Merchant attivi</div></div>
+    <div class="metric"><div class="metric-val orange">42.3K</div><div class="metric-lbl">Ordini oggi</div></div>
+    <div class="metric"><div class="metric-val purple">97%</div><div class="metric-lbl">Uptime</div></div>
   </div>
-  <div class="app-item" onclick="openApp('tracking')">
-    <div class="app-icon ic-blue">📍</div>
-    <div class="app-name">Tracking</div>
-  </div>
-  <div class="app-item" onclick="openApp('memori')">
-    <div class="app-icon ic-purple">🤖</div>
-    <div class="app-name">MEMORI-AI</div>
-  </div>
-  <div class="app-item" onclick="openApp('blueprint')">
-    <div class="app-icon ic-dark">📐</div>
-    <div class="app-name">Blueprint</div>
-  </div>
-  <div class="app-item" onclick="openApp('login')">
-    <div class="app-icon ic-teal">👤</div>
-    <div class="app-name">Login</div>
-  </div>
-  <div class="app-item" onclick="openApp('payments')">
-    <div class="app-icon ic-yellow">💳</div>
-    <div class="app-name">Pagamenti</div>
-  </div>
-  <div class="app-item" onclick="openApp('notify')">
-    <div class="app-icon ic-orange">
-      🔔
-      <div class="app-badge">3</div>
+
+  <!-- REVENUE PER TIER -->
+  <div class="card purple-card">
+    <div class="sec-title">Revenue per Tier</div>
+    <div class="rev-chart">
+      <div class="rev-row">
+        <div class="rev-label">PRO</div>
+        <div class="rev-track"><div class="rev-fill" style="width:82%;background:var(--green);"></div></div>
+        <div class="rev-val">€ 181K</div>
+      </div>
+      <div class="rev-row">
+        <div class="rev-label">PLUS</div>
+        <div class="rev-track"><div class="rev-fill" style="width:54%;background:var(--blue);"></div></div>
+        <div class="rev-val">€ 74K</div>
+      </div>
+      <div class="rev-row">
+        <div class="rev-label">FREE</div>
+        <div class="rev-track"><div class="rev-fill" style="width:21%;background:var(--muted);"></div></div>
+        <div class="rev-val">€ 29K</div>
+      </div>
     </div>
-    <div class="app-name">Notifiche</div>
   </div>
-  <div class="app-item" onclick="openApp('pricing')">
-    <div class="app-icon ic-green">💰</div>
-    <div class="app-name">Pricing</div>
-  </div>
-</div>
 
-<!-- ═══════ FASE 3 ═══════ -->
-<div class="fase-divider">
-  <div class="fase-line"></div>
-  <div class="fase-tag done">✅ FASE 3 — COMPLETATA</div>
-  <div class="fase-line"></div>
-</div>
-<div class="sec-label">Merchant & Subscription</div>
-
-<div class="app-grid">
-  <div class="app-item" onclick="openApp('dashboard')">
-    <div class="app-icon ic-blue">📊</div>
-    <div class="app-name">Dashboard</div>
-  </div>
-  <div class="app-item" onclick="openApp('settings')">
-    <div class="app-icon ic-dark">⚙️</div>
-    <div class="app-name">Impostazioni</div>
-  </div>
-  <div class="app-item" onclick="openApp('subscription')">
-    <div class="app-icon ic-green">💎</div>
-    <div class="app-name">Subscription</div>
-  </div>
-  <div class="app-item" onclick="openApp('aicontrol')">
-    <div class="app-icon ic-purple">🧩</div>
-    <div class="app-name">AI Control</div>
-  </div>
-</div>
-
-<!-- ═══════ FASE 4 ═══════ -->
-<div class="fase-divider">
-  <div class="fase-line"></div>
-  <div class="fase-tag done">✅ FASE 4 — COMPLETATA</div>
-  <div class="fase-line"></div>
-</div>
-<div class="sec-label">SERV-AI System</div>
-
-<div class="app-grid">
-  <div class="app-item" onclick="openApp('servai')">
-    <div class="app-icon ic-purple">
-      🧠
-      <div class="app-badge orange-badge">!</div>
+  <!-- TOP MERCHANT -->
+  <div class="sec-title">Top Merchant</div>
+  <div class="merchant-list">
+    <div class="merchant-row">
+      <div class="merchant-avatar av-green">🏬</div>
+      <div class="merchant-info">
+        <div class="merchant-name">GroceryFast Italia</div>
+        <div class="merchant-meta">40 sedi · Milano · Attivo da 8 mesi</div>
+      </div>
+      <div class="merchant-revenue">€ 24K</div>
+      <div class="tier-badge tier-pro">PRO</div>
     </div>
-    <div class="app-name">SERV-AI</div>
-  </div>
-  <div class="app-item" onclick="openApp('intel')">
-    <div class="app-icon ic-red">🌐</div>
-    <div class="app-name">Intel</div>
-  </div>
-  <div class="app-item" onclick="openApp('bibbia')">
-    <div class="app-icon ic-teal">📖</div>
-    <div class="app-name">Bibbia v1.1</div>
-  </div>
-  <div class="app-item" onclick="openApp('github')">
-    <div class="app-icon ic-dark">
-      🐙
-      <div class="app-badge green-badge">✓</div>
+    <div class="merchant-row">
+      <div class="merchant-avatar av-blue">🏨</div>
+      <div class="merchant-info">
+        <div class="merchant-name">Grand Hotel Group</div>
+        <div class="merchant-meta">12 hotel · Italia · Attivo da 1 anno</div>
+      </div>
+      <div class="merchant-revenue">€ 18K</div>
+      <div class="tier-badge tier-pro">PRO</div>
     </div>
-    <div class="app-name">GitHub</div>
-  </div>
-</div>
-
-<!-- ═══════ FASE 5 ═══════ -->
-<div class="fase-divider">
-  <div class="fase-line"></div>
-  <div class="fase-tag active">🔄 FASE 5 — IN CORSO</div>
-  <div class="fase-line"></div>
-</div>
-<div class="sec-label">Business Hub + SaaS</div>
-
-<div class="app-grid">
-  <div class="app-item" onclick="openApp('businesshub')">
-    <div class="app-icon ic-green">
-      🏢
-      <div class="app-badge green-badge">A</div>
+    <div class="merchant-row">
+      <div class="merchant-avatar av-orange">💊</div>
+      <div class="merchant-info">
+        <div class="merchant-name">FarmaRete</div>
+        <div class="merchant-meta">85 farmacie · Nord Italia</div>
+      </div>
+      <div class="merchant-revenue">€ 12K</div>
+      <div class="tier-badge tier-plus">PLUS</div>
     </div>
-    <div class="app-name">Business Hub</div>
+    <div class="merchant-row">
+      <div class="merchant-avatar av-purple">🍕</div>
+      <div class="merchant-info">
+        <div class="merchant-name">Napoli DOC Group</div>
+        <div class="merchant-meta">22 ristoranti · Sud Italia</div>
+      </div>
+      <div class="merchant-revenue">€ 8.4K</div>
+      <div class="tier-badge tier-plus">PLUS</div>
+    </div>
   </div>
-  <div class="app-item" onclick="openApp('onboarding')">
-    <div class="app-icon ic-orange">🚀</div>
-    <div class="app-name">Onboarding</div>
-  </div>
-  <div class="app-item" onclick="openApp('invoice')">
-    <div class="app-icon ic-blue">🧾</div>
-    <div class="app-name">Fatture</div>
-  </div>
-  <div class="app-item" onclick="openApp('analytics')">
-    <div class="app-icon ic-teal">📈</div>
-    <div class="app-name">Analytics Pro</div>
-  </div>
-  <div class="app-item" onclick="openApp('multiloc')">
-    <div class="app-icon ic-yellow">📍</div>
-    <div class="app-name">Multi-Sede</div>
-  </div>
-  <div class="app-item" onclick="openApp('saas')" style="opacity:0.5;">
-    <div class="app-icon ic-dark">☁️</div>
-    <div class="app-name">SaaS (B)</div>
-  </div>
-  <div class="app-item" onclick="openApp('admin')" style="opacity:0.5;">
-    <div class="app-icon ic-dark">🛡️</div>
-    <div class="app-name">Admin Panel</div>
-  </div>
-  <div class="app-item" onclick="openApp('api')" style="opacity:0.5;">
-    <div class="app-icon ic-dark">🔗</div>
-    <div class="app-name">API Public</div>
-  </div>
+
+  <button class="btn purple-btn" onclick="toast('Report globale generato!','Tutti i dati esportati in PDF.')">⬇ Esporta Report Globale</button>
+  <button class="btn" onclick="toast('SERV-AI notificato!','Il sistema ha ricevuto l\'aggiornamento.')">🧠 Invia Direttiva a SERV-AI</button>
 </div>
 
-<div class="spacer"></div>
+<!-- ═══════════════ API PUBBLICHE ═══════════════ -->
+<div class="panel" id="panel-api">
+
+  <div class="hl-box blue">🔗 <strong>API WONDAPP v1.0.</strong> Integrazioni per ERP, gestionali, ecommerce e partner esterni.</div>
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">18</div><div class="metric-lbl">Endpoint attivi</div></div>
+    <div class="metric"><div class="metric-val blue">342</div><div class="metric-lbl">Chiamate/min</div></div>
+    <div class="metric"><div class="metric-val orange">99.9%</div><div class="metric-lbl">Uptime API</div></div>
+    <div class="metric"><div class="metric-val purple">7</div><div class="metric-lbl">Partner attivi</div></div>
+  </div>
+
+  <div class="sec-title">La tua API Key</div>
+  <div class="api-key-box">
+    <span>wnd_live_•••••••••••••••••••4f2a</span>
+    <button class="copy-btn" onclick="toast('Copiata!','API Key negli appunti.')">Copia</button>
+  </div>
+
+  <div class="sec-title">Endpoint principali</div>
+  <div class="endpoint-list">
+    <div class="endpoint">
+      <div class="method get">GET</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/orders</div>
+        <div class="endpoint-desc">Lista ordini filtrabili per stato, data, merchant</div>
+        <div class="endpoint-status status-live">LIVE</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method post">POST</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/orders/create</div>
+        <div class="endpoint-desc">Crea un nuovo ordine programmaticamente</div>
+        <div class="endpoint-status status-live">LIVE</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method get">GET</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/merchants</div>
+        <div class="endpoint-desc">Lista merchant con dati, tier e performance</div>
+        <div class="endpoint-status status-live">LIVE</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method post">POST</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/invoice/generate</div>
+        <div class="endpoint-desc">Genera fattura PDF da ordine o parametri</div>
+        <div class="endpoint-status status-live">LIVE</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method put">PUT</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/merchant/settings</div>
+        <div class="endpoint-desc">Aggiorna impostazioni merchant via API</div>
+        <div class="endpoint-status status-beta">BETA</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method get">GET</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/analytics/revenue</div>
+        <div class="endpoint-desc">Dati revenue con filtri granulari</div>
+        <div class="endpoint-status status-beta">BETA</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method post">POST</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/ai/query</div>
+        <div class="endpoint-desc">Interroga SERV-AI direttamente via API</div>
+        <div class="endpoint-status status-soon">PRESTO</div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method del">DEL</div>
+      <div class="endpoint-info">
+        <div class="endpoint-path">/api/v1/orders/{id}</div>
+        <div class="endpoint-desc">Annulla un ordine (solo con permessi admin)</div>
+        <div class="endpoint-status status-soon">PRESTO</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn blue-btn" onclick="toast('Documentazione aperta!','Docs completi disponibili.')">📄 Documentazione Completa</button>
+  <button class="btn" onclick="toast('Nuova API Key generata!','La vecchia è stata invalidata.')">🔄 Rigenera API Key</button>
+</div>
+
+<!-- ═══════════════ WHITE LABEL ═══════════════ -->
+<div class="panel" id="panel-whitelabel">
+
+  <div class="hl-box purple">🏷️ <strong>White Label.</strong> Vendi WONDAPP con il brand dei tuoi clienti enterprise. Loro vedono il loro logo, tu incassi.</div>
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val purple">3</div><div class="metric-lbl">Clienti WL</div></div>
+    <div class="metric"><div class="metric-val">€ 48K</div><div class="metric-lbl">Revenue WL/mese</div></div>
+    <div class="metric"><div class="metric-val blue">12K</div><div class="metric-lbl">Utenti totali</div></div>
+    <div class="metric"><div class="metric-val orange">2</div><div class="metric-lbl">In negoziazione</div></div>
+  </div>
+
+  <div class="sec-title">Clienti White Label Attivi</div>
+  <div class="wl-list">
+
+    <div class="wl-card active-wl">
+      <div class="wl-icon" style="background:rgba(0,170,255,0.1);border:1px solid rgba(0,170,255,0.2);">🏦</div>
+      <div class="wl-info">
+        <div class="wl-name">BancaServ App</div>
+        <div class="wl-meta">Gruppo bancario · 4.200 utenti · Pro plan</div>
+      </div>
+      <div class="wl-revenue">€ 22K/m</div>
+    </div>
+
+    <div class="wl-card active-wl">
+      <div class="wl-icon" style="background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.15);">🏥</div>
+      <div class="wl-info">
+        <div class="wl-name">MedicoApp Pro</div>
+        <div class="wl-meta">Rete cliniche · 2.800 utenti · Pro plan</div>
+      </div>
+      <div class="wl-revenue">€ 16K/m</div>
+    </div>
+
+    <div class="wl-card active-wl">
+      <div class="wl-icon" style="background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);">🏗️</div>
+      <div class="wl-info">
+        <div class="wl-name">EdilOrder</div>
+        <div class="wl-meta">Gruppo edile · 5.100 utenti · Pro plan</div>
+      </div>
+      <div class="wl-revenue">€ 10K/m</div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+  <div class="sec-title">Personalizzazione WL</div>
+
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">Logo personalizzato</div>
+      <div class="toggle-sub">Il cliente carica il proprio logo</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">Colori brand custom</div>
+      <div class="toggle-sub">Palette colori del cliente</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">Dominio personalizzato</div>
+      <div class="toggle-sub">app.nomecliente.com</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">Nascondi brand WONDAPP</div>
+      <div class="toggle-sub">Nessun riferimento a WONDAPP nell'app</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+
+  <button class="btn purple-btn" onclick="toast('Proposta inviata!','Il team riceverà la richiesta.')">+ Nuovo Cliente White Label</button>
+</div>
+
+<!-- ═══════════════ SISTEMA ═══════════════ -->
+<div class="panel" id="panel-system">
+
+  <div class="hl-box">⚙️ <strong>Stato sistema globale.</strong> Tutti i servizi WONDAPP monitorati in tempo reale da SERV-AI.</div>
+
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-val">99.9%</div><div class="metric-lbl">Uptime globale</div></div>
+    <div class="metric"><div class="metric-val blue">38ms</div><div class="metric-lbl">Latenza media</div></div>
+    <div class="metric"><div class="metric-val orange">7</div><div class="metric-lbl">Region attive</div></div>
+    <div class="metric"><div class="metric-val purple">0</div><div class="metric-lbl">Incidenti aperti</div></div>
+  </div>
+
+  <div class="sec-title">Servizi Core</div>
+  <div class="status-list">
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">API Gateway</div><div class="status-val">38ms</div><div class="uptime">99.99%</div></div>
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">SERV-AI Engine</div><div class="status-val">H24 attivo</div><div class="uptime">100%</div></div>
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Database principale</div><div class="status-val">12ms</div><div class="uptime">99.99%</div></div>
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Push Notifications</div><div class="status-val">2.3K/min</div><div class="uptime">99.9%</div></div>
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Pagamenti</div><div class="status-val">Stripe live</div><div class="uptime">99.99%</div></div>
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">MEMORI-AI</div><div class="status-val">Claude API</div><div class="uptime">99.8%</div></div>
+    <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Generazione PDF</div><div class="status-val">1.2K/ora</div><div class="uptime">99.9%</div></div>
+    <div class="status-row"><div class="status-dot dot-orange"></div><div class="status-name">API v1 /ai/query</div><div class="status-val">In sviluppo</div><div class="uptime" style="color:var(--orange);">BETA</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sec-title">Impostazioni Globali</div>
+
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">Manutenzione programmata</div>
+      <div class="toggle-sub">Mostra banner agli utenti</div>
+    </div>
+    <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">Registrazioni aperte</div>
+      <div class="toggle-sub">Nuovi merchant possono registrarsi</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label-text">SERV-AI auto-decisioni</div>
+      <div class="toggle-sub">AI decide in autonomia le operazioni routine</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+  </div>
+
+  <button class="btn" onclick="toast('Backup avviato!','I dati vengono archiviati in modo sicuro.')">💾 Backup Manuale</button>
+  <button class="btn blue-btn" onclick="toast('Log scaricati!','File disponibile per il download.')">⬇ Scarica Log Sistema</button>
+</div>
 
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-lbl">Home</div></div>
-  <div class="nav-item"><div class="nav-icon">📦</div><div class="nav-lbl">Moduli</div></div>
-  <div class="nav-item"><div class="nav-icon">📖</div><div class="nav-lbl">Bibbia</div></div>
-  <div class="nav-item"><div class="nav-icon">🐙</div><div class="nav-lbl">GitHub</div></div>
-  <div class="nav-item"><div class="nav-icon">⚙️</div><div class="nav-lbl">Config</div></div>
+  <div class="nav-item"><div class="nav-icon">🛍️</div><div class="nav-lbl">Ordina</div></div>
+  <div class="nav-item"><div class="nav-icon">📍</div><div class="nav-lbl">Tracking</div></div>
+  <div class="nav-item"><div class="nav-icon">🤖</div><div class="nav-lbl">Memori-AI</div></div>
+  <div class="nav-item active"><div class="nav-icon">📊</div><div class="nav-lbl">Dashboard</div></div>
+  <div class="nav-item"><div class="nav-icon">🧠</div><div class="nav-lbl">Intel</div></div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal" onclick="closeModal(event)">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-app-icon" id="modalIcon" style="background:rgba(0,255,136,0.1);">🛍️</div>
-    <div class="modal-title" id="modalTitle">Modulo</div>
-    <div class="modal-sub" id="modalSub">Descrizione</div>
-    <div class="modal-fase" id="modalFase"></div>
-    <button class="modal-open-btn" id="modalBtn" onclick="launchModule()">Apri Modulo →</button>
-    <button class="modal-cancel" onclick="document.getElementById('modal').classList.remove('open')">Chiudi</button>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div style="font-size:22px;">✅</div>
+  <div>
+    <div class="toast-msg" id="toastMsg"></div>
+    <div class="toast-sub" id="toastSub"></div>
   </div>
 </div>
 
 <script>
-  const apps = {
-    ordina:      {icon:'🛍️',color:'rgba(0,255,136,0.1)',  name:'Ordina',        sub:'Home screen · Search bar universale · Servizi vicini',  fase:'✅ FASE 1 · COMPLETO', file:'index.html'},
-    tracking:    {icon:'📍',color:'rgba(0,170,255,0.1)',  name:'Tracking',       sub:'Mappa live · ETA countdown · Vista rider e merchant',   fase:'✅ FASE 1 · COMPLETO', file:'tracking.html'},
-    memori:      {icon:'🤖',color:'rgba(170,85,255,0.1)', name:'MEMORI-AI',      sub:'Chat AI assistant · 5 lingue · Claude API powered',      fase:'✅ FASE 1 · COMPLETO', file:'memori_ai.html'},
-    blueprint:   {icon:'📐',color:'rgba(60,60,90,0.4)',   name:'Blueprint',      sub:'Architettura strutturale dell\'intera piattaforma',       fase:'✅ FASE 2 · COMPLETO', file:'blueprint.html'},
-    login:       {icon:'👤',color:'rgba(0,210,200,0.1)',  name:'Login / Profilo',sub:'Autenticazione · Profilo utente · Gestione account',     fase:'✅ FASE 2 · COMPLETO', file:'login.html'},
-    payments:    {icon:'💳',color:'rgba(255,220,0,0.1)',  name:'Pagamenti',      sub:'Metodi di pagamento · Storico transazioni · Sicurezza',  fase:'✅ FASE 2 · COMPLETO', file:'payments.html'},
-    notify:      {icon:'🔔',color:'rgba(255,140,0,0.1)',  name:'Notifiche Push', sub:'Notifiche real-time · Preferenze · Alert ordini',        fase:'✅ FASE 2 · COMPLETO', file:'notifications.html'},
-    pricing:     {icon:'💰',color:'rgba(0,255,136,0.1)',  name:'Pricing',        sub:'Listino prezzi · Tier Free/Plus/Pro · Commissioni',      fase:'✅ FASE 2 · COMPLETO', file:'pricing.html'},
-    dashboard:   {icon:'📊',color:'rgba(0,170,255,0.1)',  name:'Dashboard',      sub:'Gestione ordini · Statistiche · Fatturazione auto PDF',  fase:'✅ FASE 3 · COMPLETO', file:'dashboard.html'},
-    settings:    {icon:'⚙️',color:'rgba(60,60,90,0.4)',   name:'Merchant Settings',sub:'Profilo negozio · Orari · Zona consegna · Catalogo',  fase:'✅ FASE 3 · COMPLETO', file:'settings.html'},
-    subscription:{icon:'💎',color:'rgba(0,255,136,0.1)',  name:'Subscription',   sub:'Free · Plus · Pro · Toggle annuale · Trial 7gg',         fase:'✅ FASE 3 · COMPLETO', file:'subscription_tier.html'},
-    aicontrol:   {icon:'🧩',color:'rgba(170,85,255,0.1)', name:'AI Control Center',sub:'Controllo parametri AI · Soglie · Automazioni',        fase:'✅ FASE 2 · COMPLETO', file:'ai_control.html'},
-    servai:      {icon:'🧠',color:'rgba(170,85,255,0.1)', name:'SERV-AI',        sub:'Auto-learning H24 · Alert decisioni · Log attività',     fase:'✅ FASE 4 · COMPLETO', file:'serv_ai.html'},
-    intel:       {icon:'🌐',color:'rgba(255,68,85,0.1)',  name:'Intel',          sub:'Monitor competitor globali · Amazon · Glovo · Uber Eats', fase:'✅ FASE 4 · COMPLETO', file:'intel.html'},
-    bibbia:      {icon:'📖',color:'rgba(0,210,200,0.1)',  name:'Bibbia di WONDAPP',sub:'Documento fondamenta v1.1 · Carica ad ogni sessione', fase:'✅ PUBBLICATA SU GITHUB PAGES', file:'BIBBIA_WONDAPP_v1.1.html'},
-    github:      {icon:'🐙',color:'rgba(60,60,90,0.4)',   name:'GitHub — Bodoke1',sub:'Repository wondapp- · GitHub Pages attivo',           fase:'✅ FASE 5 · ONLINE', file:'https://github.com/Bodoke1'},
-    businesshub: {icon:'🏢',color:'rgba(0,255,136,0.1)',  name:'Business Hub',   sub:'Onboarding · Fatture · Analytics Pro · Multi-Sede',     fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
-    onboarding:  {icon:'🚀',color:'rgba(255,140,0,0.1)',  name:'Onboarding',     sub:'5 passi guidati per attivare il negozio',                fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
-    invoice:     {icon:'🧾',color:'rgba(0,170,255,0.1)',  name:'Invoice Manager',sub:'Fatture · PDF · Storico · Nuova fattura',               fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
-    analytics:   {icon:'📈',color:'rgba(0,210,200,0.1)',  name:'Analytics Pro',  sub:'Revenue · Geografica · Report scaricabile',             fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
-    multiloc:    {icon:'📍',color:'rgba(255,220,0,0.1)',  name:'Multi-Sede',     sub:'Gestione più sedi · Report consolidato',                fase:'🔄 FASE 5A · IN CORSO', file:'business_hub.html'},
-    saas:        {icon:'☁️',color:'rgba(60,60,90,0.4)',   name:'SaaS Layer',     sub:'Infrastruttura SaaS · Blocco B in arrivo',              fase:'⏳ FASE 5B · PROSSIMO', file:null},
-    admin:       {icon:'🛡️',color:'rgba(60,60,90,0.4)',   name:'Admin Panel',    sub:'Pannello Orion · Revenue globale · Tutti i merchant',   fase:'⏳ FASE 5B · PROSSIMO', file:null},
-    api:         {icon:'🔗',color:'rgba(60,60,90,0.4)',   name:'API Pubbliche',  sub:'Integrazioni esterne · ERP · Gestionali · ecommerce',   fase:'⏳ FASE 5B · PROSSIMO', file:null},
-  };
-
-  let currentApp = null;
-
-  function openApp(id) {
-    const app = apps[id];
-    if (!app) return;
-    currentApp = app;
-    document.getElementById('modalIcon').textContent = app.icon;
-    document.getElementById('modalIcon').style.background = app.color;
-    document.getElementById('modalTitle').textContent = app.name;
-    document.getElementById('modalSub').textContent = app.sub;
-    const faseEl = document.getElementById('modalFase');
-    faseEl.textContent = app.fase;
-    faseEl.style.color = app.fase.includes('✅') ? 'var(--green)' : app.fase.includes('🔄') ? 'var(--orange)' : 'var(--muted)';
-    const btn = document.getElementById('modalBtn');
-    if (!app.file) {
-      btn.textContent = 'In arrivo — Fase 5B';
-      btn.style.background = 'var(--border2)';
-      btn.style.color = 'var(--muted)';
-      btn.onclick = null;
-    } else {
-      btn.textContent = 'Apri Modulo →';
-      btn.style.background = 'var(--green)';
-      btn.style.color = '#000';
-      btn.onclick = launchModule;
-    }
-    document.getElementById('modal').classList.add('open');
+  function showTab(id,btn){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.getElementById('panel-'+id).classList.add('active');
+    btn.classList.add('active');
   }
-
-  function launchModule() {
-    if (currentApp && currentApp.file) {
-      if (currentApp.file.startsWith('http')) {
-        window.open(currentApp.file, '_blank');
-      } else {
-        window.open(currentApp.file, '_blank');
-      }
-    }
+  function toast(msg,sub){
+    document.getElementById('toastMsg').textContent=msg;
+    document.getElementById('toastSub').textContent=sub;
+    const t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
   }
-
-  function closeModal(e) {
-    if (e.target === document.getElementById('modal')) {
-      document.getElementById('modal').classList.remove('open');
-    }
+  function toggleSwitch(el){
+    el.classList.toggle('on');
+    toast(el.classList.contains('on')?'Attivato':'Disattivato','Impostazione aggiornata.');
   }
-
-  // Date live
-  const d = new Date();
-  document.getElementById('dateDisplay').textContent =
-    d.toLocaleDateString('it-IT', {day:'numeric', month:'short', year:'numeric'});
-
-  // Search filter
-  document.querySelector('.search-bar input').addEventListener('input', function() {
-    const q = this.value.toLowerCase();
-    document.querySelectorAll('.app-item').forEach(el => {
-      const name = el.querySelector('.app-name').textContent.toLowerCase();
-      el.style.opacity = (!q || name.includes(q)) ? '' : '0.15';
-    });
-  });
 </script>
 </body>
 </html>
