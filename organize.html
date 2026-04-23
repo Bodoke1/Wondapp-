@@ -12,7 +12,7 @@
     --text:#e0e0f0;--muted:#666680;--orange:#ff8c00;--blue:#00aaff;--red:#ff4455;--purple:#aa55ff;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;padding-bottom:100px;}
+  body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;padding-bottom:80px;}
 
   .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
   .logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--green);letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,136,0.4);}
@@ -31,102 +31,28 @@
   .panel{display:none;padding:20px;}
   .panel.active{display:block;}
 
-  /* PRODOTTI VIEW */
-  .prodotti-view{display:none;padding:20px;}
-  .prodotti-view.show{display:block;animation:slideIn 0.3s ease;}
-  @keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
-
-  .prodotti-header{margin-bottom:20px;}
-  .prodotti-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:4px;}
-  .prodotti-sub{font-size:13px;color:var(--muted);font-weight:300;}
-
-  .form-card{background:var(--card);border:1px solid rgba(0,255,136,0.2);border-radius:20px;padding:22px;margin-bottom:22px;}
-  .form-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;}
-  .form-group{margin-bottom:14px;}
-  .form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;margin-bottom:7px;display:block;}
-  .form-input{width:100%;background:var(--dark);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
-  .form-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,255,136,0.07);}
-  .form-input::placeholder{color:var(--muted);}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-
-  .img-upload{width:100%;background:var(--dark);border:2px dashed var(--border2);border-radius:12px;padding:26px 16px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
-  .img-upload:hover{border-color:var(--green);background:rgba(0,255,136,0.03);}
-  .img-upload.has-img{border-style:solid;border-color:rgba(0,255,136,0.3);padding:0;}
-  .img-upload-icon{font-size:30px;margin-bottom:8px;}
-  .img-upload-text{font-size:13px;color:var(--muted);}
-  .img-upload-text strong{color:var(--green);}
-  .img-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
-  .img-preview{width:100%;height:150px;object-fit:cover;border-radius:10px;display:none;}
-
-  .cat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
-  .cat-chip{background:var(--card2);border:1px solid var(--border2);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:13px;cursor:pointer;transition:all 0.2s;font-weight:600;}
-  .cat-chip.selected{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
-
-  .submit-btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:6px;}
-  .submit-btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.4);}
-  .submit-btn:active{transform:scale(0.98);}
-
-  /* ═══ BARRA RICERCA PRODOTTI ═══ */
-  .search-prodotti{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:13px 16px;margin-bottom:12px;transition:border-color 0.2s;}
-  .search-prodotti:focus-within{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,255,136,0.07);}
-  .search-prodotti-icon{font-size:18px;color:var(--muted);flex-shrink:0;}
-  .search-prodotti input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;}
-  .search-prodotti input::placeholder{color:var(--muted);}
-  .search-clear{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;display:none;transition:color 0.2s;line-height:1;padding:0 2px;}
-  .search-clear:hover{color:var(--red);}
-  .search-clear.show{display:block;}
-
-  /* FILTRI RAPIDI */
-  .filtri-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-bottom:14px;}
-  .filtri-row::-webkit-scrollbar{display:none;}
-  .filtro-chip{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-weight:600;flex-shrink:0;}
-  .filtro-chip.active-filtro{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
-
-  .risultati-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-  .cat-label{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
-  .prodotti-count{font-size:11px;background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;}
-
-  /* PRODOTTO CARD */
-  .prodotti-grid{display:flex;flex-direction:column;gap:12px;}
-  .prodotto-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;transition:all 0.2s;}
-  .prodotto-card:hover{border-color:var(--border2);transform:translateX(2px);}
-  .prodotto-thumb{width:56px;height:56px;border-radius:12px;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden;}
-  .prodotto-thumb img{width:100%;height:100%;object-fit:cover;}
-  .prodotto-info{flex:1;min-width:0;}
-  .prodotto-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px;}
-  .prodotto-cat{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
-  .prodotto-price{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--green);}
-  .prodotto-actions{display:flex;gap:8px;flex-shrink:0;}
-  .action-icon{width:34px;height:34px;border-radius:10px;border:1px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all 0.2s;}
-  .action-icon.edit:hover{border-color:var(--orange);background:rgba(255,140,0,0.08);}
-  .action-icon.del:hover{border-color:var(--red);background:rgba(255,68,85,0.08);}
-
-  .highlight{background:rgba(0,255,136,0.18);color:var(--green);border-radius:3px;padding:0 2px;}
-
-  .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
-  .empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4;}
-  .empty-text{font-size:14px;}
-  .no-results{text-align:center;padding:36px 20px;color:var(--muted);}
-  .no-results-icon{font-size:40px;margin-bottom:10px;opacity:0.4;}
-  .no-results-text{font-size:14px;margin-bottom:4px;}
-  .no-results-sub{font-size:12px;opacity:0.6;}
-
-  /* DASHBOARD */
+  /* METRICHE */
   .metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
   .metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
   .metric-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:var(--green);margin-bottom:4px;}
   .metric-val.blue{color:var(--blue);}.metric-val.orange{color:var(--orange);}.metric-val.purple{color:var(--purple);}
   .metric-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+
   .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;}
   .card.purple-card{border-color:rgba(170,85,255,0.2);background:linear-gradient(135deg,var(--card),rgba(170,85,255,0.03));}
+  .card.green-card{border-color:rgba(0,255,136,0.2);background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.03));}
   .card.blue-card{border-color:rgba(0,170,255,0.2);background:linear-gradient(135deg,var(--card),rgba(0,170,255,0.03));}
+  .card.orange-card{border-color:rgba(255,140,0,0.2);background:linear-gradient(135deg,var(--card),rgba(255,140,0,0.03));}
+
   .sec-title{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+
   .rev-chart{display:flex;flex-direction:column;gap:8px;}
   .rev-row{display:flex;align-items:center;gap:10px;}
   .rev-label{font-size:12px;color:var(--text);width:80px;flex-shrink:0;}
   .rev-track{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden;}
   .rev-fill{height:100%;border-radius:4px;}
   .rev-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--green);width:50px;text-align:right;}
+
   .merchant-list{display:flex;flex-direction:column;gap:10px;}
   .merchant-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
   .merchant-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
@@ -140,6 +66,41 @@
   .tier-badge{font-size:10px;padding:3px 9px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:600;}
   .tier-plus{background:rgba(0,170,255,0.1);color:var(--blue);}
   .tier-pro{background:rgba(0,255,136,0.1);color:var(--green);}
+
+  /* PRICING */
+  .pricing-block{margin-bottom:28px;}
+  .pricing-role{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:2px;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+  .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  @media(max-width:480px){.pricing-grid{grid-template-columns:1fr;}}
+  .price-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 14px;text-align:center;}
+  .price-card.featured{border-color:rgba(0,255,136,0.3);}
+  .price-card.featured-blue{border-color:rgba(0,170,255,0.3);}
+  .price-card.featured-orange{border-color:rgba(255,136,0,0.3);}
+  .price-tier{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
+  .price-amount{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;margin-bottom:2px;}
+  .price-amount.green{color:var(--green);}
+  .price-amount.blue{color:var(--blue);}
+  .price-amount.orange{color:var(--orange);}
+  .price-amount.neutral{color:var(--text);}
+  .price-period{font-size:11px;color:var(--muted);margin-bottom:8px;}
+  .price-trial{font-size:10px;color:var(--orange);background:rgba(255,136,0,0.08);border:1px solid rgba(255,136,0,0.2);padding:3px 8px;border-radius:6px;margin-bottom:10px;display:inline-block;font-family:'JetBrains Mono',monospace;}
+  .price-comm{font-size:12px;color:var(--text);padding:8px 0;border-top:1px solid var(--border);margin-top:6px;}
+
+  /* CODICI AI */
+  .code-list{display:flex;flex-direction:column;gap:8px;}
+  .code-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+  .code-role-tag{font-size:10px;padding:3px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0;width:60px;text-align:center;}
+  .cr-cli{background:rgba(0,255,136,0.1);color:var(--green);}
+  .cr-mrc{background:rgba(0,170,255,0.1);color:var(--blue);}
+  .cr-drv{background:rgba(255,136,0,0.1);color:var(--orange);}
+  .code-str{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);flex:1;letter-spacing:0.5px;}
+  .code-plan{font-size:10px;padding:2px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;}
+  .cp-green{background:rgba(0,255,136,0.1);color:var(--green);}
+  .cp-blue{background:rgba(0,170,255,0.1);color:var(--blue);}
+  .cp-orange{background:rgba(255,136,0,0.1);color:var(--orange);}
+  .cp-muted{background:rgba(85,85,106,0.2);color:var(--muted);}
+
+  /* API */
   .api-key-box{background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
   .copy-btn{background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Exo 2',sans-serif;font-weight:600;}
   .endpoint-list{display:flex;flex-direction:column;gap:10px;}
@@ -151,10 +112,11 @@
   .endpoint-info{flex:1;}
   .endpoint-path{font-family:'JetBrains Mono',monospace;font-size:13px;color:#fff;margin-bottom:3px;}
   .endpoint-desc{font-size:12px;color:var(--muted);}
-  .endpoint-status{font-size:10px;padding:2px 8px;border-radius:6px;margin-top:4px;display:inline-block;font-family:'JetBrains Mono',monospace;}
-  .status-live{background:rgba(0,255,136,0.1);color:var(--green);}
-  .status-beta{background:rgba(255,140,0,0.1);color:var(--orange);}
-  .status-soon{background:rgba(102,102,128,0.15);color:var(--muted);}
+  .ep-status{font-size:10px;padding:2px 8px;border-radius:6px;margin-top:4px;display:inline-block;font-family:'JetBrains Mono',monospace;}
+  .s-live{background:rgba(0,255,136,0.1);color:var(--green);}
+  .s-beta{background:rgba(255,140,0,0.1);color:var(--orange);}
+  .s-soon{background:rgba(102,102,128,0.15);color:var(--muted);}
+
   .wl-list{display:flex;flex-direction:column;gap:12px;}
   .wl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;}
   .wl-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
@@ -162,6 +124,7 @@
   .wl-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
   .wl-meta{font-size:12px;color:var(--muted);}
   .wl-revenue{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--purple);}
+
   .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
   .toggle-row:last-child{border-bottom:none;}
   .toggle-label-text{font-size:14px;font-weight:600;color:var(--text);}
@@ -170,6 +133,7 @@
   .toggle.on{background:rgba(0,255,136,0.3);border:1px solid rgba(0,255,136,0.4);}
   .toggle-thumb{width:20px;height:20px;background:var(--muted);border-radius:50%;position:absolute;top:3px;left:3px;transition:all 0.3s;}
   .toggle.on .toggle-thumb{left:25px;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,0.5);}
+
   .status-list{display:flex;flex-direction:column;gap:8px;}
   .status-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;}
   .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
@@ -178,10 +142,14 @@
   .status-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
   .status-val{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
   .uptime{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+
   .hl-box{background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);border-left:3px solid var(--green);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:16px;}
   .hl-box.purple{background:rgba(170,85,255,0.06);border-color:rgba(170,85,255,0.2);border-left-color:var(--purple);}
   .hl-box.blue{background:rgba(0,170,255,0.06);border-color:rgba(0,170,255,0.2);border-left-color:var(--blue);}
+  .hl-box.orange{background:rgba(255,140,0,0.06);border-color:rgba(255,140,0,0.2);border-left-color:var(--orange);}
+
   .divider{height:1px;background:var(--border);margin:16px 0;}
+
   .btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:14px;}
   .btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.35);}
   .btn.purple-btn{background:rgba(170,85,255,0.15);color:var(--purple);border:1px solid rgba(170,85,255,0.3);}
@@ -189,14 +157,83 @@
   .btn.blue-btn{background:rgba(0,170,255,0.15);color:var(--blue);border:1px solid rgba(0,170,255,0.3);}
   .btn.blue-btn:hover{background:rgba(0,170,255,0.25);box-shadow:none;}
 
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding:10px 0 14px;z-index:100;}
-  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;opacity:0.35;transition:opacity 0.2s;}
-  .nav-item.active{opacity:1;}
-  .nav-item.active .nav-lbl{color:var(--green);}
-  .nav-icon{font-size:22px;}
-  .nav-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+  /* PRODOTTI */
+  .prodotti-view{display:none;padding:20px;}
+  .prodotti-view.show{display:block;animation:slideIn 0.3s ease;}
+  @keyframes slideIn{from{opacity:0;transform:translateX(24px);}to{opacity:1;transform:translateX(0);}}
+  .prodotti-header{margin-bottom:20px;}
+  .prodotti-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:4px;}
+  .prodotti-sub{font-size:13px;color:var(--muted);font-weight:300;}
+  .form-card{background:var(--card);border:1px solid rgba(0,255,136,0.2);border-radius:20px;padding:22px;margin-bottom:20px;}
+  .form-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;}
+  .form-group{margin-bottom:14px;}
+  .form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;margin-bottom:7px;display:block;}
+  .form-input{width:100%;background:var(--dark);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
+  .form-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,255,136,0.07);}
+  .form-input::placeholder{color:var(--muted);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .img-upload{width:100%;background:var(--dark);border:2px dashed var(--border2);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+  .img-upload:hover{border-color:var(--green);}
+  .img-upload.has-img{border-style:solid;border-color:rgba(0,255,136,0.3);padding:0;}
+  .img-upload-icon{font-size:28px;margin-bottom:8px;}
+  .img-upload-text{font-size:13px;color:var(--muted);}
+  .img-upload-text strong{color:var(--green);}
+  .img-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .img-preview{width:100%;height:150px;object-fit:cover;border-radius:10px;display:none;}
+  .cat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .cat-chip{background:var(--card2);border:1px solid var(--border2);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:13px;cursor:pointer;transition:all 0.2s;font-weight:600;}
+  .cat-chip.selected{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
+  .submit-btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--green);color:#000;font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:6px;}
+  .submit-btn:hover{background:#00ffaa;box-shadow:0 0 25px rgba(0,255,136,0.4);}
 
-  .toast{position:fixed;bottom:90px;left:20px;right:20px;background:rgba(10,10,25,0.97);border:1px solid rgba(0,255,136,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
+  .search-prodotti{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:13px 16px;margin-bottom:12px;transition:border-color 0.2s;}
+  .search-prodotti:focus-within{border-color:var(--green);}
+  .sp-icon{font-size:18px;color:var(--muted);flex-shrink:0;}
+  .search-prodotti input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;}
+  .search-prodotti input::placeholder{color:var(--muted);}
+  .sp-clear{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;display:none;transition:color 0.2s;padding:0;}
+  .sp-clear:hover{color:var(--red);}
+  .sp-clear.show{display:block;}
+
+  .filtri-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-bottom:14px;}
+  .filtri-row::-webkit-scrollbar{display:none;}
+  .filtro-chip{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-weight:600;flex-shrink:0;}
+  .filtro-chip.active-filtro{background:var(--green-dim);border-color:rgba(0,255,136,0.3);color:var(--green);}
+
+  .risultati-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .cat-label{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .prodotti-count{font-size:11px;background:var(--green-dim);border:1px solid var(--green-glow);color:var(--green);padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;}
+
+  .prodotti-grid{display:flex;flex-direction:column;gap:12px;}
+  .prodotto-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;transition:all 0.2s;}
+  .prodotto-card:hover{border-color:var(--border2);transform:translateX(2px);}
+  .prodotto-thumb{width:56px;height:56px;border-radius:12px;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden;}
+  .prodotto-thumb img{width:100%;height:100%;object-fit:cover;}
+  .prodotto-info{flex:1;min-width:0;}
+  .prodotto-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px;}
+  .prodotto-cat{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+  .prodotto-price{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--green);}
+  .prodotto-actions{display:flex;gap:8px;flex-shrink:0;}
+  .action-icon{width:34px;height:34px;border-radius:10px;border:1px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all 0.2s;}
+  .action-icon.edit:hover{border-color:var(--orange);background:rgba(255,140,0,0.08);}
+  .action-icon.del:hover{border-color:var(--red);background:rgba(255,68,85,0.08);}
+  .highlight{background:rgba(0,255,136,0.18);color:var(--green);border-radius:3px;padding:0 2px;}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+  .empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4;}
+  .empty-text{font-size:14px;}
+  .no-results{text-align:center;padding:36px 20px;color:var(--muted);}
+  .no-results-icon{font-size:40px;margin-bottom:10px;opacity:0.4;}
+  .no-results-text{font-size:14px;margin-bottom:4px;}
+  .no-results-sub{font-size:12px;opacity:0.6;}
+
+  /* BOTTOM NAV — SOLO TESTO */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,20,0.97);border-top:1px solid var(--border);display:flex;padding:0;z-index:100;backdrop-filter:blur(16px);}
+  .nav-item{flex:1;display:flex;align-items:center;justify-content:center;padding:16px 4px;cursor:pointer;opacity:0.35;transition:all 0.2s;border-top:2px solid transparent;}
+  .nav-item.active{opacity:1;border-top-color:var(--purple);}
+  .nav-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;text-align:center;}
+  .nav-item.active .nav-lbl{color:var(--purple);}
+
+  .toast{position:fixed;bottom:70px;left:20px;right:20px;background:rgba(10,10,25,0.97);border:1px solid rgba(0,255,136,0.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.35s;z-index:200;pointer-events:none;}
   .toast.show{transform:translateY(0);opacity:1;}
   .toast-msg{font-size:14px;font-weight:600;color:var(--green);}
   .toast-sub{font-size:12px;color:var(--muted);}
@@ -213,12 +250,15 @@
 <!-- ═══ DASHBOARD ═══ -->
 <div class="main-dashboard" id="mainDashboard">
   <div class="tabs">
-    <button class="tab active" onclick="showTab('admin',this)">🛡️ Admin Panel</button>
-    <button class="tab" onclick="showTab('api',this)">🔗 API Pubbliche</button>
-    <button class="tab" onclick="showTab('whitelabel',this)">🏷️ White Label</button>
-    <button class="tab" onclick="showTab('system',this)">⚙️ Sistema</button>
+    <button class="tab active" onclick="showTab('admin',this)">Admin Panel</button>
+    <button class="tab" onclick="showTab('tariffe',this)">Tariffe</button>
+    <button class="tab" onclick="showTab('codici',this)">Codici AI</button>
+    <button class="tab" onclick="showTab('api',this)">API</button>
+    <button class="tab" onclick="showTab('whitelabel',this)">White Label</button>
+    <button class="tab" onclick="showTab('system',this)">Sistema</button>
   </div>
 
+  <!-- ADMIN -->
   <div class="panel active" id="panel-admin">
     <div class="hl-box purple">🛡️ <strong>Pannello Orion.</strong> Visione completa su tutta la piattaforma in tempo reale.</div>
     <div class="metrics-grid">
@@ -227,24 +267,124 @@
       <div class="metric"><div class="metric-val orange">42.3K</div><div class="metric-lbl">Ordini oggi</div></div>
       <div class="metric"><div class="metric-val purple">97%</div><div class="metric-lbl">Uptime</div></div>
     </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-val blue">8.240</div><div class="metric-lbl">Clienti attivi</div></div>
+      <div class="metric"><div class="metric-val orange">634</div><div class="metric-lbl">Driver attivi</div></div>
+      <div class="metric"><div class="metric-val">47</div><div class="metric-lbl">Paesi coperti</div></div>
+      <div class="metric"><div class="metric-val purple">3</div><div class="metric-lbl">Profili utente</div></div>
+    </div>
     <div class="card purple-card">
-      <div class="sec-title">Revenue per Tier</div>
+      <div class="sec-title">Revenue per Tier — Merchant</div>
       <div class="rev-chart">
         <div class="rev-row"><div class="rev-label">PRO</div><div class="rev-track"><div class="rev-fill" style="width:82%;background:var(--green);"></div></div><div class="rev-val">€ 181K</div></div>
         <div class="rev-row"><div class="rev-label">PLUS</div><div class="rev-track"><div class="rev-fill" style="width:54%;background:var(--blue);"></div></div><div class="rev-val">€ 74K</div></div>
         <div class="rev-row"><div class="rev-label">FREE</div><div class="rev-track"><div class="rev-fill" style="width:21%;background:var(--muted);"></div></div><div class="rev-val">€ 29K</div></div>
       </div>
     </div>
+    <div class="card orange-card">
+      <div class="sec-title">Revenue per Tier — Driver</div>
+      <div class="rev-chart">
+        <div class="rev-row"><div class="rev-label">PRO</div><div class="rev-track"><div class="rev-fill" style="width:60%;background:var(--orange);"></div></div><div class="rev-val">€ 12K</div></div>
+        <div class="rev-row"><div class="rev-label">PLUS</div><div class="rev-track"><div class="rev-fill" style="width:35%;background:rgba(255,140,0,0.5);"></div></div><div class="rev-val">€ 7K</div></div>
+        <div class="rev-row"><div class="rev-label">FREE</div><div class="rev-track"><div class="rev-fill" style="width:15%;background:var(--muted);"></div></div><div class="rev-val">€ 3K</div></div>
+      </div>
+    </div>
     <div class="sec-title">Top Merchant</div>
     <div class="merchant-list">
-      <div class="merchant-row"><div class="merchant-avatar av-green">🏬</div><div class="merchant-info"><div class="merchant-name">GroceryFast Italia</div><div class="merchant-meta">40 sedi · Milano</div></div><div class="merchant-revenue">€ 24K</div><div class="tier-badge tier-pro">PRO</div></div>
-      <div class="merchant-row"><div class="merchant-avatar av-blue">🏨</div><div class="merchant-info"><div class="merchant-name">Grand Hotel Group</div><div class="merchant-meta">12 hotel · Italia</div></div><div class="merchant-revenue">€ 18K</div><div class="tier-badge tier-pro">PRO</div></div>
-      <div class="merchant-row"><div class="merchant-avatar av-orange">💊</div><div class="merchant-info"><div class="merchant-name">FarmaRete</div><div class="merchant-meta">85 farmacie · Nord Italia</div></div><div class="merchant-revenue">€ 12K</div><div class="tier-badge tier-plus">PLUS</div></div>
+      <div class="merchant-row"><div class="merchant-avatar av-green">🏬</div><div class="merchant-info"><div class="merchant-name">GroceryFast Italia</div><div class="merchant-meta">40 sedi · Milano · WOND-MRC-PRO-5531</div></div><div class="merchant-revenue">€ 24K</div><div class="tier-badge tier-pro">PRO</div></div>
+      <div class="merchant-row"><div class="merchant-avatar av-blue">🏨</div><div class="merchant-info"><div class="merchant-name">Grand Hotel Group</div><div class="merchant-meta">12 hotel · Italia · WOND-MRC-PRO-8821</div></div><div class="merchant-revenue">€ 18K</div><div class="tier-badge tier-pro">PRO</div></div>
+      <div class="merchant-row"><div class="merchant-avatar av-orange">💊</div><div class="merchant-info"><div class="merchant-name">FarmaRete</div><div class="merchant-meta">85 farmacie · WOND-MRC-PLUS-3341</div></div><div class="merchant-revenue">€ 12K</div><div class="tier-badge tier-plus">PLUS</div></div>
     </div>
-    <button class="btn purple-btn" onclick="toast('Report globale generato!','Tutti i dati esportati.')">⬇ Esporta Report Globale</button>
-    <button class="btn" onclick="toast('Direttiva inviata!','SERV-AI aggiornato.')">🧠 Invia Direttiva a SERV-AI</button>
+    <button class="btn purple-btn" onclick="toast('Report globale generato!','Tutti i dati esportati.')">Esporta Report Globale</button>
+    <button class="btn" onclick="toast('Direttiva inviata!','SERV-AI aggiornato.')">Invia Direttiva a SERV-AI</button>
   </div>
 
+  <!-- TARIFFE -->
+  <div class="panel" id="panel-tariffe">
+    <div class="hl-box">💰 <strong>Regola:</strong> Tutti pagano WONDAPP. Più si investe nel piano, meno si paga per transazione.</div>
+
+    <div class="pricing-block">
+      <div class="pricing-role" style="color:var(--green);">👤 CLIENTE — Solo Free</div>
+      <div class="hl-box" style="margin:0;">Il cliente non paga abbonamento. La commissione WONDAPP è inclusa nel prezzo dell'ordine. Zero costi fissi, zero sorprese.</div>
+    </div>
+
+    <div class="pricing-block">
+      <div class="pricing-role" style="color:var(--blue);">🏪 MERCHANT</div>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-tier">FREE</div>
+          <div class="price-amount neutral">€0</div>
+          <div class="price-period">per sempre</div>
+          <div class="price-comm">Commissione: <strong>Standard alta</strong></div>
+        </div>
+        <div class="price-card featured-blue">
+          <div class="price-tier">PLUS</div>
+          <div class="price-amount blue">€19</div>
+          <div class="price-period">/ mese · €15 annuale</div>
+          <div class="price-trial">7gg gratis</div>
+          <div class="price-comm">Commissione: <strong>Ridotta</strong></div>
+        </div>
+        <div class="price-card featured">
+          <div class="price-tier">PRO</div>
+          <div class="price-amount green">€49</div>
+          <div class="price-period">/ mese · €39 annuale</div>
+          <div class="price-trial">7gg gratis</div>
+          <div class="price-comm">Commissione: <strong>Minima</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-block">
+      <div class="pricing-role" style="color:var(--orange);">🚗 DRIVER</div>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-tier">FREE</div>
+          <div class="price-amount neutral">€0</div>
+          <div class="price-period">per sempre</div>
+          <div class="price-comm">Comm. WONDAPP: <strong>15%</strong></div>
+        </div>
+        <div class="price-card featured-orange">
+          <div class="price-tier">PLUS</div>
+          <div class="price-amount orange">€9</div>
+          <div class="price-period">/ mese</div>
+          <div class="price-trial">7gg gratis</div>
+          <div class="price-comm">Comm. WONDAPP: <strong>10%</strong></div>
+        </div>
+        <div class="price-card featured">
+          <div class="price-tier">PRO</div>
+          <div class="price-amount green">€19</div>
+          <div class="price-period">/ mese</div>
+          <div class="price-trial">7gg gratis</div>
+          <div class="price-comm">Comm. WONDAPP: <strong>5%</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="hl-box orange">⚠️ Le tariffe possono essere aggiustate verso il basso. WOND-AI monitora i competitor e propone aggiustamenti a Orion.</div>
+  </div>
+
+  <!-- CODICI AI -->
+  <div class="panel" id="panel-codici">
+    <div class="hl-box purple">🧠 <strong>WOND-AI genera automaticamente</strong> un codice univoco per ogni utente al momento dell'iscrizione. Il codice identifica ruolo e piano in modo permanente.</div>
+    <div class="sec-title">Esempi codici generati</div>
+    <div class="code-list">
+      <div class="code-item"><div class="code-role-tag cr-cli">CLI</div><div class="code-str">WOND-CLI-2847-MK</div><div class="code-plan cp-muted">FREE</div></div>
+      <div class="code-item"><div class="code-role-tag cr-mrc">MRC</div><div class="code-str">WOND-MRC-FREE-8821-ZX</div><div class="code-plan cp-muted">FREE</div></div>
+      <div class="code-item"><div class="code-role-tag cr-mrc">MRC</div><div class="code-str">WOND-MRC-PLUS-3341-QP</div><div class="code-plan cp-blue">PLUS</div></div>
+      <div class="code-item"><div class="code-role-tag cr-mrc">MRC</div><div class="code-str">WOND-MRC-PRO-5531-RT</div><div class="code-plan cp-green">PRO</div></div>
+      <div class="code-item"><div class="code-role-tag cr-drv">DRV</div><div class="code-str">WOND-DRV-FREE-7712-BN</div><div class="code-plan cp-muted">FREE</div></div>
+      <div class="code-item"><div class="code-role-tag cr-drv">DRV</div><div class="code-str">WOND-DRV-PRO-9204-BX</div><div class="code-plan cp-orange">PRO</div></div>
+    </div>
+    <div class="hl-box" style="margin-top:16px;">🔐 <strong>Struttura:</strong> WOND · Ruolo · Piano · Numero univoco · Lettere casuali. Non duplicabile, non modificabile. Generato in 1 secondo al primo accesso.</div>
+    <div class="metrics-grid" style="margin-top:16px;">
+      <div class="metric"><div class="metric-val">10.721</div><div class="metric-lbl">Codici generati</div></div>
+      <div class="metric"><div class="metric-val blue">8.240</div><div class="metric-lbl">Clienti</div></div>
+      <div class="metric"><div class="metric-val orange">1.847</div><div class="metric-lbl">Merchant</div></div>
+      <div class="metric"><div class="metric-val purple">634</div><div class="metric-lbl">Driver</div></div>
+    </div>
+    <button class="btn purple-btn" onclick="toast('Nuovo codice generato!','WOND-CLI-' + Math.floor(Math.random()*9000+1000) + '-' + 'ABCDEFGHIJK'.split('').sort(()=>Math.random()-0.5).slice(0,2).join(''))">Genera Codice Demo</button>
+  </div>
+
+  <!-- API -->
   <div class="panel" id="panel-api">
     <div class="hl-box blue">🔗 <strong>API WONDAPP v1.0.</strong> Integrazioni per ERP, gestionali e partner esterni.</div>
     <div class="metrics-grid">
@@ -257,15 +397,17 @@
     <div class="api-key-box"><span>wnd_live_•••••••••••••••••••4f2a</span><button class="copy-btn" onclick="toast('Copiata!','API Key negli appunti.')">Copia</button></div>
     <div class="sec-title">Endpoint principali</div>
     <div class="endpoint-list">
-      <div class="endpoint"><div class="method get">GET</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/orders</div><div class="endpoint-desc">Lista ordini filtrabili per stato, data, merchant</div><div class="endpoint-status status-live">LIVE</div></div></div>
-      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/orders/create</div><div class="endpoint-desc">Crea un nuovo ordine programmaticamente</div><div class="endpoint-status status-live">LIVE</div></div></div>
-      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/invoice/generate</div><div class="endpoint-desc">Genera fattura PDF da ordine o parametri</div><div class="endpoint-status status-live">LIVE</div></div></div>
-      <div class="endpoint"><div class="method put">PUT</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/merchant/settings</div><div class="endpoint-desc">Aggiorna impostazioni merchant via API</div><div class="endpoint-status status-beta">BETA</div></div></div>
-      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/ai/query</div><div class="endpoint-desc">Interroga SERV-AI direttamente via API</div><div class="endpoint-status status-soon">PRESTO</div></div></div>
+      <div class="endpoint"><div class="method get">GET</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/orders</div><div class="endpoint-desc">Lista ordini filtrabili per stato, data, merchant</div><div class="ep-status s-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/orders/create</div><div class="endpoint-desc">Crea un nuovo ordine programmaticamente</div><div class="ep-status s-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/invoice/generate</div><div class="endpoint-desc">Genera fattura PDF da ordine o parametri</div><div class="ep-status s-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method get">GET</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/users/{code}</div><div class="endpoint-desc">Dati utente da codice AI univoco</div><div class="ep-status s-live">LIVE</div></div></div>
+      <div class="endpoint"><div class="method put">PUT</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/merchant/settings</div><div class="endpoint-desc">Aggiorna impostazioni merchant</div><div class="ep-status s-beta">BETA</div></div></div>
+      <div class="endpoint"><div class="method post">POST</div><div class="endpoint-info"><div class="endpoint-path">/api/v1/ai/query</div><div class="endpoint-desc">Interroga WOND-AI direttamente</div><div class="ep-status s-soon">PRESTO</div></div></div>
     </div>
-    <button class="btn blue-btn" onclick="toast('Documentazione aperta!','Docs completi disponibili.')">📄 Documentazione Completa</button>
+    <button class="btn blue-btn" onclick="toast('Docs aperta!','Documentazione completa disponibile.')">Documentazione Completa</button>
   </div>
 
+  <!-- WHITE LABEL -->
   <div class="panel" id="panel-whitelabel">
     <div class="hl-box purple">🏷️ <strong>White Label.</strong> Vendi WONDAPP con il brand dei tuoi clienti enterprise.</div>
     <div class="metrics-grid">
@@ -282,61 +424,54 @@
     <button class="btn purple-btn" onclick="toast('Richiesta inviata!','Il team riceverà la proposta.')">+ Nuovo Cliente White Label</button>
   </div>
 
+  <!-- SISTEMA -->
   <div class="panel" id="panel-system">
-    <div class="hl-box">⚙️ <strong>Stato sistema globale.</strong> Tutti i servizi monitorati H24 da SERV-AI.</div>
+    <div class="hl-box">⚙️ <strong>Stato sistema globale.</strong> Tutti i servizi monitorati H24 da WOND-AI.</div>
     <div class="metrics-grid">
       <div class="metric"><div class="metric-val">99.9%</div><div class="metric-lbl">Uptime globale</div></div>
       <div class="metric"><div class="metric-val blue">38ms</div><div class="metric-lbl">Latenza media</div></div>
-      <div class="metric"><div class="metric-val orange">7</div><div class="metric-lbl">Region attive</div></div>
+      <div class="metric"><div class="metric-val orange">47</div><div class="metric-lbl">Paesi attivi</div></div>
       <div class="metric"><div class="metric-val purple">0</div><div class="metric-lbl">Incidenti aperti</div></div>
     </div>
     <div class="status-list">
       <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">API Gateway</div><div class="status-val">38ms</div><div class="uptime">99.99%</div></div>
-      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">SERV-AI Engine</div><div class="status-val">H24 attivo</div><div class="uptime">100%</div></div>
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">WOND-AI Engine</div><div class="status-val">H24 attivo</div><div class="uptime">100%</div></div>
       <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Database principale</div><div class="status-val">12ms</div><div class="uptime">99.99%</div></div>
       <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Pagamenti</div><div class="status-val">Stripe live</div><div class="uptime">99.99%</div></div>
       <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">MEMORI-AI</div><div class="status-val">Claude API</div><div class="uptime">99.8%</div></div>
-      <div class="status-row"><div class="status-dot dot-orange"></div><div class="status-name">API v1 /ai/query</div><div class="status-val">In sviluppo</div><div class="uptime" style="color:var(--orange);">BETA</div></div>
+      <div class="status-row"><div class="status-dot dot-green"></div><div class="status-name">Codici AI Generator</div><div class="status-val">10.721 generati</div><div class="uptime">100%</div></div>
+      <div class="status-row"><div class="status-dot dot-orange"></div><div class="status-name">API /ai/query</div><div class="status-val">In sviluppo</div><div class="uptime" style="color:var(--orange);">BETA</div></div>
     </div>
     <div class="divider"></div>
-    <div class="toggle-row"><div><div class="toggle-label-text">Registrazioni aperte</div><div class="toggle-sub">Nuovi merchant possono registrarsi</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
-    <div class="toggle-row"><div><div class="toggle-label-text">SERV-AI auto-decisioni</div><div class="toggle-sub">AI decide in autonomia le operazioni routine</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
-    <button class="btn" onclick="toast('Backup avviato!','I dati vengono archiviati.')">💾 Backup Manuale</button>
+    <div class="toggle-row"><div><div class="toggle-label-text">Registrazioni aperte</div><div class="toggle-sub">Nuovi utenti possono iscriversi</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
+    <div class="toggle-row"><div><div class="toggle-label-text">WOND-AI auto-decisioni</div><div class="toggle-sub">AI gestisce operazioni routine in autonomia</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
+    <div class="toggle-row"><div><div class="toggle-label-text">Generazione codici AI</div><div class="toggle-sub">Codici univoci generati automaticamente</div></div><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div></div>
+    <button class="btn" onclick="toast('Backup avviato!','I dati vengono archiviati.')">Backup Manuale</button>
   </div>
 </div>
 
 <!-- ═══ GESTIONE PRODOTTI ═══ -->
 <div class="prodotti-view" id="prodottiView">
   <div class="prodotti-header">
-    <div class="prodotti-title">🛍️ Gestione Prodotti</div>
+    <div class="prodotti-title">Gestione Prodotti</div>
     <div class="prodotti-sub">Aggiungi e gestisci il tuo catalogo</div>
   </div>
-
   <div class="form-card">
     <div class="form-title">+ Aggiungi Prodotto</div>
-    <div class="form-group">
-      <label class="form-label">Nome Prodotto</label>
-      <input class="form-input" id="prodNome" type="text" placeholder="Es. Pizza Margherita, Paracetamolo 500mg…">
-    </div>
+    <div class="form-group"><label class="form-label">Nome Prodotto</label><input class="form-input" id="prodNome" type="text" placeholder="Es. Pizza Margherita, Paracetamolo 500mg…"></div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Prezzo (€)</label>
-        <input class="form-input" id="prodPrezzo" type="number" placeholder="0.00" step="0.01" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Disponibilità</label>
-        <input class="form-input" id="prodQta" type="number" placeholder="pz" min="0">
-      </div>
+      <div class="form-group"><label class="form-label">Prezzo (€)</label><input class="form-input" id="prodPrezzo" type="number" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="form-group"><label class="form-label">Disponibilità</label><input class="form-input" id="prodQta" type="number" placeholder="pz" min="0"></div>
     </div>
     <div class="form-group">
       <label class="form-label">Categoria</label>
       <div class="cat-chips">
-        <div class="cat-chip selected" onclick="selectCat(this)">🍕 Food</div>
-        <div class="cat-chip" onclick="selectCat(this)">💊 Farmacia</div>
-        <div class="cat-chip" onclick="selectCat(this)">🔧 Servizi</div>
-        <div class="cat-chip" onclick="selectCat(this)">🛒 Retail</div>
-        <div class="cat-chip" onclick="selectCat(this)">🏨 Hotel</div>
-        <div class="cat-chip" onclick="selectCat(this)">📦 Altro</div>
+        <div class="cat-chip selected" onclick="selectCat(this)">Food</div>
+        <div class="cat-chip" onclick="selectCat(this)">Farmacia</div>
+        <div class="cat-chip" onclick="selectCat(this)">Servizi</div>
+        <div class="cat-chip" onclick="selectCat(this)">Retail</div>
+        <div class="cat-chip" onclick="selectCat(this)">Hotel</div>
+        <div class="cat-chip" onclick="selectCat(this)">Altro</div>
       </div>
     </div>
     <div class="form-group">
@@ -348,249 +483,181 @@
         <img class="img-preview" id="imgPreview">
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Descrizione (opzionale)</label>
-      <input class="form-input" id="prodDesc" type="text" placeholder="Breve descrizione…">
-    </div>
-    <button class="submit-btn" onclick="aggiungiProdotto()">✓ Aggiungi al Catalogo</button>
+    <div class="form-group"><label class="form-label">Descrizione (opzionale)</label><input class="form-input" id="prodDesc" type="text" placeholder="Breve descrizione…"></div>
+    <button class="submit-btn" onclick="aggiungiProdotto()">Aggiungi al Catalogo</button>
   </div>
 
-  <!-- BARRA RICERCA -->
   <div class="search-prodotti">
-    <div class="search-prodotti-icon">🔍</div>
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Cerca per nome, categoria, prezzo…"
-      oninput="cercaProdotti(this.value)"
-      autocomplete="off"
-    >
-    <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+    <div class="sp-icon">🔍</div>
+    <input type="text" id="searchInput" placeholder="Cerca per nome, categoria, prezzo…" oninput="cercaProdotti(this.value)" autocomplete="off">
+    <button class="sp-clear" id="searchClear" onclick="clearSearch()">✕</button>
   </div>
-
-  <!-- FILTRI RAPIDI -->
   <div class="filtri-row">
     <div class="filtro-chip active-filtro" onclick="setFiltro(this,'tutti')">Tutti</div>
-    <div class="filtro-chip" onclick="setFiltro(this,'food')">🍕 Food</div>
-    <div class="filtro-chip" onclick="setFiltro(this,'farmacia')">💊 Farmacia</div>
-    <div class="filtro-chip" onclick="setFiltro(this,'servizi')">🔧 Servizi</div>
-    <div class="filtro-chip" onclick="setFiltro(this,'retail')">🛒 Retail</div>
-    <div class="filtro-chip" onclick="setFiltro(this,'hotel')">🏨 Hotel</div>
-    <div class="filtro-chip" onclick="setFiltro(this,'altro')">📦 Altro</div>
+    <div class="filtro-chip" onclick="setFiltro(this,'food')">Food</div>
+    <div class="filtro-chip" onclick="setFiltro(this,'farmacia')">Farmacia</div>
+    <div class="filtro-chip" onclick="setFiltro(this,'servizi')">Servizi</div>
+    <div class="filtro-chip" onclick="setFiltro(this,'retail')">Retail</div>
+    <div class="filtro-chip" onclick="setFiltro(this,'hotel')">Hotel</div>
+    <div class="filtro-chip" onclick="setFiltro(this,'altro')">Altro</div>
   </div>
-
   <div class="risultati-info">
     <div class="cat-label">Catalogo</div>
     <span class="prodotti-count" id="prodCount">0 prodotti</span>
   </div>
-
   <div class="prodotti-grid" id="prodottiGrid">
-    <div class="empty-state">
-      <div class="empty-icon">📦</div>
-      <div class="empty-text">Nessun prodotto ancora.<br>Aggiungine uno qui sopra!</div>
-    </div>
+    <div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Nessun prodotto ancora.<br>Aggiungine uno qui sopra!</div></div>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV — SOLO TESTO -->
 <div class="bottom-nav">
-  <div class="nav-item" id="nav-ordina" onclick="apriProdotti()">
-    <div class="nav-icon">🛍️</div><div class="nav-lbl">Ordina</div>
-  </div>
-  <div class="nav-item" onclick="toast('Tracking','Modulo in apertura.')">
-    <div class="nav-icon">📍</div><div class="nav-lbl">Tracking</div>
-  </div>
-  <div class="nav-item" onclick="toast('MEMORI-AI','Assistente in apertura.')">
-    <div class="nav-icon">🤖</div><div class="nav-lbl">Memori-AI</div>
-  </div>
-  <div class="nav-item active" id="nav-dashboard" onclick="tornaDashboard()">
-    <div class="nav-icon">📊</div><div class="nav-lbl">Dashboard</div>
-  </div>
-  <div class="nav-item" onclick="toast('Intel','Intelligence in apertura.')">
-    <div class="nav-icon">🧠</div><div class="nav-lbl">Intel</div>
-  </div>
+  <div class="nav-item" id="nav-ordina" onclick="apriProdotti()"><div class="nav-lbl">Ordina</div></div>
+  <div class="nav-item" onclick="toast('Tracking','Modulo in apertura.')"><div class="nav-lbl">Tracking</div></div>
+  <div class="nav-item" onclick="toast('MEMORI-AI','Assistente in apertura.')"><div class="nav-lbl">Memori-AI</div></div>
+  <div class="nav-item active" id="nav-dashboard" onclick="tornaDashboard()"><div class="nav-lbl">Dashboard</div></div>
+  <div class="nav-item" onclick="toast('Intel','Intelligence in apertura.')"><div class="nav-lbl">Intel</div></div>
 </div>
 
 <div class="toast" id="toast">
   <div style="font-size:22px;">✅</div>
-  <div>
-    <div class="toast-msg" id="toastMsg"></div>
-    <div class="toast-sub" id="toastSub"></div>
-  </div>
+  <div><div class="toast-msg" id="toastMsg"></div><div class="toast-sub" id="toastSub"></div></div>
 </div>
 
 <script>
-  let prodotti = [];
-  let categoriaSelezionata = '🍕 Food';
-  let filtroAttivo = 'tutti';
-  let queryAttiva = '';
+  let prodotti=[], categoriaSelezionata='Food', filtroAttivo='tutti', queryAttiva='';
 
-  function apriProdotti() {
+  function apriProdotti(){
     document.getElementById('mainDashboard').classList.add('hidden');
     document.getElementById('prodottiView').classList.add('show');
     document.getElementById('backBtn').classList.add('show');
-    document.getElementById('topbarBadge').style.display = 'none';
+    document.getElementById('topbarBadge').style.display='none';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('nav-ordina').classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
-  function tornaDashboard() {
+  function tornaDashboard(){
     document.getElementById('mainDashboard').classList.remove('hidden');
     document.getElementById('prodottiView').classList.remove('show');
     document.getElementById('backBtn').classList.remove('show');
-    document.getElementById('topbarBadge').style.display = '';
+    document.getElementById('topbarBadge').style.display='';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('nav-dashboard').classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
-  function showTab(id,btn) {
+  function showTab(id,btn){
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
     document.getElementById('panel-'+id).classList.add('active');
     btn.classList.add('active');
   }
 
-  /* ── RICERCA REAL-TIME ── */
-  function cercaProdotti(q) {
-    queryAttiva = q.trim().toLowerCase();
-    document.getElementById('searchClear').classList.toggle('show', queryAttiva.length > 0);
+  function cercaProdotti(q){
+    queryAttiva=q.trim().toLowerCase();
+    document.getElementById('searchClear').classList.toggle('show',queryAttiva.length>0);
     renderProdotti();
   }
 
-  function clearSearch() {
-    document.getElementById('searchInput').value = '';
-    queryAttiva = '';
+  function clearSearch(){
+    document.getElementById('searchInput').value='';
+    queryAttiva='';
     document.getElementById('searchClear').classList.remove('show');
     document.getElementById('searchInput').focus();
     renderProdotti();
   }
 
-  function setFiltro(el, filtro) {
+  function setFiltro(el,filtro){
     document.querySelectorAll('.filtro-chip').forEach(c=>c.classList.remove('active-filtro'));
     el.classList.add('active-filtro');
-    filtroAttivo = filtro;
+    filtroAttivo=filtro;
     renderProdotti();
   }
 
-  function selectCat(el) {
+  function selectCat(el){
     document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
-    categoriaSelezionata = el.textContent.trim();
+    categoriaSelezionata=el.textContent.trim();
   }
 
-  function previewImg(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const box = document.getElementById('imgUpload');
-      const img = document.getElementById('imgPreview');
-      img.src = ev.target.result;
-      img.style.display = 'block';
+  function previewImg(e){
+    const file=e.target.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const box=document.getElementById('imgUpload');
+      const img=document.getElementById('imgPreview');
+      img.src=ev.target.result;img.style.display='block';
       box.classList.add('has-img');
-      box.querySelector('.img-upload-icon').style.display = 'none';
-      box.querySelector('.img-upload-text').style.display = 'none';
+      box.querySelector('.img-upload-icon').style.display='none';
+      box.querySelector('.img-upload-text').style.display='none';
     };
     reader.readAsDataURL(file);
   }
 
-  function aggiungiProdotto() {
-    const nome   = document.getElementById('prodNome').value.trim();
-    const prezzo = parseFloat(document.getElementById('prodPrezzo').value);
-    const qta    = document.getElementById('prodQta').value.trim();
-    const desc   = document.getElementById('prodDesc').value.trim();
-    const imgEl  = document.getElementById('imgPreview');
-    const hasImg = imgEl.style.display === 'block';
-    if (!nome)               { toast('Nome mancante!','Inserisci il nome del prodotto.'); return; }
-    if (!prezzo || prezzo<=0){ toast('Prezzo mancante!','Inserisci un prezzo valido.');   return; }
-    prodotti.push({ id:Date.now(), nome, prezzo, qta:qta||'∞', categoria:categoriaSelezionata, desc, img:hasImg?imgEl.src:null });
+  function aggiungiProdotto(){
+    const nome=document.getElementById('prodNome').value.trim();
+    const prezzo=parseFloat(document.getElementById('prodPrezzo').value);
+    const qta=document.getElementById('prodQta').value.trim();
+    const desc=document.getElementById('prodDesc').value.trim();
+    const imgEl=document.getElementById('imgPreview');
+    const hasImg=imgEl.style.display==='block';
+    if(!nome){toast('Nome mancante!','Inserisci il nome del prodotto.');return;}
+    if(!prezzo||prezzo<=0){toast('Prezzo mancante!','Inserisci un prezzo valido.');return;}
+    prodotti.push({id:Date.now(),nome,prezzo,qta:qta||'∞',categoria:categoriaSelezionata,desc,img:hasImg?imgEl.src:null});
     renderProdotti();
     resetForm();
-    toast('Prodotto aggiunto!', nome + ' è nel catalogo.');
+    toast('Prodotto aggiunto!',nome+' è nel catalogo.');
   }
 
-  function renderProdotti() {
-    const grid = document.getElementById('prodottiGrid');
-    const filtrati = prodotti.filter(p => {
-      const catKey = p.categoria.toLowerCase().replace(/[^\w]/g,'');
-      if (filtroAttivo !== 'tutti' && !catKey.includes(filtroAttivo)) return false;
-      if (queryAttiva) {
-        const hay = [p.nome, p.categoria, p.desc, '€'+p.prezzo.toFixed(2), p.qta+'pz'].join(' ').toLowerCase();
-        if (!hay.includes(queryAttiva)) return false;
+  function renderProdotti(){
+    const grid=document.getElementById('prodottiGrid');
+    const filtrati=prodotti.filter(p=>{
+      const ck=p.categoria.toLowerCase();
+      if(filtroAttivo!=='tutti'&&!ck.includes(filtroAttivo))return false;
+      if(queryAttiva){
+        const hay=[p.nome,p.categoria,p.desc,'€'+p.prezzo.toFixed(2),p.qta+'pz'].join(' ').toLowerCase();
+        if(!hay.includes(queryAttiva))return false;
       }
       return true;
     });
-
-    document.getElementById('prodCount').textContent =
-      filtrati.length + ' prodott' + (filtrati.length===1?'o':'i');
-
-    if (prodotti.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Nessun prodotto ancora.<br>Aggiungine uno qui sopra!</div></div>`;
-      return;
-    }
-    if (filtrati.length === 0) {
-      const q = escHTML(queryAttiva || filtroAttivo);
-      grid.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div class="no-results-text">Nessun risultato per "<strong style="color:var(--green);">${q}</strong>"</div><div class="no-results-sub">Prova un'altra parola o categoria</div></div>`;
-      return;
-    }
-
-    grid.innerHTML = filtrati.map(p => `
+    document.getElementById('prodCount').textContent=filtrati.length+' prodott'+(filtrati.length===1?'o':'i');
+    if(prodotti.length===0){grid.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Nessun prodotto ancora.<br>Aggiungine uno qui sopra!</div></div>`;return;}
+    if(filtrati.length===0){grid.innerHTML=`<div class="no-results"><div class="no-results-icon">🔍</div><div class="no-results-text">Nessun risultato per "<strong style="color:var(--green);">${esc(queryAttiva||filtroAttivo)}</strong>"</div><div class="no-results-sub">Prova parole diverse</div></div>`;return;}
+    grid.innerHTML=filtrati.map(p=>`
       <div class="prodotto-card">
-        <div class="prodotto-thumb">
-          ${p.img ? `<img src="${p.img}" alt="${escHTML(p.nome)}">` : getCatEmoji(p.categoria)}
-        </div>
+        <div class="prodotto-thumb">${p.img?`<img src="${p.img}" alt="${esc(p.nome)}">`:getEmoji(p.categoria)}</div>
         <div class="prodotto-info">
-          <div class="prodotto-name">${queryAttiva ? evidenzia(p.nome,queryAttiva) : escHTML(p.nome)}</div>
-          <div class="prodotto-cat">${queryAttiva ? evidenzia(p.categoria,queryAttiva) : escHTML(p.categoria)} · ${escHTML(p.qta)} pz</div>
+          <div class="prodotto-name">${queryAttiva?evidenzia(p.nome,queryAttiva):esc(p.nome)}</div>
+          <div class="prodotto-cat">${esc(p.categoria)} · ${esc(p.qta)} pz</div>
           <div class="prodotto-price">€ ${p.prezzo.toFixed(2)}</div>
         </div>
         <div class="prodotto-actions">
-          <button class="action-icon edit" onclick="toast('Modifica','Funzione modifica in arrivo.')">✏️</button>
-          <button class="action-icon del"  onclick="eliminaProdotto(${p.id})">🗑️</button>
+          <button class="action-icon edit" onclick="toast('Modifica','Funzione in arrivo.')">✏️</button>
+          <button class="action-icon del" onclick="eliminaProdotto(${p.id})">🗑️</button>
         </div>
       </div>`).join('');
   }
 
-  function evidenzia(testo, q) {
-    const s = escHTML(testo);
-    const r = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    return s.replace(new RegExp('('+r+')','gi'),'<span class="highlight">$1</span>');
-  }
-
-  function escHTML(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  function eliminaProdotto(id) {
-    prodotti = prodotti.filter(p=>p.id!==id);
-    renderProdotti();
-    toast('Prodotto rimosso!','Eliminato dal catalogo.');
-  }
-
-  function resetForm() {
+  function evidenzia(t,q){const s=esc(t);const r=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return s.replace(new RegExp('('+r+')','gi'),'<span class="highlight">$1</span>');}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function eliminaProdotto(id){prodotti=prodotti.filter(p=>p.id!==id);renderProdotti();toast('Prodotto rimosso!','Eliminato dal catalogo.');}
+  function resetForm(){
     ['prodNome','prodPrezzo','prodQta','prodDesc'].forEach(id=>document.getElementById(id).value='');
-    const img = document.getElementById('imgPreview');
-    img.style.display='none'; img.src='';
-    const box = document.getElementById('imgUpload');
-    box.classList.remove('has-img');
+    const img=document.getElementById('imgPreview');img.style.display='none';img.src='';
+    const box=document.getElementById('imgUpload');box.classList.remove('has-img');
     box.querySelector('.img-upload-icon').style.display='';
     box.querySelector('.img-upload-text').style.display='';
     document.querySelectorAll('.cat-chip').forEach((c,i)=>c.classList.toggle('selected',i===0));
-    categoriaSelezionata='🍕 Food';
+    categoriaSelezionata='Food';
   }
-
-  function getCatEmoji(cat){
-    const m={'🍕 Food':'🍕','💊 Farmacia':'💊','🔧 Servizi':'🔧','🛒 Retail':'🛒','🏨 Hotel':'🏨','📦 Altro':'📦'};
-    return m[cat]||'📦';
-  }
-
-  function toggleSwitch(el){ el.classList.toggle('on'); toast(el.classList.contains('on')?'Attivato':'Disattivato','Impostazione aggiornata.'); }
-
+  function getEmoji(cat){const m={'Food':'🍕','Farmacia':'💊','Servizi':'🔧','Retail':'🛒','Hotel':'🏨','Altro':'📦'};return m[cat]||'📦';}
+  function toggleSwitch(el){el.classList.toggle('on');toast(el.classList.contains('on')?'Attivato':'Disattivato','Impostazione aggiornata.');}
   function toast(msg,sub){
     document.getElementById('toastMsg').textContent=msg;
     document.getElementById('toastSub').textContent=sub;
-    const t=document.getElementById('toast');
-    t.classList.add('show');
+    const t=document.getElementById('toast');t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),3000);
   }
 </script>
