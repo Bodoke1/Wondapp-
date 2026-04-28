@@ -9,39 +9,33 @@
         
         :root { --n: #00ff88; --d: #050507; --s: #0f0f1a; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; }
         body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; }
 
         /* HEADER & GLOBO */
         .header { padding: 30px 15px; border-bottom: 4px solid var(--n); background: var(--s); text-align: center; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
         .logo { font-family: 'Orbitron'; color: var(--n); font-size: 28px; letter-spacing: 5px; text-shadow: 0 0 15px var(--n); }
         .globo { width: 60px; height: 60px; border: 3px solid var(--n); border-radius: 50%; margin: 15px auto; animation: pulse 2s infinite ease-in-out; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 10px var(--n); } 50% { transform: scale(1.05); box-shadow: 0 0 25px var(--n); } 100% { transform: scale(1); box-shadow: 0 0 10px var(--n); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 10px var(--n); } 50% { box-shadow: 0 0 25px var(--n); } 100% { box-shadow: 0 0 10px var(--n); } }
 
-        /* BARRA DI RICERCA NEON */
+        /* BARRA DI RICERCA */
         .search-area { padding: 25px; }
         #q { 
             width: 100%; padding: 22px; border-radius: 50px; 
             border: 3px solid var(--n); background: #000; color: #fff; 
             font-size: 18px; text-align: center; font-weight: 800;
             box-shadow: 0 0 15px rgba(0,255,136,0.2);
-            transition: 0.3s;
         }
-        #q:focus { box-shadow: 0 0 25px var(--n); border-color: #fff; }
 
-        /* RISULTATI */
+        /* CARD RISULTATI */
         .results { padding: 0 20px 100px; }
         .m-card { background: var(--s); border-radius: 25px; margin-bottom: 30px; border: 2px solid var(--n); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
         .card-top { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #222; }
         .m-icon { width: 60px; height: 60px; border: 2px solid var(--n); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; background: #000; }
-        
         .price { font-size: 34px; font-weight: 900; color: var(--n); text-align: right; padding: 15px 25px; }
-        
-        .m-map { width: 92%; height: 180px; margin: 0 auto 20px; border: 2px solid var(--n); border-radius: 15px; overflow: hidden; background: #111; }
-        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg) brightness(0.8); }
-
+        .m-map { width: 92%; height: 180px; margin: 0 auto 20px; border: 2px solid var(--n); border-radius: 15px; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg); }
         .btn { width: 100%; padding: 22px; background: var(--n); color: #000; font-family: 'Orbitron'; font-weight: 900; text-transform: uppercase; cursor: pointer; }
-        .btn:active { background: #fff; }
     </style>
 </head>
 <body>
@@ -52,65 +46,52 @@
 </div>
 
 <div class="search-area">
-    <input type="text" id="q" placeholder="SCANSIONA IL GLOBO..." onkeyup="radar()" autocomplete="off">
+    <input type="text" id="q" placeholder="DIGITA PER CERCARE..." onkeyup="radar()" autocomplete="off">
 </div>
 
 <div id="view" class="results"></div>
 
 <script>
-/* --- LA BIBBIA INTEGRATA (Raggi X: Verificata 100%) --- */
+/* DATABASE INTEGRATO - ZERO ERRORI */
 var BIBBIA = [
   {"n": "ENI STATION SGM", "c": "Benzinaio", "l": "Viale Lombardia, SGM", "p": "1.759", "i": "⛽"},
   {"n": "MARIO IL FABBRO", "c": "Artigiano", "l": "Via Roma 10, SGM", "p": "PRONTO", "i": "🔧"},
   {"n": "PANIFICIO STORICO", "c": "Alimentari", "l": "Piazza Centrale, SGM", "p": "1.15", "i": "🥖"}
 ];
 
-/* --- MOTORE RADAR (Sintassi ultra-sicura) --- */
 function radar() {
     var query = document.getElementById('q').value.toLowerCase().trim();
     var out = document.getElementById('view');
     
-    if(!query) { 
+    if (query === "") { 
         out.innerHTML = ""; 
         return; 
     }
 
-    // Filtro classico senza simboli moderni che si rompono
-    var res = BIBBIA.filter(function(item) {
-        return item.n.toLowerCase().indexOf(query) > -1 || item.c.toLowerCase().indexOf(query) > -1;
-    });
-
     var h = "";
-    for (var i = 0; i < res.length; i++) {
-        var shop = res[i];
-        var dest = encodeURIComponent(shop.n + " " + shop.l);
-        
-        h += '<div class="m-card">' +
-                '<div class="card-top">' +
-                    '<div class="m-icon">' + shop.i + '</div>' +
-                    '<div>' +
-                        '<h3 style="font-size:20px;">' + shop.n + '</h3>' +
-                        '<p style="font-size:11px; color:#00ff88; font-weight:800;">' + shop.c.toUpperCase() + '</p>' +
+    for (var i = 0; i < BIBBIA.length; i++) {
+        var shop = BIBBIA[i];
+        if (shop.n.toLowerCase().indexOf(query) > -1 || shop.c.toLowerCase().indexOf(query) > -1) {
+            var dest = encodeURIComponent(shop.n + " " + shop.l);
+            
+            h += '<div class="m-card">' +
+                    '<div class="card-top">' +
+                        '<div class="m-icon">' + shop.i + '</div>' +
+                        '<div>' +
+                            '<h3 style="font-size:20px;">' + shop.n + '</h3>' +
+                            '<p style="font-size:11px; color:#00ff88;">' + shop.c.toUpperCase() + '</p>' +
+                        '</div>' +
                     '</div>' +
-                '</div>' +
-                '<div class="price">' + shop.p + '</div>' +
-                '<div class="m-map">' +
-                    '<iframe src="https://maps.google.com/maps?q=' + dest + '&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>' +
-                '</div>' +
-                '<button class="btn" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + dest + '\', \'_blank\')">NAVIGA ORA</button>' +
-             '</div>';
+                    '<div class="price">' + shop.p + '</div>' +
+                    '<div class="m-map">' +
+                        '<iframe src="https://www.google.com/maps?q=' + dest + '&output=embed"></iframe>' +
+                    '</div>' +
+                    '<button class="btn" onclick="window.open(\'https://www.google.com/maps/search/?api=1&query=' + dest + '\')">NAVIGA ORA</button>' +
+                 '</div>';
+        }
     }
-
-    if(res.length === 0) {
-        h = '<div style="text-align:center; padding:30px; border:2px dashed #00ff88; border-radius:25px;">' +
-            '<p style="color:#00ff88; font-weight:800;">NON IN DATABASE</p>' +
-            '<button class="btn" style="background:transparent; border:2px solid #00ff88; color:#00ff88; margin-top:15px;" onclick="window.open(\'https://www.google.com/maps/search/\' + encodeURIComponent(document.getElementById(\'q\').value))">ATTIVA RADAR GLOBALE</button>' +
-            '</div>';
-    }
-
     out.innerHTML = h;
 }
 </script>
-
 </body>
 </html>
