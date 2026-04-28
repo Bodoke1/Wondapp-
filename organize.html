@@ -1,106 +1,41 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WONDAPP SUPREME</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;800&display=swap');
-        :root { --n: #00ff88; --d: #050507; --s: #0f0f1a; }
+/**
+ * WONDAPP - LA BIBBIA (DATABASE)
+ * Versione Suprema - Zero Errori
+ */
 
-        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; }
-        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; }
-
-        .header { padding: 25px; border-bottom: 4px solid var(--n); background: var(--s); text-align: center; }
-        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 26px; letter-spacing: 4px; }
-        
-        .globo { width: 60px; height: 60px; border: 2px solid var(--n); border-radius: 50%; margin: 15px auto; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); } 100% { box-shadow: 0 0 0 15px rgba(0,255,136,0); } }
-
-        .quick-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; }
-        .icon-card { background: var(--s); padding: 15px 5px; border-radius: 15px; text-align: center; border: 2px solid var(--n); cursor: pointer; }
-        .icon-card span { display: block; font-size: 24px; }
-        .icon-card p { font-size: 9px; font-weight: 800; color: var(--n); text-transform: uppercase; }
-
-        .search-box { padding: 0 20px 20px; }
-        #q { width: 100%; padding: 18px; border-radius: 12px; border: 2px solid var(--n); background: #000; color: #fff; font-size: 16px; text-align: center; }
-
-        .results { padding: 0 20px 100px; }
-        .m-card { background: var(--s); border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--n); overflow: hidden; }
-        .m-info { padding: 15px; display: flex; align-items: center; gap: 12px; }
-        .m-icon { width: 50px; height: 50px; border: 1px solid var(--n); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-        
-        .price { font-size: 30px; font-weight: 900; color: var(--n); text-align: right; padding: 0 20px 10px; }
-        .m-map { width: 90%; height: 160px; margin: 0 auto 15px; border: 1px solid var(--n); border-radius: 10px; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg); }
-
-        .btn { width: 100%; padding: 18px; background: var(--n); color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <div class="logo">WONDAPP</div>
-    <div class="globo"></div>
-</div>
-
-<div class="quick-menu">
-    <div class="icon-card" onclick="setQ('Benzinaio')"><span>⛽</span><p>Benzina</p></div>
-    <div class="icon-card" onclick="setQ('Artigiano')"><span>🛠️</span><p>Artigiano</p></div>
-    <div class="icon-card" onclick="setQ('Alimentari')"><span>🥖</span><p>Botteghe</p></div>
-</div>
-
-<div class="search-box">
-    <input type="text" id="q" placeholder="CERCA NEL GLOBO..." onkeyup="radar()">
-</div>
-
-<div id="view" class="results"></div>
-
-<script>
-// DATABASE INTEGRATO
 const BIBBIA = [
-    { n: "ENI STATION SGM", c: "Benzinaio", l: "Viale Lombardia, SGM", p: "1.759", i: "⛽" },
-    { n: "MARIO IL FABBRO", c: "Artigiano", l: "Via Roma 10, SGM", p: "PRONTO", i: "🔧" },
-    { n: "FORNO STORICO", c: "Alimentari", l: "Piazza Centrale, SGM", p: "1.15", i: "🥖" }
+    { 
+        n: "ENI STATION SGM", 
+        c: "Benzinaio", 
+        l: "Viale Lombardia, San Giuliano M.", 
+        p: "1.759", 
+        i: "⛽", 
+        f: "GOLD" 
+    },
+    { 
+        n: "MARIO IL FABBRO", 
+        c: "Artigiano", 
+        l: "Via Roma 10, SGM", 
+        p: "PRONTO", 
+        i: "🔧", 
+        f: "GOLD" 
+    },
+    { 
+        n: "PANIFICIO STORICO", 
+        c: "Alimentari", 
+        l: "Piazza Centrale, SGM", 
+        p: "1.15", 
+        i: "🥖", 
+        f: "NORMAL" 
+    },
+    { 
+        n: "BAR DEL CENTRO", 
+        c: "Bar", 
+        l: "Via Matteotti 4", 
+        p: "1.10", 
+        i: "☕", 
+        f: "NORMAL" 
+    }
 ];
 
-function setQ(v) { 
-    document.getElementById('q').value = v; 
-    radar(); 
-}
-
-function radar() {
-    const query = document.getElementById('q').value.toLowerCase().trim();
-    const out = document.getElementById('view');
-    if(!query) { out.innerHTML = ""; return; }
-
-    const res = BIBBIA.filter(i => i.n.toLowerCase().includes(query) || i.c.toLowerCase().includes(query));
-
-    let html = "";
-    res.forEach(i => {
-        const d = encodeURIComponent(i.n + " " + i.l);
-        html += '<div class="m-card">' +
-                '<div class="m-info">' +
-                '<div class="m-icon">' + i.i + '</div>' +
-                '<div><h3>' + i.n + '</h3><p style="font-size:10px;color:var(--n)">' + i.c + '</p></div>' +
-                '</div>' +
-                '<div class="price">' + i.p + '</div>' +
-                '<div class="m-map">' +
-                '<iframe src="https://maps.google.com/maps?q=' + d + '&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>' +
-                '</div>' +
-                '<button class="btn" onclick="window.open(\'https://www.google.com/maps/search/' + d + '\')">NAVIGA</button>' +
-                '</div>';
-    });
-
-    if(res.length === 0) {
-        html = '<div style="text-align:center;padding:20px;border:2px dashed var(--n);border-radius:15px;">' +
-               '<p style="color:var(--n)">NON IN DATABASE. ATTIVA RADAR GLOBALE?</p>' +
-               '<button class="btn" style="margin-top:10px;background:none;border:1px solid var(--n);color:var(--n)" onclick="window.open(\'https://www.google.com/maps/search/\' + encodeURIComponent(document.getElementById(\'q\').value))">ATTIVA RADAR</button>' +
-               '</div>';
-    }
-
-    out.innerHTML = html;
-}
-</script>
-</body>
-</html>
+// Fine del database. Pronto per essere letto dal Radar.
