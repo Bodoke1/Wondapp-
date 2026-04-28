@@ -1,31 +1,155 @@
-// --- COPIA DA QUI ---
-const DB = [
-    { 
-        n: "ENI STATION SGM", 
-        c: "Benzinaio", 
-        l: "Viale Lombardia, San Giuliano M.", 
-        p: "1.759", 
-        i: "⛽", 
-        f: "GOLD", 
-        t: ["benzina", "agip", "eni"] 
-    },
-    { 
-        n: "MARIO IL FABBRO", 
-        c: "Artigiano", 
-        l: "Via Roma 10, SGM", 
-        p: "PRONTO", 
-        i: "🔧", 
-        f: "GOLD", 
-        t: ["fabbro", "riparazione", "chiavi"] 
-    },
-    { 
-        n: "PANIFICIO STORICO", 
-        c: "Alimentari", 
-        l: "Piazza Centrale", 
-        p: "1.20", 
-        i: "🥖", 
-        f: "NORMAL", 
-        t: ["pane", "focaccia"] 
-    }
-]; // <--- CONTROLLA CHE CI SIA QUESTA CHIUSURA!
-// --- A QUI ---
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WONDAPP — OFFICIAL DASHBOARD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;800&display=swap');
+        
+        :root { --n: #00ff88; --g: #ffd700; --d: #050507; --s: #0f0f1a; }
+
+        /* RESET E BASE */
+        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; overflow-x: hidden; }
+
+        /* HEADER E GLOBO WONDAPP */
+        .header { padding: 30px 15px; border-bottom: 4px solid var(--n); background: var(--s); text-align: center; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 28px; letter-spacing: 5px; text-shadow: 0 0 15px var(--n); }
+        
+        .globo-radar { 
+            width: 75px; height: 75px; border: 3px solid var(--n); border-radius: 50%; 
+            margin: 20px auto; position: relative; 
+            animation: pulse 2.5s infinite ease-in-out; 
+        }
+        @keyframes pulse { 
+            0% { transform: scale(1); box-shadow: 0 0 10px var(--n); } 
+            50% { transform: scale(1.08); box-shadow: 0 0 30px var(--n); } 
+            100% { transform: scale(1); box-shadow: 0 0 10px var(--n); } 
+        }
+
+        /* MENU RAPIDO (ICONE CON BORDI VERDI) */
+        .quick-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 25px; }
+        .icon-card { 
+            background: var(--s); padding: 18px 5px; border-radius: 18px; 
+            text-align: center; border: 2px solid var(--n); 
+            box-shadow: 0 0 10px rgba(0,255,136,0.15); transition: 0.2s;
+            cursor: pointer;
+        }
+        .icon-card span { display: block; font-size: 28px; margin-bottom: 8px; }
+        .icon-card p { font-size: 9px; font-weight: 800; color: var(--n); text-transform: uppercase; letter-spacing: 1px; }
+        .icon-card:active { transform: scale(0.92); background: var(--n); }
+        .icon-card:active p, .icon-card:active span { color: #000; }
+
+        /* INPUT DI RICERCA */
+        .search-box { padding: 0 25px 25px; }
+        #q { 
+            width: 100%; padding: 18px; border-radius: 15px; 
+            border: 2px solid var(--n); background: #000; color: #fff; 
+            font-size: 16px; text-align: center; font-weight: 800;
+            box-shadow: inset 0 0 10px rgba(0,255,136,0.1);
+        }
+
+        /* RISULTATI RICERCA */
+        .results { padding: 0 20px 120px; }
+        .merchant-card { 
+            background: var(--s); border-radius: 25px; margin-bottom: 30px; 
+            border: 2px solid var(--n); overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-top { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #222; }
+        .m-icon { 
+            width: 55px; height: 55px; border: 2px solid var(--n); 
+            border-radius: 12px; display: flex; align-items: center; 
+            justify-content: center; font-size: 28px; background: #000; 
+        }
+
+        .price-tag { font-size: 32px; font-weight: 900; color: var(--n); text-align: right; padding: 10px 25px; }
+
+        /* MAPPA INTEGRATA - IDENTIFICAZIONE WONDAPP */
+        .map-wrapper { 
+            width: 90%; height: 180px; margin: 10px auto 20px; 
+            border: 2px solid var(--n); border-radius: 15px; 
+            overflow: hidden; background: #111; 
+        }
+        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg) brightness(0.8); }
+
+        .btn-wond { 
+            width: 100%; padding: 20px; background: var(--n); color: #000; 
+            font-family: 'Orbitron'; font-weight: 900; text-transform: uppercase; 
+            cursor: pointer; font-size: 14px; 
+        }
+        .btn-global { background: transparent; border: 2px solid var(--n); color: var(--n); margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">WONDAPP</div>
+    <div class="globo-radar"></div>
+</div>
+
+<div class="quick-menu">
+    <div class="icon-card" onclick="setQ('Benzinaio')"><span>⛽</span><p>Benzina</p></div>
+    <div class="icon-card" onclick="setQ('Artigiano')"><span>🛠️</span><p>Artigiano</p></div>
+    <div class="icon-card" onclick="setQ('Alimentari')"><span>🥖</span><p>Botteghe</p></div>
+</div>
+
+<div class="search-box">
+    <input type="text" id="q" placeholder="SCANSIONA IL GLOBO..." onkeyup="radar()" autocomplete="off">
+</div>
+
+<div id="view" class="results"></div>
+
+<script src="bibbia.js"></script>
+
+<script>
+function setQ(v) { document.getElementById('q').value = v; radar(); }
+
+function radar() {
+    const query = document.getElementById('q').value.toLowerCase().trim();
+    const out = document.getElementById('view');
+    if(!query) { out.innerHTML = ""; return; }
+
+    // Cerca nel database BIBBIA caricato esternamente
+    const results = BIBBIA.filter(i => 
+        i.n.toLowerCase().includes(query) || 
+        i.c.toLowerCase().includes(query)
+    );
+
+    let html = results.map(i => `
+        <div class="merchant-card">
+            <div class="card-top">
+                <div class="m-icon">${i.i}</div>
+                <div>
+                    <h3 style="font-size:19px;">${i.n}</h3>
+                    <p style="font-size:11px; color:var(--n);">${i.c} • ${i.l}</p>
+                </div>
+            </div>
+            <div class="price-tag">${i.p}${i.p.includes('.') ? '€' : ''}</div>
+            
+            <div class="map-wrapper">
+                <iframe src="https://maps.google.com/maps?q=${encodeURIComponent(i.n + ' ' + i.l)}&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
+            </div>
+
+            <button class="btn-wond" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(i.n + ' ' + i.l)}', '_blank')">NAVIGA ORA</button>
+        </div>
+    `).join('');
+
+    // Radar Globale (se non ci sono partner o per espandere)
+    html += `
+        <div style="text-align:center; padding:30px; border:2px dashed var(--n); border-radius:25px; margin-top:10px;">
+            <p style="color:var(--n); font-size:12px; margin-bottom:15px; font-weight:800; letter-spacing:1px;">CERCHI ALTRO NEL GLOBO?</p>
+            <button class="btn-wond btn-global" onclick="window.open('https://www.google.com/maps/search/${encodeURIComponent(query)}', '_blank')">ATTIVA RADAR GLOBALE</button>
+        </div>
+    `;
+
+    out.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
