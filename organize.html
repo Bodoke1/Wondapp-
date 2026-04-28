@@ -6,14 +6,11 @@
     <title>WONDAPP — OFFICIAL DASHBOARD</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;800&display=swap');
-        
         :root { --n: #00ff88; --g: #ffd700; --d: #050507; --s: #0f0f1a; }
 
-        /* RESET E BASE */
         * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; -webkit-tap-highlight-color: transparent; }
         body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; overflow-x: hidden; }
 
-        /* HEADER E GLOBO WONDAPP */
         .header { padding: 30px 15px; border-bottom: 4px solid var(--n); background: var(--s); text-align: center; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
         .logo { font-family: 'Orbitron'; color: var(--n); font-size: 28px; letter-spacing: 5px; text-shadow: 0 0 15px var(--n); }
         
@@ -28,7 +25,6 @@
             100% { transform: scale(1); box-shadow: 0 0 10px var(--n); } 
         }
 
-        /* MENU RAPIDO (ICONE CON BORDI VERDI) */
         .quick-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 25px; }
         .icon-card { 
             background: var(--s); padding: 18px 5px; border-radius: 18px; 
@@ -41,7 +37,6 @@
         .icon-card:active { transform: scale(0.92); background: var(--n); }
         .icon-card:active p, .icon-card:active span { color: #000; }
 
-        /* INPUT DI RICERCA */
         .search-box { padding: 0 25px 25px; }
         #q { 
             width: 100%; padding: 18px; border-radius: 15px; 
@@ -50,7 +45,6 @@
             box-shadow: inset 0 0 10px rgba(0,255,136,0.1);
         }
 
-        /* RISULTATI RICERCA */
         .results { padding: 0 20px 120px; }
         .merchant-card { 
             background: var(--s); border-radius: 25px; margin-bottom: 30px; 
@@ -69,7 +63,6 @@
 
         .price-tag { font-size: 32px; font-weight: 900; color: var(--n); text-align: right; padding: 10px 25px; }
 
-        /* MAPPA INTEGRATA - IDENTIFICAZIONE WONDAPP */
         .map-wrapper { 
             width: 90%; height: 180px; margin: 10px auto 20px; 
             border: 2px solid var(--n); border-radius: 15px; 
@@ -107,20 +100,34 @@
 <script src="bibbia.js"></script>
 
 <script>
-function setQ(v) { document.getElementById('q').value = v; radar(); }
+function setQ(v) { 
+    document.getElementById('q').value = v; 
+    radar(); 
+}
 
 function radar() {
     const query = document.getElementById('q').value.toLowerCase().trim();
     const out = document.getElementById('view');
-    if(!query) { out.innerHTML = ""; return; }
+    
+    // Controllo se il file bibbia.js è caricato correttamente
+    if (typeof BIBBIA === 'undefined') {
+        out.innerHTML = "<p style='color:red; text-align:center;'>Errore: bibbia.js non trovato!</p>";
+        return;
+    }
 
-    // Cerca nel database BIBBIA caricato esternamente
+    if(!query) { 
+        out.innerHTML = ""; 
+        return; 
+    }
+
     const results = BIBBIA.filter(i => 
         i.n.toLowerCase().includes(query) || 
         i.c.toLowerCase().includes(query)
     );
 
-    let html = results.map(i => `
+    let html = results.map(i => {
+        const destinazione = encodeURIComponent(`${i.n} ${i.l}`);
+        return `
         <div class="merchant-card">
             <div class="card-top">
                 <div class="m-icon">${i.i}</div>
@@ -132,17 +139,17 @@ function radar() {
             <div class="price-tag">${i.p}${i.p.includes('.') ? '€' : ''}</div>
             
             <div class="map-wrapper">
-                <iframe src="https://maps.google.com/maps?q=${encodeURIComponent(i.n + ' ' + i.l)}&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
+                <iframe src="https://maps.google.com/maps?q=${destinazione}&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
             </div>
 
-            <button class="btn-wond" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(i.n + ' ' + i.l)}', '_blank')">NAVIGA ORA</button>
+            <button class="btn-wond" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${destinazione}', '_blank')">NAVIGA ORA</button>
         </div>
-    `).join('');
+        `;
+    }).join('');
 
-    // Radar Globale (se non ci sono partner o per espandere)
     html += `
         <div style="text-align:center; padding:30px; border:2px dashed var(--n); border-radius:25px; margin-top:10px;">
-            <p style="color:var(--n); font-size:12px; margin-bottom:15px; font-weight:800; letter-spacing:1px;">CERCHI ALTRO NEL GLOBO?</p>
+            <p style="color:var(--n); font-size:11px; margin-bottom:15px; font-weight:800; letter-spacing:1px;">CERCHI ALTRO NEL GLOBO?</p>
             <button class="btn-wond btn-global" onclick="window.open('https://www.google.com/maps/search/${encodeURIComponent(query)}', '_blank')">ATTIVA RADAR GLOBALE</button>
         </div>
     `;
