@@ -1,97 +1,73 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WONDAPP SUPREME</title>
+    <title>WONDAPP PROTOTIPO</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;800&display=swap');
-        
-        :root { --n: #00ff88; --d: #050507; --s: #0f0f1a; }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; }
-        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; }
-
-        /* HEADER & GLOBO */
-        .header { padding: 30px 15px; border-bottom: 4px solid var(--n); background: var(--s); text-align: center; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
-        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 28px; letter-spacing: 5px; text-shadow: 0 0 15px var(--n); }
-        .globo { width: 60px; height: 60px; border: 3px solid var(--n); border-radius: 50%; margin: 15px auto; animation: pulse 2s infinite ease-in-out; }
-        @keyframes pulse { 0% { box-shadow: 0 0 10px var(--n); } 50% { box-shadow: 0 0 25px var(--n); } 100% { box-shadow: 0 0 10px var(--n); } }
-
-        /* BARRA DI RICERCA */
-        .search-area { padding: 25px; }
+        /* STILE INTEGRATO - NIENTE CARICAMENTI ESTERNI */
+        body { background: #050507; color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
+        .header { padding: 20px; border-bottom: 3px solid #00ff88; background: #0f0f1a; }
+        .logo { color: #00ff88; font-size: 24px; font-weight: bold; letter-spacing: 3px; }
+        .search-area { padding: 20px; }
         #q { 
-            width: 100%; padding: 22px; border-radius: 50px; 
-            border: 3px solid var(--n); background: #000; color: #fff; 
-            font-size: 18px; text-align: center; font-weight: 800;
-            box-shadow: 0 0 15px rgba(0,255,136,0.2);
+            width: 90%; padding: 15px; border-radius: 30px; 
+            border: 2px solid #00ff88; background: #000; color: #fff; 
+            font-size: 18px; text-align: center;
         }
-
-        /* CARD RISULTATI */
-        .results { padding: 0 20px 100px; }
-        .m-card { background: var(--s); border-radius: 25px; margin-bottom: 30px; border: 2px solid var(--n); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .card-top { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #222; }
-        .m-icon { width: 60px; height: 60px; border: 2px solid var(--n); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; background: #000; }
-        .price { font-size: 34px; font-weight: 900; color: var(--n); text-align: right; padding: 15px 25px; }
-        .m-map { width: 92%; height: 180px; margin: 0 auto 20px; border: 2px solid var(--n); border-radius: 15px; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg); }
-        .btn { width: 100%; padding: 22px; background: var(--n); color: #000; font-family: 'Orbitron'; font-weight: 900; text-transform: uppercase; cursor: pointer; }
+        .results { padding: 20px; }
+        .card { 
+            background: #0f0f1a; border-radius: 20px; border: 2px solid #00ff88; 
+            margin-bottom: 20px; padding: 15px; text-align: left;
+        }
+        .price { color: #00ff88; font-size: 28px; font-weight: bold; }
+        .btn { 
+            width: 100%; padding: 15px; background: #00ff88; color: #000; 
+            border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">WONDAPP</div>
-    <div class="globo"></div>
 </div>
 
 <div class="search-area">
-    <input type="text" id="q" placeholder="DIGITA PER CERCARE..." onkeyup="radar()" autocomplete="off">
+    <input type="text" id="q" placeholder="SCRIVI ENI O MARIO..." onkeyup="radar()">
 </div>
 
 <div id="view" class="results"></div>
 
 <script>
-/* DATABASE INTEGRATO - ZERO ERRORI */
-var BIBBIA = [
-  {"n": "ENI STATION SGM", "c": "Benzinaio", "l": "Viale Lombardia, SGM", "p": "1.759", "i": "⛽"},
-  {"n": "MARIO IL FABBRO", "c": "Artigiano", "l": "Via Roma 10, SGM", "p": "PRONTO", "i": "🔧"},
-  {"n": "PANIFICIO STORICO", "c": "Alimentari", "l": "Piazza Centrale, SGM", "p": "1.15", "i": "🥖"}
-];
+    // DATABASE BLINDATO
+    var BIBBIA = [
+        {n: "ENI STATION SGM", c: "Benzinaio", p: "1.759", i: "⛽"},
+        {n: "MARIO IL FABBRO", c: "Artigiano", p: "PRONTO", i: "🔧"},
+        {n: "PANIFICIO STORICO", c: "Alimentari", p: "1.15", i: "🥖"}
+    ];
 
-function radar() {
-    var query = document.getElementById('q').value.toLowerCase().trim();
-    var out = document.getElementById('view');
-    
-    if (query === "") { 
-        out.innerHTML = ""; 
-        return; 
-    }
+    function radar() {
+        var val = document.getElementById('q').value.toUpperCase();
+        var out = document.getElementById('view');
+        out.innerHTML = ""; // Pulisce tutto ogni volta che scrivi
+        
+        if (val.length < 1) return;
 
-    var h = "";
-    for (var i = 0; i < BIBBIA.length; i++) {
-        var shop = BIBBIA[i];
-        if (shop.n.toLowerCase().indexOf(query) > -1 || shop.c.toLowerCase().indexOf(query) > -1) {
-            var dest = encodeURIComponent(shop.n + " " + shop.l);
-            
-            h += '<div class="m-card">' +
-                    '<div class="card-top">' +
-                        '<div class="m-icon">' + shop.i + '</div>' +
-                        '<div>' +
-                            '<h3 style="font-size:20px;">' + shop.n + '</h3>' +
-                            '<p style="font-size:11px; color:#00ff88;">' + shop.c.toUpperCase() + '</p>' +
-                        '</div>' +
-                    '</div>' +
+        for (var i = 0; i < BIBBIA.length; i++) {
+            var shop = BIBBIA[i];
+            // Se il nome contiene quello che scrivi...
+            if (shop.n.indexOf(val) > -1 || shop.c.toUpperCase().indexOf(val) > -1) {
+                out.innerHTML += '<div class="card">' +
+                    '<div style="font-size:30px">' + shop.i + '</div>' +
+                    '<h2>' + shop.n + '</h2>' +
+                    '<p>' + shop.c + '</p>' +
                     '<div class="price">' + shop.p + '</div>' +
-                    '<div class="m-map">' +
-                        '<iframe src="https://www.google.com/maps?q=' + dest + '&output=embed"></iframe>' +
-                    '</div>' +
-                    '<button class="btn" onclick="window.open(\'https://www.google.com/maps/search/?api=1&query=' + dest + '\')">NAVIGA ORA</button>' +
-                 '</div>';
+                    '<div class="btn">NAVIGA ORA</div>' +
+                '</div>';
+            }
         }
     }
-    out.innerHTML = h;
-}
 </script>
+
 </body>
 </html>
