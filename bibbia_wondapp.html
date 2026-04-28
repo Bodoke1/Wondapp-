@@ -2,95 +2,104 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WONDAPP SYSTEM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WONDAPP — ULTIMATE EDITION</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;800&display=swap');
         :root { --n: #00ff88; --g: #ffd700; --d: #050507; --s: #0f0f1a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; }
-        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; }
-        
-        .header { padding: 20px; border-bottom: 3px solid var(--n); background: var(--s); text-align: center; }
-        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 22px; letter-spacing: 2px; }
 
-        .search-box { padding: 20px; background: var(--s); }
-        /* BARRA DI RICERCA POTENZIATA */
-        #q { width: 100%; padding: 18px; border-radius: 12px; border: 2px solid var(--n); background: #000; color: #fff; font-size: 18px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; overflow-x: hidden; touch-action: manipulation; }
 
-        .results { padding: 20px; }
-        .card { background: var(--s); border-radius: 20px; padding: 20px; margin-bottom: 20px; border-left: 6px solid var(--g); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .header { padding: 15px; border-bottom: 2px solid var(--n); background: var(--s); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
+        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 20px; letter-spacing: 2px; }
+        .badge { font-size: 9px; color: var(--n); border: 1px solid var(--n); padding: 3px 8px; border-radius: 5px; font-weight: 800; text-transform: uppercase; }
+
+        /* MENU ICONE RAPIDE */
+        .quick-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; background: #000; }
+        .icon-btn { background: var(--s); padding: 15px 5px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #222; transition: 0.1s; }
+        .icon-btn:active { transform: scale(0.92); border-color: var(--n); background: #111; }
+        .icon-btn span { display: block; font-size: 26px; margin-bottom: 5px; }
+        .icon-btn p { font-size: 10px; font-weight: 800; color: #ccc; text-transform: uppercase; }
+
+        /* SEARCH AREA */
+        .search-area { padding: 15px 20px; background: var(--s); }
+        #q { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid #333; background: #000; color: #fff; font-size: 16px; }
+        #q:focus { border-color: var(--n); box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+
+        /* RISULTATI */
+        .results { padding: 15px; padding-bottom: 150px; min-height: 55vh; }
+        .card { background: var(--s); border-radius: 18px; padding: 20px; margin-bottom: 15px; border-left: 6px solid #333; position: relative; animation: pop 0.2s ease-out; }
+        @keyframes pop { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
         
-        .price { font-size: 32px; font-weight: 800; color: var(--n); text-align: right; margin: 10px 0; }
-        .btn { width: 100%; padding: 18px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-go { background: var(--n); color: #000; }
+        .card.GOLD { border-left-color: var(--g); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .card.GOLD::after { content: "GOLD"; position: absolute; top: 12px; right: 12px; font-size: 9px; color: var(--g); font-family: 'Orbitron'; border: 1px solid var(--g); padding: 2px 6px; border-radius: 4px; font-weight: 900; }
+
+        .price-tag { font-size: 30px; font-weight: 800; color: var(--n); text-align: right; margin-top: 10px; }
+        
+        .btn { width: 100%; padding: 18px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+        .btn-go { background: var(--n); color: #000; margin-top: 15px; }
         .btn-radar { background: transparent; border: 2px solid var(--n); color: var(--n); margin-top: 30px; }
     </style>
 </head>
 <body>
 
-<div class="header"><div class="logo">WONDAPP</div></div>
-
-<div class="search-box">
-    <input type="text" id="q" placeholder="Scrivi qui (es. Pizza o Agip)..." onkeyup="cerca()">
+<div class="header">
+    <div class="logo">WONDAPP</div>
+    <div class="badge">SISTEMA ATTIVO</div>
 </div>
 
-<div id="view" class="results"></div>
+<div class="quick-menu">
+    <div class="icon-btn" onclick="f('Benzinaio')"><span>⛽</span><p>Benzina</p></div>
+    <div class="icon-btn" onclick="f('Pizzeria')"><span>🍕</span><p>Pizza</p></div>
+    <div class="icon-btn" onclick="f('Spesa')"><span>🛒</span><p>Spesa</p></div>
+    <div class="icon-btn" onclick="f('Farmacia')"><span>💊</span><p>Salute</p></div>
+    <div class="icon-btn" onclick="f('Bar')"><span>☕</span><p>Bar</p></div>
+    <div class="icon-btn" onclick="f('Hotel')"><span>🏨</span><p>Hotel</p></div>
+</div>
+
+<div class="search-area">
+    <input type="text" id="q" placeholder="Cerca o attiva Radar..." onkeyup="e()" autocomplete="off">
+</div>
+
+<div id="d" class="results"></div>
 
 <script>
-// LA TUA BIBBIA DATI
-const BIBBIA = [
-    { nome:"ENI STATION SGM", cat:"Carburante", loc:"Viale Lombardia, San Giuliano M.", prezzo:"1.759", tags:["benzina","agip","eni","gasolio"] },
-    { nome:"PIZZERIA DA MIMMO", cat:"Ristorazione", loc:"Via Torino 45, Milano", prezzo:"9.00", tags:["pizza","ristorante","cena"] }
+const DATA = [
+    { n:"ENI STATION SGM", c:"Benzinaio", l:"San Giuliano Milanese", p:"1.759", f:"GOLD", t:["agip","eni","carburante"] },
+    { n:"PIZZERIA DA MIMMO", c:"Pizzeria", l:"Milano, Via Torino", p:"9.00", f:"GOLD", t:["pizza","mangiare"] }
 ];
 
-function cerca() {
-    const query = document.getElementById('q').value.toLowerCase().trim();
-    const contenitore = document.getElementById('view');
-    
-    if (query === "") {
-        contenitore.innerHTML = "";
-        return;
-    }
+function f(v) { document.getElementById('q').value = v; e(); }
 
-    // FILTRO AGGRESSIVO: Cerca ovunque
-    const filtrati = BIBBIA.filter(item => 
-        item.nome.toLowerCase().includes(query) || 
-        item.cat.toLowerCase().includes(query) || 
-        item.tags.some(t => t.includes(query))
-    );
+function e() {
+    const q = document.getElementById('q').value.toLowerCase().trim();
+    const b = document.getElementById('d');
+    if (!q) { b.innerHTML = ""; return; }
 
-    let output = "";
+    const m = DATA.filter(i => (i.n+i.c+(i.t?i.t.join(''):'')).toLowerCase().includes(q));
+    let h = "";
 
-    if (filtrati.length > 0) {
-        // MOSTRA I VIP TROVATI
-        output = filtrati.map(item => `
-            <div class="card">
-                <div style="font-size:12px; color:var(--n); font-weight:800;">${item.cat.toUpperCase()}</div>
-                <div style="font-size:22px; font-weight:800; margin:5px 0;">${item.nome}</div>
-                <div style="font-size:13px; color:#888;">📍 ${item.loc}</div>
-                <div class="price">${item.prezzo}€</div>
-                <button class="btn btn-go" onclick="vai('${item.nome}, ${item.loc}')">NAVIGA ORA</button>
+    if (m.length > 0) {
+        h = m.map(i => `
+            <div class="card ${i.f === 'GOLD' ? 'GOLD' : ''}">
+                <div style="font-size:10px; color:#888; text-transform:uppercase;">${i.c}</div>
+                <div style="font-size:19px; font-weight:800; margin:5px 0;">${i.n}</div>
+                <div style="font-size:11px; color:#666; margin-bottom:10px;">📍 ${i.l}</div>
+                <div class="price-tag">${i.p}${i.p.includes('.') ? '€' : ''}</div>
+                <button class="btn btn-go" onclick="n('${i.n}, ${i.l}')">Naviga Ora</button>
             </div>
         `).join('');
-    } else {
-        // SE NON TROVA NULLA NEI VIP
-        output = `<div style="text-align:center; padding:20px; color:#666;">Nessun Merchant VIP trovato...</div>`;
     }
 
-    // AGGIUNGE SEMPRE IL RADAR GLOBALE (Uber Style)
-    output += `
-        <button class="btn btn-radar" onclick="vai('${query}')">
-            ATTIVA RADAR GLOBALE PER: ${query.toUpperCase()}
-        </button>
-    `;
-
-    contenitore.innerHTML = output;
+    h += `<button class="btn btn-radar" onclick="n('${q}')">🔍 ATTIVA RADAR: ${q.toUpperCase()}</button>`;
+    b.innerHTML = h;
 }
 
-function vai(destinazione) {
-    window.open("https://www.google.com/maps/search/" + encodeURIComponent(destinazione), '_blank');
+function n(d) {
+    if(!d || d.length < 2) return;
+    window.open("https://www.google.com/maps/search/" + encodeURIComponent(d), '_blank');
 }
 </script>
-
 </body>
 </html>
