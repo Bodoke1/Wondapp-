@@ -1,69 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>WONDAPP PROTOTIPO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WONDAPP SUPREME</title>
     <style>
-        /* STILE INTEGRATO - NIENTE CARICAMENTI ESTERNI */
-        body { background: #050507; color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
-        .header { padding: 20px; border-bottom: 3px solid #00ff88; background: #0f0f1a; }
-        .logo { color: #00ff88; font-size: 24px; font-weight: bold; letter-spacing: 3px; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;800&display=swap');
+        :root { --n: #00ff88; --d: #050507; --s: #0f0f1a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; }
+        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; text-align: center; }
+        
+        .header { padding: 30px 15px; border-bottom: 4px solid var(--n); background: var(--s); margin-bottom: 20px; }
+        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 28px; letter-spacing: 5px; text-shadow: 0 0 15px var(--n); }
+        
         .search-area { padding: 20px; }
         #q { 
-            width: 90%; padding: 15px; border-radius: 30px; 
-            border: 2px solid #00ff88; background: #000; color: #fff; 
-            font-size: 18px; text-align: center;
+            width: 90%; max-width: 500px; padding: 20px; border-radius: 50px; 
+            border: 3px solid var(--n); background: #000; color: #fff; 
+            font-size: 18px; text-align: center; font-weight: 800;
         }
-        .results { padding: 20px; }
-        .card { 
-            background: #0f0f1a; border-radius: 20px; border: 2px solid #00ff88; 
-            margin-bottom: 20px; padding: 15px; text-align: left;
+
+        .results { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .m-card { 
+            background: var(--s); border-radius: 25px; margin-bottom: 25px; 
+            border: 2px solid var(--n); padding: 20px; text-align: left;
+            box-shadow: 0 0 20px rgba(0,255,136,0.1);
         }
-        .price { color: #00ff88; font-size: 28px; font-weight: bold; }
+        .price { font-size: 32px; font-weight: 900; color: var(--n); margin: 10px 0; }
         .btn { 
-            width: 100%; padding: 15px; background: #00ff88; color: #000; 
-            border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer;
+            width: 100%; padding: 18px; background: var(--n); color: #000; 
+            font-family: 'Orbitron'; font-weight: 900; border-radius: 15px; cursor: pointer; 
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo">WONDAPP</div>
-</div>
+<div class="header"><div class="logo">WONDAPP</div></div>
 
 <div class="search-area">
-    <input type="text" id="q" placeholder="SCRIVI ENI O MARIO..." onkeyup="radar()">
+    <input type="text" id="q" placeholder="SCRIVI ENI..." oninput="radar()">
 </div>
 
 <div id="view" class="results"></div>
 
 <script>
-    // DATABASE BLINDATO
+    // DATABASE INTEGRATO - ZERO COLLEGAMENTI ESTERNI
     var BIBBIA = [
-        {n: "ENI STATION SGM", c: "Benzinaio", p: "1.759", i: "⛽"},
-        {n: "MARIO IL FABBRO", c: "Artigiano", p: "PRONTO", i: "🔧"},
-        {n: "PANIFICIO STORICO", c: "Alimentari", p: "1.15", i: "🥖"}
+        {nome: "ENI STATION SGM", cat: "Benzinaio", prezzo: "1.759", icona: "⛽"},
+        {nome: "MARIO IL FABBRO", cat: "Artigiano", prezzo: "PRONTO", icona: "🔧"},
+        {nome: "PANIFICIO STORICO", cat: "Alimentari", prezzo: "1.15", icona: "🥖"}
     ];
 
     function radar() {
-        var val = document.getElementById('q').value.toUpperCase();
-        var out = document.getElementById('view');
-        out.innerHTML = ""; // Pulisce tutto ogni volta che scrivi
+        var input = document.getElementById('q').value.toUpperCase();
+        var contenitore = document.getElementById('view');
+        contenitore.innerHTML = ""; // Pulisce lo schermo
         
-        if (val.length < 1) return;
+        if (input.length === 0) return;
 
         for (var i = 0; i < BIBBIA.length; i++) {
-            var shop = BIBBIA[i];
-            // Se il nome contiene quello che scrivi...
-            if (shop.n.indexOf(val) > -1 || shop.c.toUpperCase().indexOf(val) > -1) {
-                out.innerHTML += '<div class="card">' +
-                    '<div style="font-size:30px">' + shop.i + '</div>' +
-                    '<h2>' + shop.n + '</h2>' +
-                    '<p>' + shop.c + '</p>' +
-                    '<div class="price">' + shop.p + '</div>' +
-                    '<div class="btn">NAVIGA ORA</div>' +
-                '</div>';
+            var dati = BIBBIA[i];
+            
+            // CONTROLLO RAGGI X: Se il nome o la categoria contengono il testo scritto
+            if (dati.nome.indexOf(input) > -1 || dati.cat.toUpperCase().indexOf(input) > -1) {
+                
+                var card = document.createElement('div');
+                card.className = 'm-card';
+                card.innerHTML = 
+                    '<div style="font-size:40px">' + dati.icona + '</div>' +
+                    '<h3>' + dati.nome + '</h3>' +
+                    '<p style="color:#00ff88">' + dati.cat + '</p>' +
+                    '<div class="price">' + dati.prezzo + '</div>' +
+                    '<button class="btn" onclick="window.open(\'https://www.google.it/maps/search/\' + encodeURIComponent(\'' + dati.nome + '\'))">NAVIGA ORA</button>';
+                
+                contenitore.appendChild(card);
             }
         }
     }
