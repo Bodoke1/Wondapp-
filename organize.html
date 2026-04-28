@@ -1,170 +1,114 @@
-Eccola qui. Copia tutto questo blocco, cancella quello che hai in **`organize.html`** e incolla questo. 
-
-Ho incluso il **motore di ricerca territoriale** e la **mappa logica** così non perdi un colpo. Se un cliente cerca un negozio, WondApp sputa fuori l'indirizzo e il tasto per andarci.
-
-```html
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WONDAPP — OPERATIVA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WONDAPP — SUPREME</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;600;800&display=swap');
         
-        :root { 
-            --green:#00ff88; 
-            --dark:#0a0a0f; 
-            --card:#12121a; 
-            --border:#1e1e2e; 
-            --text:#e0e0f0; 
-            --muted:#666680; 
-        }
+        :root { --n: #00ff88; --g: #ffd700; --d: #050507; --s: #0f0f1a; }
 
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--dark); color:var(--text); font-family:'Exo 2',sans-serif; padding-bottom:100px; overflow-x:hidden; }
+        /* RESET TOTALE - ELIMINA CONFLITTI */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; border: none; outline: none; }
+        body { background: var(--d); color: #fff; font-family: 'Exo 2', sans-serif; overflow-x: hidden; touch-action: manipulation; }
 
-        /* HEADER */
-        .topbar { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(10,10,15,0.98); backdrop-filter:blur(10px); z-index:100; }
-        .logo { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900; color:var(--green); letter-spacing:1px; }
-        .logo span { color:#fff; }
+        /* INTERFACCIA FISSA */
+        .header { padding: 25px 20px; border-bottom: 4px solid var(--n); text-align: center; background: var(--s); position: sticky; top: 0; z-index: 9999; box-shadow: 0 10px 30px #000; }
+        .logo { font-family: 'Orbitron'; color: var(--n); font-size: 26px; letter-spacing: 4px; text-shadow: 0 0 15px rgba(0,255,136,0.6); }
+        .monitor { background: rgba(0,255,136,0.1); padding: 10px; font-size: 10px; text-align: center; border-bottom: 1px solid var(--n); color: var(--n); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* RICERCA */
-        .search-hero { padding:20px; background:linear-gradient(180deg, rgba(0,255,136,0.08) 0%, transparent 100%); }
-        .search-box { display:flex; align-items:center; gap:12px; background:var(--card); border:2px solid var(--green); border-radius:18px; padding:15px; box-shadow: 0 0 25px rgba(0,255,136,0.15); }
-        .search-box input { flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:18px; font-weight:600; }
+        /* MOTORE DI RICERCA */
+        .search-container { padding: 25px 20px; background: linear-gradient(180deg, var(--s) 0%, var(--d) 100%); }
+        .search-container input { width: 100%; padding: 20px; border-radius: 15px; border: 2px solid var(--n); background: #000; color: #fff; font-size: 18px; box-shadow: 0 0 15px rgba(0,255,136,0.1); transition: 0.3s; }
+        .search-container input:focus { border-color: #fff; box-shadow: 0 0 30px rgba(0,255,136,0.4); }
 
-        /* PAGINE E RISULTATI */
-        .page { display:none; padding:0 20px; animation: slideUp 0.3s ease-out; }
-        .page.active { display:block; }
+        /* RISULTATI RADAR */
+        .results { padding: 10px 20px 120px 20px; max-width: 800px; margin: 0 auto; }
+        .card { background: var(--s); border-radius: 25px; padding: 25px; margin-bottom: 30px; border-left: 8px solid #333; position: relative; animation: show 0.3s ease-out; }
+        @keyframes show { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .result-card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:18px; display:flex; align-items:center; gap:15px; margin-bottom:15px; border-left: 4px solid var(--green); }
-        .res-icon { font-size:28px; min-width:55px; height:55px; background:rgba(255,255,255,0.03); border-radius:15px; display:flex; align-items:center; justify-content:center; border: 1px solid var(--border); }
-        .res-info { flex:1; }
-        .res-name { font-weight:700; color:#fff; font-size:17px; margin-bottom:3px; }
-        .res-details { font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:1px; }
-        .res-geo { display:flex; align-items:center; gap:6px; margin-top:8px; font-size:13px; color:var(--green); font-weight:600; }
+        .card.GOLD { border-left-color: var(--g); box-shadow: 0 20px 50px #000; }
+        .card.GOLD::after { content: 'VIP'; position: absolute; top: 15px; right: 20px; color: var(--g); font-family: 'Orbitron'; font-size: 10px; border: 1px solid var(--g); padding: 4px 10px; border-radius: 8px; font-weight: 900; }
 
-        .btn-go { background:var(--green); color:#000; border:none; padding:12px 20px; border-radius:14px; font-weight:900; font-family:'Orbitron'; cursor:pointer; font-size:11px; }
+        .price-row { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; margin: 20px 0; display: flex; justify-content: flex-end; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .p-new { color: var(--n); font-weight: 900; font-size: 36px; text-shadow: 0 0 20px rgba(0,255,136,0.5); }
+        
+        /* PULSANTI */
+        .btn { background: var(--n); color: #000; padding: 22px; border-radius: 18px; width: 100%; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 16px; transition: 0.2s; }
+        .btn:active { transform: scale(0.97); filter: brightness(1.2); }
+        .btn-world { background: transparent; color: var(--n); border: 2px solid var(--n); margin-top: 30px; }
 
-        /* NAVIGAZIONE BASSA */
-        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border); display:flex; padding:15px 0 30px; z-index:100; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
-        .nav-item { flex:1; text-align:center; opacity:0.3; transition:0.3s; cursor:pointer; }
-        .nav-item.active { opacity:1; color:var(--green); }
-        .nav-icon { font-size:24px; margin-bottom:4px; }
-        .nav-lbl { font-size:10px; font-weight:800; text-transform:uppercase; }
-
-        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .label { font-size: 12px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
 
-<div class="topbar">
-    <div class="logo">WOND<span>APP</span></div>
-    <div style="font-size:11px; font-weight:700; color:var(--green);">📡 GEOLOC ATTIVA</div>
+<div class="header"><div class="logo">WONDAPP</div></div>
+<div class="monitor">SHIELD 20X — RADAR GLOBALE ATTIVO</div>
+
+<div class="search-container">
+    <input type="text" id="sIn" placeholder="COSA CERCHI VICINO A TE?" oninput="wond.search(this.value)" autocomplete="off" spellcheck="false">
 </div>
 
-<div id="searchSection" class="search-hero">
-    <div class="search-box">
-        <span style="font-size:20px;">🔎</span>
-        <input type="text" id="mainSearch" placeholder="Cerca un posto nella Bibbia..." oninput="wond.find(this.value)">
-    </div>
-</div>
-
-<div id="homePage" class="page active">
-    <div id="resultsList" style="margin-top:10px;">
-        <p style="text-align:center; color:var(--muted); margin-top:50px; font-weight:600;">WondApp è pronta. Scrivi cosa cerchi.</p>
-    </div>
-</div>
-
-<div id="mapPage" class="page">
-    <div style="margin-top:30px; text-align:center;">
-        <div style="font-size:50px; margin-bottom:20px;">📍</div>
-        <h2 style="font-family:'Orbitron'; color:var(--green);">TRACKING ATTIVO</h2>
-        <p style="color:var(--muted); margin-top:15px; line-height:1.6;">La Bibbia sta geolocalizzando la tua posizione per calcolare il percorso più rapido.</p>
-    </div>
-</div>
-
-<div id="aiPage" class="page">
-    <div style="margin-top:30px; background:var(--card); padding:25px; border-radius:20px; border:1px solid var(--green);">
-        <h2 style="font-family:'Orbitron'; color:var(--green); font-size:18px;">MEMORI-AI</h2>
-        <p style="margin-top:15px; font-size:14px; line-height:1.6;">Analisi predittiva in corso: sto imparando i tuoi negozi preferiti per anticipare le tue ricerche.</p>
-    </div>
-</div>
-
-<nav class="bottom-nav">
-    <div class="nav-item active" onclick="wond.page('home', this)">
-        <div class="nav-icon">🛍️</div><div class="nav-lbl">Ordina</div>
-    </div>
-    <div class="nav-item" onclick="wond.page('map', this)">
-        <div class="nav-icon">📍</div><div class="nav-lbl">Mappa</div>
-    </div>
-    <div class="nav-item" onclick="wond.page('ai', this)">
-        <div class="nav-icon">🤖</div><div class="nav-lbl">AI</div>
-    </div>
-</nav>
+<div id="res" class="results"></div>
 
 <script>
+/** * WONDAPP BIBLE: MASTER CODE 
+ * Progettato per essere inarrestabile e senza limiti.
+ */
+const BIBLE = {
+    "stores": [
+        { "n":"ENI STATION SGM", "c":"Carburante", "a":"Viale Lombardia, San Giuliano M.", "f":"GOLD", "pw":"1.759", "t":["benzina","agip","eni","carburante"] },
+        { "n":"PIZZERIA DA MIMMO", "c":"Ristorazione", "a":"Via Torino 45, Milano", "f":"GOLD", "pw":"9.00", "t":["pizza","cibo","ristorante"] }
+    ]
+};
+
 const wond = {
-    // LA BIBBIA DI WONDAPP (Aggiungi qui tutti i negozi che vuoi)
-    bibbia: [
-        {nome:'ENI Service Station', cat:'Carburante', icon:'⛽', via:'Corso Garibaldi 12, Milano', tags:['benzina','eni','gasolio','rifornimento']},
-        {nome:'Q8 Self Service', cat:'Carburante', icon:'⛽', via:'Via Melchiorre Gioia, Milano', tags:['benzina','q8','gasolio']},
-        {nome:'Farmacia Centrale H24', cat:'Salute', icon:'💊', via:'Piazza Duomo 1, Milano', tags:['farmacia','medicina','farmaco','notte']},
-        {nome:'Pizzeria Da Mimmo', cat:'Ristorante', icon:'🍕', via:'Via Torino 45, Milano', tags:['pizza','ristorante','cibo','food']},
-        {nome:'Esselunga Supermarket', cat:'Spesa', icon:'🛒', via:'Viale Piave, Milano', tags:['spesa','supermercato','cibo','alimentari']},
-        {nome:'Taxi Point Centrale', cat:'Trasporto', icon:'🚕', via:'Piazza Duca d\'Aosta, Milano', tags:['taxi','auto','aeroporto','stazione']},
-        {nome:'Idraulico Express', cat:'Servizi Casa', icon:'🔧', via:'Via Padova 22, Milano', tags:['idraulico','casa','emergenza','riparazione']}
-    ],
+    search: function(v) {
+        // Normalizzazione input: elimina errori di digitazione e caratteri speciali
+        const q = v.toLowerCase().trim().replace(/[^\w\s]/gi, '');
+        const o = document.getElementById('res');
+        if(!q) { o.innerHTML = ""; return; }
 
-    // Cambio pagina fluido
-    page: function(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id + 'Page').classList.add('active');
-        el.classList.add('active');
-        // Nascondi barra ricerca se non siamo in home
-        document.getElementById('searchSection').style.display = (id === 'home') ? 'block' : 'none';
+        // Filtro rapido Merchant VIP Gold
+        const f = BIBLE.stores.filter(s => 
+            s.n.toLowerCase().includes(q) || 
+            s.c.toLowerCase().includes(q) || 
+            s.t.some(t => t.includes(q))
+        ).sort((a,b) => (a.f === 'GOLD' ? -1 : 1));
+
+        let html = f.map(s => `
+            <div class="card ${s.f}">
+                <span class="label" style="color:var(--n)">${s.c}</span>
+                <span class="label">📍 ${s.a}</span>
+                <div style="font-weight:900; font-size:28px; margin:10px 0; ${s.f==='GOLD'?'color:var(--g)':'' }">${s.n}</div>
+                <div class="price-row"><span class="p-new">${s.pw}€</span></div>
+                <button class="btn" onclick="wond.go('${s.n.replace(/'/g, "\\'")}, ${s.a.replace(/'/g, "\\'")}')">NAVIGA</button>
+            </div>
+        `).join('');
+
+        // TASTO MONDO: Il radar illimitato che trova tutto ovunque
+        html += `
+            <div style="text-align:center; padding-top:40px; border-top:1px dashed #333;">
+                <span class="label">NON È NELLA LISTA VIP?</span>
+                <button class="btn btn-world" onclick="wond.go('${q.replace(/'/g, "\\'")}')">CERCA "${q.toUpperCase()}" NEL MONDO</button>
+                <p style="font-size:10px; color:#444; margin-top:20px; font-weight:bold;">IL RADAR USA IL TUO GPS PER TROVARE IL MEGLIO</p>
+            </div>
+        `;
+        o.innerHTML = html;
     },
-
-    // Motore di ricerca con geolocalizzazione
-    find: function(val) {
-        const q = val.toLowerCase().trim();
-        const list = document.getElementById('resultsList');
-        if(q.length < 1) { 
-            list.innerHTML = '<p style="text-align:center; color:var(--muted); margin-top:50px; font-weight:600;">WondApp è pronta. Scrivi cosa cerchi.</p>'; 
-            return; 
-        }
-
-        const matches = this.bibbia.filter(item => 
-            item.nome.toLowerCase().includes(q) || 
-            item.cat.toLowerCase().includes(q) || 
-            item.tags.some(t => t.includes(q))
-        );
-
-        if(matches.length > 0) {
-            list.innerHTML = matches.map(item => `
-                <div class="result-card">
-                    <div class="res-icon">${item.icon}</div>
-                    <div class="res-info">
-                        <div class="res-details">${item.cat}</div>
-                        <div class="res-name">${item.nome}</div>
-                        <div class="res-geo">📍 ${item.via}</div>
-                    </div>
-                    <button class="btn-go" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.nome + ' ' + item.via)}')">VAI</button>
-                </div>
-            `).join('');
-        } else {
-            list.innerHTML = `
-                <div style="text-align:center; padding:50px;">
-                    <div style="font-size:40px; margin-bottom:10px;">🚫</div>
-                    <p style="color:var(--green); font-weight:800; font-family:'Orbitron';">NON TROVATO NELLA BIBBIA</p>
-                    <p style="color:var(--muted); font-size:12px; margin-top:5px;">Verifica i tag o l'indirizzo.</p>
-                </div>`;
-        }
+    go: function(dest) {
+        if(!dest) return;
+        // Protocollo universale navigazione diretta GPS
+        const target = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(dest);
+        window.open(target, '_blank');
     }
 };
+
+// Disabilita refresh accidentale su tasto Invio
+document.addEventListener('keydown', function(e) { if(e.key === 'Enter') e.preventDefault(); });
 </script>
+
 </body>
 </html>
-```
