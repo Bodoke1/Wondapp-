@@ -1,7 +1,11 @@
-function escHtml(s){
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+function showToast(msg){
+  const t = document.getElementById("toast");
+  if(!t) return;
+
+  t.textContent = msg;
+  t.classList.add("show");
+
+  setTimeout(() => {
+    t.classList.remove("show");
+  }, 2800);
 }
