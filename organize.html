@@ -1047,7 +1047,7 @@ const osmMap = [
   { keys:['bici','bicicletta','bicycle','ciclista','bike','riparazione bici'], q:`node["shop"="bicycle"]` },
   { keys:['fiori','fiorista','flowers','rose','bouquet','florist'],         q:`node["shop"="florist"]` },
   { keys:['parrucchiere','barber','capelli','barbiere','hairdresser','salon','salone'], q:`node["shop"~"hairdresser|barber"]` },
-  { keys:['lavanderia','laundry','lavaggio','tintoria'],                    q:`node["shop"~"laundry|dry_cleaning"]` },
+  { keys:['lavanderia','laundry','tintoria','stireria'],                         q:`node["shop"~"laundry|dry_cleaning"]` },
   { keys:['veterinario','vet','animali','cane','gatto'],                    q:`node["amenity"="veterinary"]` },
   { keys:['banca','bank','bancomat','atm'],                                 q:`node["amenity"~"bank|atm"]` },
   { keys:['tabaccheria','tabacco','tabacchi','sigarette','gratta','lotto'], q:`node["shop"="tobacco"]` },
@@ -1055,7 +1055,10 @@ const osmMap = [
   { keys:['gelateria','gelato','ice cream','gelati'],                       q:`node["amenity"~"ice_cream|cafe"]["name"~"gelat",i]` },
   { keys:['ospedale','hospital','pronto soccorso','emergenza'],             q:`node["amenity"="hospital"]` },
   { keys:['dentista','dentist','dente','odontoiatra'],                      q:`node["amenity"="dentist"]` },
-  { keys:['meccanico','car repair','auto','automobile','officina','carrozzeria'], q:`node["shop"~"car_repair|car"]` },
+  { keys:['autolavaggio','car wash','car_wash','lavaggio auto','autolavaggi'],  q:`node["amenity"="car_wash"]` },
+  { keys:['gommista','pneumatici','gomme','tyre','tire'],                       q:`node["shop"="tyres"]` },
+  { keys:['autofficina','officina','meccanico','carrozzeria','car repair','auto repair'], q:`node["shop"="car_repair"]` },
+  { keys:['concessionaria','auto nuove','auto usate','dealer','car dealer'],    q:`node["shop"~"car|car_dealer"]` },
   { keys:['hotel','albergo','hostel','b&b','bed and breakfast','dormire'],  q:`node["tourism"~"hotel|hostel|guest_house"]` },
   { keys:['posta','poste','corriere','spedizione','postale'],               q:`node["amenity"="post_office"]` },
   { keys:['palestra','gym','fitness','sport','piscina'],                    q:`node["leisure"~"fitness_centre|sports_centre|swimming_pool"]` },
@@ -1076,12 +1079,20 @@ const osmMap = [
 
 function getOsmQuery(searchTerm) {
   const q = searchTerm.toLowerCase().trim();
+  // Try exact match first, then word-boundary match
   for (const entry of osmMap) {
-    if (entry.keys.some(k => q.includes(k) || k.includes(q))) {
-      return entry.q;
-    }
+    // Exact match
+    if (entry.keys.some(k => k === q)) return entry.q;
   }
-  return null; // search by name fallback
+  for (const entry of osmMap) {
+    // Query starts with key or key is fully contained as a word
+    if (entry.keys.some(k => {
+      if (k.length < 4) return false; // skip very short keys to avoid false positives
+      const regex = new RegExp(`(^|\\s)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(\\s|$)`);
+      return regex.test(q) || q === k;
+    })) return entry.q;
+  }
+  return null;
 }
 
 // ══════════════════════════════════════
