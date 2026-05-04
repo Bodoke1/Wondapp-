@@ -45,7 +45,7 @@ body {
 /* ── TOAST ── */
 #toast {
   position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
-  background: var(--primary); color: #fff; padding: 12px 24px; border-radius: 40px;
+  background: var(--primary); color: #062a16; padding: 12px 24px; border-radius: 40px;
   font-size: 14px; font-weight: 600; z-index: 9999; transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
   white-space: nowrap; pointer-events: none;
 }
@@ -73,7 +73,7 @@ body {
   font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 20px;
   cursor: pointer; transition: all 0.2s; font-family: var(--font-body);
 }
-.lang-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.lang-btn.active { background: var(--primary); color: #062a16; border-color: var(--primary); }
 
 /* ── MAIN CONTENT ── */
 .main-content {
@@ -121,7 +121,7 @@ body {
   font-family: var(--font-body); font-size: 15px; font-weight: 600;
   transition: all 0.2s; width: 100%; margin-bottom: 10px;
 }
-.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary { background: var(--primary); color: #062a16; }
 .btn-primary:active { background: var(--primary-dark); transform: scale(0.98); }
 .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
 .btn-outline:active { border-color: var(--primary); color: var(--primary); }
@@ -160,6 +160,7 @@ select.input-field { cursor: pointer; }
 ═══════════════════════════════════ */
 .globe-icon { font-size: 20px; margin-right: 2px; animation: spin 12s linear infinite; display: inline-block; }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes geoPulse { from{opacity:1} to{opacity:0.4} }
 
 /* ── MERCHANT CARDS ── */
 .merchant-results { margin-bottom: 16px; }
@@ -199,21 +200,7 @@ select.input-field { cursor: pointer; }
   position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
   font-size: 18px; pointer-events: none;
 }
-.geo-btn {
-  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  background: var(--primary); border: none; width: 36px; height: 36px;
-  border-radius: 50%; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; font-size: 16px; transition: all 0.2s;
-}
-.geo-btn:active { transform: translateY(-50%) scale(0.95); }
-.geo-btn.loading { animation: geoPulse 0.8s infinite alternate; }
-@keyframes geoPulse { from{opacity:1} to{opacity:0.5} }
-.geo-status {
-  font-size: 12px; color: var(--text3); margin-top: 6px; padding-left: 16px;
-  min-height: 16px; transition: color 0.3s;
-}
-.geo-status.found { color: var(--primary); }
-.geo-status.error { color: var(--red); }
+.hero-banner {
   background: linear-gradient(135deg, #00cc6a 0%, #00FF88 100%);
   border-radius: var(--radius); padding: 24px 20px; margin-bottom: 20px; position: relative; overflow: hidden;
 }
@@ -276,7 +263,7 @@ select.input-field { cursor: pointer; }
   flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer;
   font-size: 13px; font-weight: 600; color: var(--text2); transition: all 0.2s;
 }
-.view-btn.active { background: var(--primary); color: #fff; }
+.view-btn.active { background: var(--primary); color: #062a16; }
 
 .tracking-steps { padding: 10px 0; }
 .step {
@@ -300,7 +287,7 @@ select.input-field { cursor: pointer; }
   box-shadow: 0 0 0 4px rgba(255,107,0,0.15);
   animation: pulse 1.5s infinite;
 }
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 4px rgba(255,107,0,0.15)} 50%{box-shadow:0 0 0 8px rgba(255,107,0,0.05)} }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 4px rgba(0,255,136,0.2)} 50%{box-shadow:0 0 0 8px rgba(0,255,136,0.06)} }
 .step-content {}
 .step-title { font-weight: 600; font-size: 15px; }
 .step-time { font-size: 12px; color: var(--text2); margin-top: 2px; }
@@ -341,7 +328,7 @@ select.input-field { cursor: pointer; }
 .msg-bubble {
   padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5;
 }
-.msg-user .msg-bubble { background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+.msg-user .msg-bubble { background: var(--primary); color: #062a16; border-bottom-right-radius: 4px; }
 .msg-ai .msg-bubble { background: var(--bg3); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
 .msg-time { font-size: 10px; color: var(--text3); margin-top: 4px; padding: 0 4px; }
 .msg-user .msg-time { text-align: right; }
@@ -367,7 +354,7 @@ select.input-field { cursor: pointer; }
 .chat-input:focus { border-color: var(--primary); }
 .send-btn {
   width: 46px; height: 46px; border-radius: 50%; background: var(--primary);
-  border: none; color: #fff; font-size: 18px; cursor: pointer; flex-shrink: 0;
+  border: none; color: #062a16; font-size: 18px; cursor: pointer; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; transition: all 0.2s;
 }
 .send-btn:active { transform: scale(0.95); background: var(--primary-dark); }
@@ -1029,65 +1016,7 @@ function getTrackingSteps(lang) {
 // ══════════════════════════════════════
 let userLocation = null;
 
-function getLocation() {
-  const btn = document.getElementById('geoBtn');
-  const status = document.getElementById('geoStatus');
-  const searchBar = document.getElementById('searchBar');
-
-  if (!navigator.geolocation) {
-    status.textContent = '⚠️ Geolocalizzazione non supportata dal browser';
-    status.className = 'geo-status error';
-    return;
-  }
-
-  btn.classList.add('loading');
-  status.textContent = '📡 Localizzazione in corso...';
-  status.className = 'geo-status';
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const { latitude, longitude, accuracy } = position.coords;
-      userLocation = { lat: latitude, lng: longitude };
-
-      btn.classList.remove('loading');
-      status.textContent = '⏳ Recupero indirizzo...';
-
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=${currentLang}`,
-          { headers: { 'User-Agent': 'WONDAPP/1.0' } }
-        );
-        const data = await res.json();
-        const addr = data.address;
-        const parts = [
-          addr.road || addr.pedestrian || addr.footway,
-          addr.house_number,
-          addr.city || addr.town || addr.village || addr.municipality
-        ].filter(Boolean);
-
-        const locationString = parts.join(', ') || data.display_name?.split(',').slice(0,2).join(',');
-        searchBar.value = locationString;
-        status.textContent = `📍 ${locationString} (±${Math.round(accuracy)}m)`;
-        status.className = 'geo-status found';
-        showToast('📍 Posizione trovata!');
-      } catch (e) {
-        status.textContent = `📍 Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
-        status.className = 'geo-status found';
-      }
-    },
-    (error) => {
-      btn.classList.remove('loading');
-      const msgs = {
-        1: '🚫 GPS negato — inserisci la città manualmente',
-        2: '📡 Segnale GPS non disponibile.',
-        3: '⏱️ Timeout GPS — riprova.'
-      };
-      status.textContent = msgs[error.code] || '❌ Errore GPS';
-      status.className = 'geo-status error';
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
-  );
-}
+function getLocation() { getSilentLocation(); }
 
 // ══════════════════════════════════════
 // OSM TAG MAPPING — universale
@@ -1229,12 +1158,7 @@ async function executeOverpassSearch(searchTerm, resultsEl) {
   </div>`;
 
   try {
-    // Build query: combine term + location if we have it
-    const cityHint = userLocation ? '' : '';
     let nominatimQ = searchTerm;
-    if (userLocation) {
-      // reverse geocode city from coords to append to query
-    }
 
     const url = `https://nominatim.openstreetmap.org/search?` + new URLSearchParams({
       q: nominatimQ,
@@ -1380,10 +1304,9 @@ function openMerchantDetail(idx) {
   document.getElementById('mainOrderContent').style.display = 'block';
 }
 
-async function getLocationThenSearch(query) {
-  await getLocation();
-  if (userLocation) setTimeout(() => doSearch(query), 500);
-  else setTimeout(() => doSearch(query), 1200);
+function getLocationThenSearch(query) {
+  getSilentLocation();
+  setTimeout(() => doSearch(query), 1500);
 }
 
 async function searchByCity(query) {
@@ -1415,9 +1338,9 @@ async function searchByCity(query) {
 }
 
 
-
 // ══════════════════════════════════════
-
+// INIT
+// ══════════════════════════════════════
 function init() {
   buildLangSelector();
   applyLang('it');
