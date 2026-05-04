@@ -190,10 +190,10 @@ select.input-field { cursor: pointer; }
 .search-bar {
   width: 100%; background: var(--bg3); border: 1.5px solid var(--border);
   border-radius: 50px; color: var(--text); font-family: var(--font-body);
-  font-size: 15px; padding: 13px 50px 13px 48px; outline: none;
+  font-size: 15px; padding: 14px 20px 14px 48px; outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,255,136,0.1); }
+.search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,255,136,0.08); }
 .search-bar::placeholder { color: var(--text3); }
 .search-icon {
   position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
@@ -460,16 +460,13 @@ select.input-field { cursor: pointer; }
 
   <!-- ══════════ TAB 1: ORDINA ══════════ -->
   <section class="tab-section active" id="tab-ordina">
-    <!-- Search Bar + Geolocation -->
+    <!-- Search Bar -->
     <div class="search-bar-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" class="search-bar" id="searchBar" placeholder="Cerca prodotti, servizi, merchant..." oninput="filterProducts(this.value)">
-      <button class="geo-btn" id="geoBtn" onclick="getLocation()" title="Usa la mia posizione">📍</button>
+      <input type="text" class="search-bar" id="searchBar" placeholder="Cerca negozi, ristoranti, farmacie..." oninput="filterProducts(this.value)">
     </div>
-    <div class="geo-status" id="geoStatus"></div>
 
-    <div class="merchant-results" id="merchantResults" style="display:none"></div>
-
+    <div id="merchantResults" style="display:none"></div>
     <div id="mainOrderContent">
     <div class="hero-banner">
       <div class="hero-title" id="heroTitle">Ordina qualsiasi cosa</div>
@@ -1186,71 +1183,113 @@ function filterProducts(query) {
 async function doSearch(query) {
   const resultsEl = document.getElementById('merchantResults');
 
+  // Smart parsing: "benzinaio a Milano" / "pizza in Roma" / "farmacia near Paris"
+  const locPattern = /\s+(?:a|in|near|vicino a|dans|en|bei|à|cerca de|в)\s+(.+)$/i;
+  const locMatch = query.match(locPattern);
+  let searchTerm = query;
+  let cityOverride = null;
+
+  if (locMatch) {
+    searchTerm = query.replace(locPattern, '').trim();
+    cityOverride = locMatch[1].trim();
+  }
+
+  // Se c'è città nella query, geocodifica subito senza chiedere GPS
+  if (cityOverride && !userLocation) {
+    resultsEl.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text2)">
+      <div style="font-size:24px;margin-bottom:8px;animation:geoPulse 0.8s infinite alternate">🌍</div>
+      <div style="font-size:13px">Ricerca: <strong style="color:var(--primary)">${searchTerm}</strong> a <strong style="color:var(--primary)">${cityOverride}</strong></div>
+    </div>`;
+    // Use full query directly with Nominatim — most accurate
+    const fullQuery = `${searchTerm} ${cityOverride}`;
+    await executeOverpassSearch(fullQuery, resultsEl);
+    return;
+  }
+
   if (!userLocation) {
     resultsEl.innerHTML = `<div style="text-align:center;padding:24px 16px">
-      <div style="font-size:36px;margin-bottom:12px">📍</div>
-      <div style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:6px">Dove ti trovi?</div>
-      <div style="color:var(--text2);font-size:13px;margin-bottom:16px">Attiva il GPS oppure inserisci la tua città</div>
-      <button class="btn btn-primary" style="max-width:240px;margin-bottom:10px" onclick="getLocationThenSearch('${query}')">📍 Usa GPS automatico</button>
-      <div style="display:flex;gap:8px;margin-top:4px">
+      <div style="font-size:32px;margin-bottom:12px">📍</div>
+      <div style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:6px">Dove cerchi?</div>
+      <div style="color:var(--text2);font-size:13px;margin-bottom:16px">Inserisci una città o attiva il GPS</div>
+      <div style="display:flex;gap:8px">
         <input type="text" class="input-field" id="manualCity" placeholder="Es: Milano, Roma, Paris..." style="border-radius:50px;padding:12px 16px" onkeydown="if(event.key==='Enter')searchByCity('${query}')">
-        <button onclick="searchByCity('${query}')" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;flex-shrink:0">›</button>
+        <button onclick="searchByCity('${query}')" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:20px;cursor:pointer;flex-shrink:0;color:#000">›</button>
       </div>
     </div>`;
     return;
   }
 
-  const { lat, lng } = userLocation;
-  const radius = 3000; // 3km default
+  await executeOverpassSearch(searchTerm, resultsEl);
+}
+
+async function executeOverpassSearch(searchTerm, resultsEl) {
+  resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
+    <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🔍</div>
+    <div style="font-size:14px">Ricerca in corso...</div>
+  </div>`;
 
   try {
-    const osmTag = getOsmQuery(query);
-    let overpassQuery;
-
-    if (osmTag) {
-      // Categoria riconosciuta — cerca per tipo
-      overpassQuery = `[out:json][timeout:15];
-(
-  ${osmTag}(around:${radius},${lat},${lng});
-  way${osmTag.slice(4)}(around:${radius},${lat},${lng});
-);
-out center 30;`;
-    } else {
-      // Ricerca per nome (nome negozio / via specifica)
-      overpassQuery = `[out:json][timeout:15];
-(
-  node["name"~"${query}",i](around:5000,${lat},${lng});
-  way["name"~"${query}",i](around:5000,${lat},${lng});
-  node["addr:street"~"${query}",i](around:5000,${lat},${lng});
-);
-out center 30;`;
+    // Build query: combine term + location if we have it
+    const cityHint = userLocation ? '' : '';
+    let nominatimQ = searchTerm;
+    if (userLocation) {
+      // reverse geocode city from coords to append to query
     }
 
-    const response = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: overpassQuery
+    const url = `https://nominatim.openstreetmap.org/search?` + new URLSearchParams({
+      q: nominatimQ,
+      format: 'json',
+      limit: 30,
+      addressdetails: 1,
+      extratags: 1,
+      ...(userLocation ? { lat: userLocation.lat, lon: userLocation.lng, bounded: 0 } : {})
     });
 
-    if (!response.ok) throw new Error('Overpass error');
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'WONDAPP/1.0', 'Accept-Language': currentLang }
+    });
+
+    if (!response.ok) throw new Error('Nominatim error');
     const data = await response.json();
 
-    let elements = data.elements.map(el => {
-      const elLat = el.lat || el.center?.lat;
-      const elLng = el.lon || el.center?.lon;
-      const dist = (elLat && elLng) ? haversine(lat, lng, elLat, elLng) : 99999;
-      return { ...el, dist, elLat, elLng };
-    }).filter(el => el.elLat);
+    if (!data.length) {
+      renderSearchResults([], searchTerm);
+      return;
+    }
 
-    elements.sort((a, b) => a.dist - b.dist);
-    elements = elements.slice(0, 25);
+    // Map to internal format with distance
+    const elements = data.map(item => {
+      const elLat = parseFloat(item.lat);
+      const elLng = parseFloat(item.lon);
+      const dist = userLocation ? haversine(userLocation.lat, userLocation.lng, elLat, elLng) : 0;
+      const addr = item.address || {};
+      return {
+        tags: {
+          name: item.display_name.split(',')[0],
+          amenity: item.type || item.class,
+          'addr:street': addr.road || addr.pedestrian || '',
+          'addr:housenumber': addr.house_number || '',
+          'addr:city': addr.city || addr.town || addr.village || addr.municipality || '',
+          phone: item.extratags?.phone || '',
+          opening_hours: item.extratags?.opening_hours || '',
+          website: item.extratags?.website || ''
+        },
+        dist,
+        elLat,
+        elLng,
+        type: item.type
+      };
+    });
 
-    renderSearchResults(elements, query);
+    // Sort by distance if we have GPS
+    if (userLocation) elements.sort((a, b) => a.dist - b.dist);
+
+    renderSearchResults(elements, searchTerm);
 
   } catch (err) {
     resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
       <div style="font-size:32px;margin-bottom:10px">⚠️</div>
       <div style="font-size:14px">Errore di connessione. Riprova.</div>
-      <div style="font-size:12px;margin-top:6px;color:var(--text3)">${err.message}</div>
     </div>`;
   }
 }
@@ -1305,8 +1344,8 @@ function renderSearchResults(elements, query) {
     </div>
     ${elements.map((el, i) => {
       const tags = el.tags || {};
-      const name = tags.name || tags['name:it'] || tags['name:en'] || 'Negozio senza nome';
-      if (name === 'Negozio senza nome' && !tags.amenity && !tags.shop) return '';
+      const name = tags.name || tags['name:it'] || tags['name:en'] || '';
+      if (!name || name.toLowerCase().includes('senza nome')) return '';
       const icon = getIconForTags(tags);
       const type = tags.amenity || tags.shop || tags.tourism || tags.leisure || '';
       const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
@@ -1387,6 +1426,16 @@ function init() {
   buildCompetitors();
   addAIMessage(T[currentLang].memoriWelcome);
   updateDashboard();
+  getSilentLocation();
+}
+
+function getSilentLocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => { userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+    () => { /* silenzioso — nessun messaggio */ },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+  );
 }
 
 // ══════════════════════════════════════
