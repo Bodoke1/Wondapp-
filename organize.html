@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WONDAPP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -435,6 +436,76 @@ select.input-field { cursor: pointer; }
 .threat-track { background: var(--bg3); border-radius: 4px; height: 5px; overflow: hidden; }
 .threat-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), var(--gold)); transition: width 1s ease; }
 
+/* ── MERCHANT DETAIL MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+  display: none; align-items: flex-end; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--bg2); border-radius: 24px 24px 0 0;
+  width: 100%; max-width: 480px; max-height: 88vh;
+  overflow-y: auto; animation: slideUp 0.35s cubic-bezier(.34,1.56,.64,1);
+  scrollbar-width: none;
+}
+.modal-sheet::-webkit-scrollbar { display: none; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle {
+  width: 40px; height: 4px; background: var(--border); border-radius: 2px;
+  margin: 12px auto 0;
+}
+.modal-header {
+  display: flex; align-items: center; gap: 14px; padding: 16px 20px 12px;
+}
+.modal-avatar {
+  width: 56px; height: 56px; border-radius: 16px; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+  border: 2px solid var(--primary);
+}
+.modal-name { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+.modal-type { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.modal-close {
+  margin-left: auto; background: var(--bg3); border: none; color: var(--text2);
+  width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-map {
+  height: 200px; margin: 0 16px; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); position: relative;
+}
+.modal-info { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.info-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--bg3); border-radius: var(--radius-sm);
+}
+.info-row-icon { font-size: 18px; flex-shrink: 0; }
+.info-row-text { flex: 1; }
+.info-row-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.info-row-value { font-size: 14px; font-weight: 500; color: var(--text); margin-top: 2px; }
+.info-row a { color: var(--primary); text-decoration: none; }
+.modal-nav-btns { padding: 0 16px 12px; display: flex; gap: 10px; }
+.nav-app-btn {
+  flex: 1; padding: 13px 8px; border-radius: var(--radius-sm); border: none;
+  cursor: pointer; font-family: var(--font-body); font-size: 13px; font-weight: 700;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.nav-app-btn:active { transform: scale(0.97); }
+.nav-app-btn .nav-icon { font-size: 20px; }
+.nav-gmaps { background: #1a73e8; color: #fff; }
+.nav-waze { background: #33ccff; color: #000; }
+.nav-apple { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+.modal-order-btn { margin: 0 16px 24px; }
+
+/* ── WONDAPP MAP MARKER ── */
+.wondapp-marker {
+  background: var(--primary); border: 3px solid #fff;
+  border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.wondapp-marker-inner { transform: rotate(45deg); font-size: 14px; }
+
 /* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -633,6 +704,44 @@ select.input-field { cursor: pointer; }
   </button>
 </nav>
 
+<!-- MERCHANT DETAIL MODAL -->
+<div class="modal-overlay" id="merchantModal" onclick="closeModal(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-avatar" id="modalAvatar">🏪</div>
+      <div>
+        <div class="modal-name" id="modalName">—</div>
+        <div class="modal-type" id="modalType"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+
+    <div class="modal-map" id="modalMap"></div>
+
+    <div class="modal-info" id="modalInfo"></div>
+
+    <div class="modal-nav-btns">
+      <button class="nav-app-btn nav-gmaps" id="btnGmaps" onclick="openNav('gmaps')">
+        <span class="nav-icon">🗺️</span>Google Maps
+      </button>
+      <button class="nav-app-btn nav-waze" id="btnWaze" onclick="openNav('waze')">
+        <span class="nav-icon">🚗</span>Waze
+      </button>
+      <button class="nav-app-btn nav-apple" id="btnApple" onclick="openNav('apple')">
+        <span class="nav-icon">🍎</span>Apple Maps
+      </button>
+    </div>
+
+    <div class="modal-order-btn">
+      <button class="btn btn-primary" onclick="closeModalDirect();showToast('🛍️ Seleziona prodotti e ordina!')">
+        🛍️ Ordina da questo negozio
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 // ══════════════════════════════════════
 // TRANSLATIONS
@@ -1325,6 +1434,7 @@ out center 30;`;
     if (elements.length === 0) {
       await searchWithNominatim(searchTerm, resultsEl);
     } else {
+      window._lastSearchResults = elements;
       renderSearchResults(elements, searchTerm, radius);
     }
   } catch(e) {
@@ -1378,6 +1488,7 @@ async function searchWithNominatim(searchTerm, resultsEl) {
       });
 
     if (userLocation) elements.sort((a, b) => a.dist - b.dist);
+    window._lastSearchResults = elements;
     renderSearchResults(elements, searchTerm);
 
   } catch(err) {
@@ -1476,11 +1587,133 @@ function renderSearchResults(elements, query, radius = 0) {
   `;
 }
 
+let currentMerchantCoords = null;
+let leafletMap = null;
+
 function openMerchantDetail(idx) {
-  showToast('🏪 Negozio selezionato — ordina dalla lista prodotti');
-  document.getElementById('searchBar').value = '';
-  document.getElementById('merchantResults').style.display = 'none';
-  document.getElementById('mainOrderContent').style.display = 'block';
+  // Get stored elements from last search
+  const el = window._lastSearchResults?.[idx];
+  if (!el) return;
+
+  const tags = el.tags || {};
+  const name = tags.brand || tags.name || 'Negozio';
+  const icon = getIconForTags(tags);
+  const type = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ');
+  const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
+  const city = tags['addr:city'] || '';
+  const address = [street, city].filter(Boolean).join(', ');
+  const phone = tags.phone || tags['contact:phone'] || '';
+  const hours = tags.opening_hours || '';
+  const dist = el.dist || 0;
+
+  currentMerchantCoords = { lat: el.elLat, lng: el.elLng, name };
+
+  // Fill modal
+  document.getElementById('modalAvatar').textContent = icon;
+  document.getElementById('modalName').textContent = name;
+  document.getElementById('modalType').textContent = type;
+
+  // Info rows
+  const infoRows = [];
+  if (dist > 0) infoRows.push(`
+    <div class="info-row">
+      <div class="info-row-icon">📏</div>
+      <div class="info-row-text">
+        <div class="info-row-label">Distanza</div>
+        <div class="info-row-value">${formatDist(dist)} da te</div>
+      </div>
+    </div>`);
+  if (address) infoRows.push(`
+    <div class="info-row">
+      <div class="info-row-icon">📍</div>
+      <div class="info-row-text">
+        <div class="info-row-label">Indirizzo</div>
+        <div class="info-row-value">${address}</div>
+      </div>
+    </div>`);
+  if (phone) infoRows.push(`
+    <div class="info-row">
+      <div class="info-row-icon">📞</div>
+      <div class="info-row-text">
+        <div class="info-row-label">Telefono</div>
+        <div class="info-row-value"><a href="tel:${phone}">${phone}</a></div>
+      </div>
+    </div>`);
+  if (hours) infoRows.push(`
+    <div class="info-row">
+      <div class="info-row-icon">🕐</div>
+      <div class="info-row-text">
+        <div class="info-row-label">Orari</div>
+        <div class="info-row-value">${hours}</div>
+      </div>
+    </div>`);
+
+  document.getElementById('modalInfo').innerHTML = infoRows.join('') ||
+    '<div style="text-align:center;padding:10px;color:var(--text3);font-size:13px">Nessuna info aggiuntiva disponibile</div>';
+
+  // Show modal
+  document.getElementById('merchantModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Init Leaflet map
+  setTimeout(() => initMerchantMap(el.elLat, el.elLng, name, icon), 100);
+}
+
+function initMerchantMap(lat, lng, name, icon) {
+  const container = document.getElementById('modalMap');
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+
+  leafletMap = L.map(container, {
+    center: [lat, lng], zoom: 15,
+    zoomControl: false, attributionControl: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19
+  }).addTo(leafletMap);
+
+  // Custom WONDAPP marker
+  const wondappIcon = L.divIcon({
+    className: '',
+    html: `<div style="
+      background:#00FF88; border:3px solid #fff; border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg); width:36px; height:36px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 3px 12px rgba(0,255,136,0.5);
+    ">
+      <div style="transform:rotate(45deg);font-size:16px">🌍</div>
+    </div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, -40]
+  });
+
+  L.marker([lat, lng], { icon: wondappIcon })
+    .addTo(leafletMap)
+    .bindPopup(`<strong style="color:#00FF88">WONDAPP</strong><br>${name}`, { className: 'wondapp-popup' })
+    .openPopup();
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('merchantModal')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('merchantModal').classList.remove('open');
+  document.body.style.overflow = '';
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+}
+
+function openNav(app) {
+  if (!currentMerchantCoords) return;
+  const { lat, lng, name } = currentMerchantCoords;
+  const encodedName = encodeURIComponent(name);
+  const urls = {
+    gmaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encodedName}`,
+    waze: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
+    apple: `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
+  };
+  window.open(urls[app], '_blank');
 }
 
 function getLocationThenSearch(query) {
