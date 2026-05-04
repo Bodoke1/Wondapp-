@@ -161,6 +161,28 @@ select.input-field { cursor: pointer; }
 .globe-icon { font-size: 20px; margin-right: 2px; animation: spin 12s linear infinite; display: inline-block; }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
+/* ── MERCHANT CARDS ── */
+.merchant-results { margin-bottom: 16px; }
+.merchant-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 14px;
+}
+.merchant-card:active, .merchant-card.selected { border-color: var(--primary); background: var(--primary-glow); }
+.merchant-avatar {
+  width: 52px; height: 52px; border-radius: 14px; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0;
+}
+.merchant-info { flex: 1; min-width: 0; }
+.merchant-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.merchant-type { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.merchant-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+.merchant-rating { font-size: 12px; color: var(--gold); font-weight: 600; }
+.merchant-status { font-size: 11px; font-weight: 600; }
+.merchant-status.open { color: var(--primary); }
+.merchant-status.closed { color: var(--red); }
+.no-results { text-align: center; padding: 30px 20px; color: var(--text3); font-size: 14px; }
+
 /* ── SEARCH BAR ── */
 .search-bar-wrap {
   position: relative; margin-bottom: 18px;
@@ -446,6 +468,9 @@ select.input-field { cursor: pointer; }
     </div>
     <div class="geo-status" id="geoStatus"></div>
 
+    <div class="merchant-results" id="merchantResults" style="display:none"></div>
+
+    <div id="mainOrderContent">
     <div class="hero-banner">
       <div class="hero-title" id="heroTitle">Ordina qualsiasi cosa</div>
       <div class="hero-sub" id="heroSub">H24 · 7 giorni su 7 · Istantaneo</div>
@@ -476,9 +501,8 @@ select.input-field { cursor: pointer; }
         🚀 <span id="sendOrderTxt">Invia Ordine</span>
       </button>
     </div>
+    </div><!-- end mainOrderContent -->
   </section>
-
-  <!-- ══════════ TAB 2: TRACKING ══════════ -->
   <section class="tab-section" id="tab-tracking">
     <div class="section-title">📦 <span id="trackingTitle">Tracking Ordine</span></div>
 
@@ -1057,11 +1081,11 @@ function getLocation() {
     (error) => {
       btn.classList.remove('loading');
       const msgs = {
-        1: '🚫 Permesso negato. Abilita la posizione nelle impostazioni del browser.',
-        2: '📡 Segnale GPS non disponibile. Riprova.',
-        3: '⏱️ Timeout — riprova tra qualche secondo.'
+        1: '🚫 GPS negato — inserisci la città manualmente',
+        2: '📡 Segnale GPS non disponibile.',
+        3: '⏱️ Timeout GPS — riprova.'
       };
-      status.textContent = msgs[error.code] || '❌ Errore sconosciuto';
+      status.textContent = msgs[error.code] || '❌ Errore GPS';
       status.className = 'geo-status error';
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
@@ -1069,42 +1093,289 @@ function getLocation() {
 }
 
 // ══════════════════════════════════════
-// SEARCH FILTER
+// OSM TAG MAPPING — universale
 // ══════════════════════════════════════
+const osmMap = [
+  { keys:['pizza','pizzeria'],                   q:`node["amenity"="restaurant"]["cuisine"~"pizza",i]` },
+  { keys:['ristorante','restaurant','mangiare','cibo','food','sushi','cinese','messicano','indiano','thai','kebab','poke','burger','hamburgeria','trattoria','osteria','cucina'],  q:`node["amenity"="restaurant"]` },
+  { keys:['bar','caffè','caffe','cafe','coffee','cappuccino','colazione'],  q:`node["amenity"="cafe"]` },
+  { keys:['farmacia','pharmacy','medicine','medicinale','farmaco'],         q:`node["amenity"="pharmacy"]` },
+  { keys:['benzinaio','benzina','carburante','gas','petrol','diesel','rifornimento'], q:`node["amenity"="fuel"]` },
+  { keys:['supermercato','supermarket','spesa','alimentari','grocery','coop','esselunga','lidl','aldi','conad'], q:`node["shop"="supermarket"]` },
+  { keys:['bici','bicicletta','bicycle','ciclista','bike','riparazione bici'], q:`node["shop"="bicycle"]` },
+  { keys:['fiori','fiorista','flowers','rose','bouquet','florist'],         q:`node["shop"="florist"]` },
+  { keys:['parrucchiere','barber','capelli','barbiere','hairdresser','salon','salone'], q:`node["shop"~"hairdresser|barber"]` },
+  { keys:['lavanderia','laundry','lavaggio','tintoria'],                    q:`node["shop"~"laundry|dry_cleaning"]` },
+  { keys:['veterinario','vet','animali','cane','gatto'],                    q:`node["amenity"="veterinary"]` },
+  { keys:['banca','bank','bancomat','atm'],                                 q:`node["amenity"~"bank|atm"]` },
+  { keys:['tabaccheria','tabacco','tabacchi','sigarette','gratta','lotto'], q:`node["shop"="tobacco"]` },
+  { keys:['panetteria','bakery','pane','forno','pasticceria','cornetto','brioche'], q:`node["shop"~"bakery|pastry"]` },
+  { keys:['gelateria','gelato','ice cream','gelati'],                       q:`node["amenity"~"ice_cream|cafe"]["name"~"gelat",i]` },
+  { keys:['ospedale','hospital','pronto soccorso','emergenza'],             q:`node["amenity"="hospital"]` },
+  { keys:['dentista','dentist','dente','odontoiatra'],                      q:`node["amenity"="dentist"]` },
+  { keys:['meccanico','car repair','auto','automobile','officina','carrozzeria'], q:`node["shop"~"car_repair|car"]` },
+  { keys:['hotel','albergo','hostel','b&b','bed and breakfast','dormire'],  q:`node["tourism"~"hotel|hostel|guest_house"]` },
+  { keys:['posta','poste','corriere','spedizione','postale'],               q:`node["amenity"="post_office"]` },
+  { keys:['palestra','gym','fitness','sport','piscina'],                    q:`node["leisure"~"fitness_centre|sports_centre|swimming_pool"]` },
+  { keys:['libreria','libri','books','fumetti'],                            q:`node["shop"="books"]` },
+  { keys:['elettronica','elettrodomestici','computer','telefono','smartphone','riparazione telefono'], q:`node["shop"~"electronics|mobile_phone"]` },
+  { keys:['abbigliamento','vestiti','moda','clothes','fashion','scarpe','shoes'], q:`node["shop"~"clothes|shoes|fashion"]` },
+  { keys:['ferramenta','hardware','utensili','bricolage'],                  q:`node["shop"="hardware"]` },
+  { keys:['ottico','occhiali','vista','lenti'],                             q:`node["shop"="optician"]` },
+  { keys:['gioielleria','gioielli','orologeria','anello','collana'],        q:`node["shop"~"jewelry|watches"]` },
+  { keys:['photography','fotografo','foto','stampa foto'],                  q:`node["shop"="photo"]` },
+  { keys:['animali','pet shop','cibo animali','petshop'],                   q:`node["shop"="pet"]` },
+  { keys:['fast food','mcdonald','kfc','subway'],                           q:`node["amenity"="fast_food"]` },
+  { keys:['parcheggio','parking','garage','posto auto'],                    q:`node["amenity"~"parking|parking_space"]` },
+  { keys:['taxi','uber','cabify','trasporto'],                              q:`node["amenity"="taxi"]` },
+];
+
+function getOsmQuery(searchTerm) {
+  const q = searchTerm.toLowerCase().trim();
+  for (const entry of osmMap) {
+    if (entry.keys.some(k => q.includes(k) || k.includes(q))) {
+      return entry.q;
+    }
+  }
+  return null; // search by name fallback
+}
+
+// ══════════════════════════════════════
+// HAVERSINE DISTANCE
+// ══════════════════════════════════════
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function formatDist(m) {
+  return m < 1000 ? `${Math.round(m)}m` : `${(m/1000).toFixed(1)}km`;
+}
+
+// ══════════════════════════════════════
+// SEARCH FILTER — REAL OSM
+// ══════════════════════════════════════
+let searchTimeout = null;
+
 function filterProducts(query) {
-  if (!query.trim()) {
+  clearTimeout(searchTimeout);
+  const q = query.trim();
+  const resultsEl = document.getElementById('merchantResults');
+  const mainContent = document.getElementById('mainOrderContent');
+
+  if (!q) {
+    resultsEl.style.display = 'none';
+    mainContent.style.display = 'block';
     buildProducts(currentCat);
     return;
   }
-  const q = query.toLowerCase();
-  const list = document.getElementById('productList');
-  const allProducts = catalog.flat();
-  const filtered = allProducts.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.desc.toLowerCase().includes(q)
-  );
 
-  if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>Nessun risultato per "${query}"</p></div>`;
+  mainContent.style.display = 'none';
+  resultsEl.style.display = 'block';
+  resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
+    <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🔍</div>
+    <div style="font-size:14px">Ricerca in corso...</div>
+  </div>`;
+
+  searchTimeout = setTimeout(() => doSearch(q), 400);
+}
+
+async function doSearch(query) {
+  const resultsEl = document.getElementById('merchantResults');
+
+  if (!userLocation) {
+    resultsEl.innerHTML = `<div style="text-align:center;padding:24px 16px">
+      <div style="font-size:36px;margin-bottom:12px">📍</div>
+      <div style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:6px">Dove ti trovi?</div>
+      <div style="color:var(--text2);font-size:13px;margin-bottom:16px">Attiva il GPS oppure inserisci la tua città</div>
+      <button class="btn btn-primary" style="max-width:240px;margin-bottom:10px" onclick="getLocationThenSearch('${query}')">📍 Usa GPS automatico</button>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <input type="text" class="input-field" id="manualCity" placeholder="Es: Milano, Roma, Paris..." style="border-radius:50px;padding:12px 16px" onkeydown="if(event.key==='Enter')searchByCity('${query}')">
+        <button onclick="searchByCity('${query}')" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;flex-shrink:0">›</button>
+      </div>
+    </div>`;
     return;
   }
 
-  list.innerHTML = filtered.map((p, i) => {
-    const globalIdx = catalog.flat().indexOf(p);
-    const catIdx = catalog.findIndex(c => c.includes(p));
-    const prodIdx = catalog[catIdx].indexOf(p);
-    return `<div class="product-item" onclick="addToCart(${catIdx},${prodIdx})">
-      <div class="product-info">
-        <div class="product-name">${p.name}</div>
-        <div class="product-desc">${p.desc}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="product-price">€${p.price.toFixed(2)}</div>
-        <button class="product-add" onclick="event.stopPropagation();addToCart(${catIdx},${prodIdx})">+</button>
-      </div>
+  const { lat, lng } = userLocation;
+  const radius = 3000; // 3km default
+
+  try {
+    const osmTag = getOsmQuery(query);
+    let overpassQuery;
+
+    if (osmTag) {
+      // Categoria riconosciuta — cerca per tipo
+      overpassQuery = `[out:json][timeout:15];
+(
+  ${osmTag}(around:${radius},${lat},${lng});
+  way${osmTag.slice(4)}(around:${radius},${lat},${lng});
+);
+out center 30;`;
+    } else {
+      // Ricerca per nome (nome negozio / via specifica)
+      overpassQuery = `[out:json][timeout:15];
+(
+  node["name"~"${query}",i](around:5000,${lat},${lng});
+  way["name"~"${query}",i](around:5000,${lat},${lng});
+  node["addr:street"~"${query}",i](around:5000,${lat},${lng});
+);
+out center 30;`;
+    }
+
+    const response = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: overpassQuery
+    });
+
+    if (!response.ok) throw new Error('Overpass error');
+    const data = await response.json();
+
+    let elements = data.elements.map(el => {
+      const elLat = el.lat || el.center?.lat;
+      const elLng = el.lon || el.center?.lon;
+      const dist = (elLat && elLng) ? haversine(lat, lng, elLat, elLng) : 99999;
+      return { ...el, dist, elLat, elLng };
+    }).filter(el => el.elLat);
+
+    elements.sort((a, b) => a.dist - b.dist);
+    elements = elements.slice(0, 25);
+
+    renderSearchResults(elements, query);
+
+  } catch (err) {
+    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
+      <div style="font-size:32px;margin-bottom:10px">⚠️</div>
+      <div style="font-size:14px">Errore di connessione. Riprova.</div>
+      <div style="font-size:12px;margin-top:6px;color:var(--text3)">${err.message}</div>
     </div>`;
-  }).join('');
+  }
 }
+
+function getIconForTags(tags) {
+  const t = JSON.stringify(tags).toLowerCase();
+  if (t.includes('restaurant') || t.includes('pizza') || t.includes('food')) return '🍽️';
+  if (t.includes('pharmacy')) return '💊';
+  if (t.includes('fuel')) return '⛽';
+  if (t.includes('cafe')) return '☕';
+  if (t.includes('supermarket')) return '🛒';
+  if (t.includes('bicycle')) return '🚲';
+  if (t.includes('florist')) return '🌸';
+  if (t.includes('hairdresser') || t.includes('barber')) return '✂️';
+  if (t.includes('laundry')) return '👕';
+  if (t.includes('veterinary')) return '🐾';
+  if (t.includes('bank') || t.includes('atm')) return '🏦';
+  if (t.includes('tobacco')) return '🚬';
+  if (t.includes('bakery') || t.includes('pastry')) return '🥐';
+  if (t.includes('hotel') || t.includes('hostel')) return '🏨';
+  if (t.includes('dentist')) return '🦷';
+  if (t.includes('car') || t.includes('mechanic')) return '🔧';
+  if (t.includes('post')) return '📮';
+  if (t.includes('fitness') || t.includes('sport')) return '💪';
+  if (t.includes('books')) return '📚';
+  if (t.includes('electronics') || t.includes('mobile')) return '📱';
+  if (t.includes('clothes') || t.includes('fashion')) return '👗';
+  if (t.includes('hardware')) return '🔨';
+  if (t.includes('optician')) return '👓';
+  if (t.includes('jewelry')) return '💍';
+  if (t.includes('pet')) return '🐶';
+  if (t.includes('fast_food')) return '🍔';
+  return '🏪';
+}
+
+function renderSearchResults(elements, query) {
+  const resultsEl = document.getElementById('merchantResults');
+
+  if (elements.length === 0) {
+    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)">
+      <div style="font-size:36px;margin-bottom:10px">🔍</div>
+      <div style="font-size:14px;color:var(--text2)">Nessun negozio trovato per "<strong style="color:var(--primary)">${query}</strong>"</div>
+      <div style="font-size:12px;margin-top:6px">nella tua zona (3km)</div>
+    </div>`;
+    return;
+  }
+
+  resultsEl.innerHTML = `
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding-left:4px;display:flex;justify-content:space-between;align-items:center">
+      <span><strong style="color:var(--primary)">${elements.length}</strong> negozi trovati vicino a te</span>
+      <span style="color:var(--text3);font-size:11px">📍 dal più vicino</span>
+    </div>
+    ${elements.map((el, i) => {
+      const tags = el.tags || {};
+      const name = tags.name || tags['name:it'] || tags['name:en'] || 'Negozio senza nome';
+      if (name === 'Negozio senza nome' && !tags.amenity && !tags.shop) return '';
+      const icon = getIconForTags(tags);
+      const type = tags.amenity || tags.shop || tags.tourism || tags.leisure || '';
+      const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
+      const city = tags['addr:city'] || tags['addr:town'] || '';
+      const address = [street, city].filter(Boolean).join(', ');
+      const phone = tags.phone || tags['contact:phone'] || '';
+      const hours = tags.opening_hours || '';
+      const website = tags.website || tags['contact:website'] || '';
+
+      return `<div class="merchant-card" onclick="openMerchantDetail(${i})">
+        <div class="merchant-avatar">${icon}</div>
+        <div class="merchant-info">
+          <div class="merchant-name">${name}</div>
+          <div class="merchant-type">${type.replace(/_/g,' ')}</div>
+          ${address ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">📍 ${address}</div>` : ''}
+          <div class="merchant-meta">
+            <span style="font-size:12px;font-weight:700;color:var(--primary)">📏 ${formatDist(el.dist)}</span>
+            ${hours ? `<span style="font-size:11px;color:var(--text2)">🕐 ${hours.split(';')[0]}</span>` : ''}
+            ${phone ? `<span style="font-size:11px;color:var(--blue)">📞</span>` : ''}
+          </div>
+        </div>
+        <div style="font-size:20px;color:var(--text3)">›</div>
+      </div>`;
+    }).filter(Boolean).join('')}
+  `;
+}
+
+function openMerchantDetail(idx) {
+  showToast('🏪 Negozio selezionato — ordina dalla lista prodotti');
+  document.getElementById('searchBar').value = '';
+  document.getElementById('merchantResults').style.display = 'none';
+  document.getElementById('mainOrderContent').style.display = 'block';
+}
+
+async function getLocationThenSearch(query) {
+  await getLocation();
+  if (userLocation) setTimeout(() => doSearch(query), 500);
+  else setTimeout(() => doSearch(query), 1200);
+}
+
+async function searchByCity(query) {
+  const cityInput = document.getElementById('manualCity');
+  const city = cityInput ? cityInput.value.trim() : '';
+  if (!city) return;
+
+  const resultsEl = document.getElementById('merchantResults');
+  resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
+    <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🌍</div>
+    <div style="font-size:14px">Ricerca di "${city}"...</div>
+  </div>`;
+
+  try {
+    const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`, {
+      headers: { 'User-Agent': 'WONDAPP/1.0' }
+    });
+    const geoData = await geoRes.json();
+    if (!geoData.length) {
+      resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:32px">❌</div><div style="margin-top:10px">Città non trovata: "${city}"</div></div>`;
+      return;
+    }
+    userLocation = { lat: parseFloat(geoData[0].lat), lng: parseFloat(geoData[0].lon) };
+    showToast(`📍 ${geoData[0].display_name.split(',')[0]}`);
+    doSearch(query);
+  } catch(e) {
+    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:32px">⚠️</div><div style="margin-top:10px">Errore connessione</div></div>`;
+  }
+}
+
+
 
 // ══════════════════════════════════════
 
