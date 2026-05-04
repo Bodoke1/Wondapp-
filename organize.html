@@ -1172,7 +1172,7 @@ const osmMap = [
   { keys:['posta','poste','corriere','spedizione','postale'],               q:`node["amenity"="post_office"]` },
   { keys:['palestra','gym','fitness','sport','piscina'],                    q:`node["leisure"~"fitness_centre|sports_centre|swimming_pool"]` },
   { keys:['libreria','libri','books','fumetti'],                            q:`node["shop"="books"]` },
-  { keys:['elettronica','elettrodomestici','computer','telefono','smartphone','riparazione telefono'], q:`node["shop"~"electronics|mobile_phone"]` },
+  { keys:['elettronica','computer','telefono','smartphone','riparazione telefono'], q:`node["shop"~"electronics|mobile_phone"]` },
   { keys:['abbigliamento','vestiti','moda','clothes','fashion','scarpe','shoes'], q:`node["shop"~"clothes|shoes|fashion"]` },
   { keys:['ferramenta','hardware','utensili','bricolage'],                  q:`node["shop"="hardware"]` },
   { keys:['ottico','occhiali','vista','lenti'],                             q:`node["shop"="optician"]` },
@@ -1182,7 +1182,7 @@ const osmMap = [
   { keys:['photography','fotografo','foto','stampa foto'],                  q:`node["shop"="photo"]` },
   { keys:['animali','pet shop','cibo animali','petshop'],                   q:`node["shop"="pet"]` },
   { keys:['fast food','mcdonald','kfc','subway'],                           q:`node["amenity"="fast_food"]` },
-  { keys:['parcheggio','parking','garage','posto auto'],                    q:`node["amenity"~"parking|parking_space"]` },
+  { keys:['parcheggio','parking','garage','posto auto'],                    q:`node["amenity"="parking"]` },
   { keys:['taxi','uber','cabify','trasporto'],                              q:`node["amenity"="taxi"]` },
 ];
 
@@ -1280,6 +1280,47 @@ function formatDist(m) {
 // SEARCH FILTER — REAL OSM
 // ══════════════════════════════════════
 let searchTimeout = null;
+let currentSearchIcon = '🏪';
+let currentSearchLabel = '';
+
+// Icon + label from search term (used as fallback for Nominatim results)
+function getContextFromSearch(term) {
+  const t = normalizeQuery(term);
+  const iconMap = [
+    { keys:['benzinaio','benzina','carburante','fuel','petrol','diesel'], icon:'⛽', label:'Stazione di servizio' },
+    { keys:['farmacia','pharmacy','farmaco'], icon:'💊', label:'Farmacia' },
+    { keys:['ristorante','restaurant','pizza','sushi','cibo','food'], icon:'🍽️', label:'Ristorante' },
+    { keys:['bar','caffe','cafe','coffee'], icon:'☕', label:'Bar / Caffè' },
+    { keys:['supermercato','supermarket','spesa'], icon:'🛒', label:'Supermercato' },
+    { keys:['bici','bicicletta','bicycle','bike'], icon:'🚲', label:'Negozio bici' },
+    { keys:['fiori','fiorista','florist'], icon:'🌸', label:'Fiorista' },
+    { keys:['parrucchiere','barbiere','barber','hairdresser'], icon:'✂️', label:'Parrucchiere' },
+    { keys:['lavanderia','laundry','tintoria'], icon:'👕', label:'Lavanderia' },
+    { keys:['veterinario','vet'], icon:'🐾', label:'Veterinario' },
+    { keys:['autolavaggio','car wash','car_wash'], icon:'🚗', label:'Autolavaggio' },
+    { keys:['gommista','pneumatici','gomme'], icon:'🔩', label:'Gommista' },
+    { keys:['autofficina','officina','meccanico','carrozzeria'], icon:'🔧', label:'Officina' },
+    { keys:['hotel','albergo','hostel'], icon:'🏨', label:'Hotel' },
+    { keys:['dentista','dentist'], icon:'🦷', label:'Dentista' },
+    { keys:['posta','poste'], icon:'📮', label:'Ufficio postale' },
+    { keys:['palestra','gym','fitness'], icon:'💪', label:'Palestra' },
+    { keys:['banca','bank','bancomat','atm'], icon:'🏦', label:'Banca' },
+    { keys:['tabaccheria','tabacco','tabacchi'], icon:'🚬', label:'Tabaccheria' },
+    { keys:['panetteria','bakery','pane','forno'], icon:'🥐', label:'Panetteria' },
+    { keys:['libreria','libri'], icon:'📚', label:'Libreria' },
+    { keys:['elettrodomestici','lavatrice','frigorifero'], icon:'🏠', label:'Elettrodomestici' },
+    { keys:['elettronica','computer','telefono','smartphone'], icon:'📱', label:'Elettronica' },
+    { keys:['mobile','mobili','arredamento'], icon:'🛋️', label:'Arredamento' },
+    { keys:['parcheggio','parking','garage'], icon:'🅿️', label:'Parcheggio' },
+    { keys:['ospedale','hospital'], icon:'🏥', label:'Ospedale' },
+  ];
+  for (const entry of iconMap) {
+    if (entry.keys.some(k => t.includes(k) || k.includes(t.split(' ')[0]))) {
+      return { icon: entry.icon, label: entry.label };
+    }
+  }
+  return { icon: '🏪', label: '' };
+}
 
 function filterProducts(query) {
   clearTimeout(searchTimeout);
@@ -1336,8 +1377,8 @@ async function doSearch(query) {
       <div style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:6px">Dove cerchi?</div>
       <div style="color:var(--text2);font-size:13px;margin-bottom:16px">Inserisci una città o attiva il GPS</div>
       <div style="display:flex;gap:8px">
-        <input type="text" class="input-field" id="manualCity" placeholder="Es: Milano, Roma, Paris..." style="border-radius:50px;padding:12px 16px" onkeydown="if(event.key==='Enter')searchByCity('${query}')">
-        <button onclick="searchByCity('${query}')" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:20px;cursor:pointer;flex-shrink:0;color:#000">›</button>
+        <input type="text" class="input-field" id="manualCity" placeholder="Es: Milano, Roma, Paris..." style="border-radius:50px;padding:12px 16px" onkeydown="if(event.key==='Enter')searchByCity()">
+        <button onclick="searchByCity()" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:20px;cursor:pointer;flex-shrink:0;color:#062a16">›</button>
       </div>
     </div>`;
     return;
@@ -1351,6 +1392,11 @@ async function executeOverpassSearch(searchTerm, resultsEl) {
     <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🔍</div>
     <div style="font-size:14px">Ricerca in corso...</div>
   </div>`;
+
+  // Store context for icon/label fallback
+  const ctx = getContextFromSearch(searchTerm);
+  currentSearchIcon = ctx.icon;
+  currentSearchLabel = ctx.label;
 
   let osmTag = getOsmQuery(searchTerm);
 
@@ -1517,7 +1563,7 @@ function getIconForTags(tags) {
   if (t.includes('bakery') || t.includes('pastry')) return '🥐';
   if (t.includes('hotel') || t.includes('hostel')) return '🏨';
   if (t.includes('dentist')) return '🦷';
-  if (t.includes('car') || t.includes('mechanic')) return '🔧';
+  if (t.includes('car_repair') || t.includes('mechanic') || t.includes('officina')) return '🔧';
   if (t.includes('post')) return '📮';
   if (t.includes('fitness') || t.includes('sport')) return '💪';
   if (t.includes('books')) return '📚';
@@ -1533,7 +1579,6 @@ function getIconForTags(tags) {
 
 function renderSearchResults(elements, query, radius = 0) {
   const resultsEl = document.getElementById('merchantResults');
-  const radiusLabel = radius > 3000 ? ` (${radius/1000}km)` : '';
 
   if (elements.length === 0) {
     resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)">
@@ -1556,10 +1601,12 @@ function renderSearchResults(elements, query, radius = 0) {
       const tags = el.tags || {};
       const name = tags.brand || tags.name || '';
       if (!name) return '';
-      const icon = getIconForTags(tags);
-      const skipTypes = ['roof','yes','building','construction','brownfield','landuse','residential','area'];
-      const type = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ');
-      const showType = skipTypes.includes(type.trim()) ? '' : type;
+      // Use tag-based icon, fallback to search context icon
+      const rawIcon = getIconForTags(tags);
+      const icon = rawIcon === '🏪' ? currentSearchIcon : rawIcon;
+      const skipTypes = ['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
+      const rawType = (tags.amenity || tags.shop || tags.tourism || tags.leisure || '').replace(/_/g,' ').trim();
+      const showType = skipTypes.includes(rawType) ? currentSearchLabel : (rawType || currentSearchLabel);
       const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
       const city = tags['addr:city'] || '';
       const address = [street, city].filter(Boolean).join(', ');
@@ -1567,8 +1614,6 @@ function renderSearchResults(elements, query, radius = 0) {
       const phone = tags.phone || '';
       const dist = el.dist || 0;
       const distStr = dist > 0 ? `📏 ${formatDist(dist)}` : '';
-      const proximityLabel = dist > 10000 ? 'zona' : dist > 3000 ? 'area' : 'vicino';
-
       return `<div class="merchant-card" onclick="openMerchantDetail(${i})">
         <div class="merchant-avatar">${icon}</div>
         <div class="merchant-info">
@@ -1656,10 +1701,11 @@ function openMerchantDetail(idx) {
   document.body.style.overflow = 'hidden';
 
   // Init Leaflet map
-  setTimeout(() => initMerchantMap(el.elLat, el.elLng, name, icon), 100);
+  setTimeout(() => initMerchantMap(el.elLat, el.elLng, name, icon), 420);
 }
 
 function initMerchantMap(lat, lng, name, icon) {
+  if (!lat || !lng) return;
   const container = document.getElementById('modalMap');
   if (leafletMap) { leafletMap.remove(); leafletMap = null; }
 
@@ -1692,6 +1738,7 @@ function initMerchantMap(lat, lng, name, icon) {
     .addTo(leafletMap)
     .bindPopup(`<strong style="color:#00FF88">WONDAPP</strong><br>${name}`, { className: 'wondapp-popup' })
     .openPopup();
+  setTimeout(() => leafletMap && leafletMap.invalidateSize(), 50);
 }
 
 function closeModal(e) {
@@ -1706,10 +1753,9 @@ function closeModalDirect() {
 
 function openNav(app) {
   if (!currentMerchantCoords) return;
-  const { lat, lng, name } = currentMerchantCoords;
-  const encodedName = encodeURIComponent(name);
+  const { lat, lng } = currentMerchantCoords;
   const urls = {
-    gmaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encodedName}`,
+    gmaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
     waze: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
     apple: `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
   };
@@ -1721,9 +1767,10 @@ function getLocationThenSearch(query) {
   setTimeout(() => doSearch(query), 1500);
 }
 
-async function searchByCity(query) {
+async function searchByCity() {
   const cityInput = document.getElementById('manualCity');
   const city = cityInput ? cityInput.value.trim() : '';
+  const query = document.getElementById('searchBar')?.value?.trim() || '';
   if (!city) return;
 
   const resultsEl = document.getElementById('merchantResults');
@@ -1796,7 +1843,7 @@ function applyLang(lang) {
   el('catLabel').textContent = t.catLabel;
   el('prodLabel').textContent = t.prodLabel;
   el('cartLabel').textContent = t.cartLabel;
-  el('cartEmpty').textContent = t.cartEmpty;
+  const cartEmptyEl = el('cartEmpty'); if(cartEmptyEl) cartEmptyEl.textContent = t.cartEmpty;
   el('totalLabel').textContent = t.totalLabel;
   el('noteLabel').textContent = t.noteLabel;
   el('orderNote').placeholder = t.notePlaceholder;
@@ -1814,15 +1861,15 @@ function applyLang(lang) {
   el('statTimeLabel').textContent = t.statTimeLabel;
   el('statRatingLabel').textContent = t.statRatingLabel;
   el('activeOrdersTitle').textContent = t.activeOrdersTitle;
-  el('noActiveOrdersTxt').textContent = t.noActiveOrdersTxt;
+  const noActiveEl = el('noActiveOrdersTxt'); if(noActiveEl) noActiveEl.textContent = t.noActiveOrdersTxt;
   el('completedTitle').textContent = t.completedTitle;
   el('intelSub').textContent = t.intelSub;
   el('memoriLang').textContent = lang.toUpperCase();
 
   // Nav labels
-  document.querySelectorAll('[data-key]').forEach(el => {
-    const key = el.getAttribute('data-key');
-    if (t[key]) el.textContent = t[key];
+  document.querySelectorAll('[data-key]').forEach(node => {
+    const key = node.getAttribute('data-key');
+    if (t[key]) node.textContent = t[key];
   });
 
   buildCategories();
@@ -1895,8 +1942,6 @@ function renderCart() {
   const totalEl = el('cartTotal');
   const dividerEl = el('cartDivider');
   const sendBtn = el('sendOrderBtn');
-  const emptyEl = el('cartEmpty');
-
   if (cart.length === 0) {
     itemsEl.innerHTML = `<div class="cart-empty" id="cartEmpty">${t.cartEmpty}</div>`;
     totalEl.style.display = 'none';
@@ -2207,7 +2252,7 @@ async function sendChat() {
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: systemPrompt,
-        messages: chatHistory.map(m => ({ role: m.role, content: m.content }))
+        messages: chatHistory.slice(-20).map(m => ({ role: m.role, content: m.content }))
       })
     });
 
