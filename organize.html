@@ -12,9 +12,9 @@
   --bg3: #1a1a1a;
   --card: #141414;
   --border: #2a2a2a;
-  --primary: #FF6B00;
-  --primary-glow: rgba(255,107,0,0.15);
-  --primary-dark: #cc5500;
+  --primary: #00FF88;
+  --primary-glow: rgba(0,255,136,0.12);
+  --primary-dark: #00cc6a;
   --gold: #FFB800;
   --text: #ffffff;
   --text2: #aaaaaa;
@@ -158,8 +158,41 @@ select.input-field { cursor: pointer; }
 /* ═══════════════════════════════════
    TAB 1 — ORDINA
 ═══════════════════════════════════ */
-.hero-banner {
-  background: linear-gradient(135deg, var(--primary) 0%, #FF9500 100%);
+.globe-icon { font-size: 20px; margin-right: 2px; animation: spin 12s linear infinite; display: inline-block; }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* ── SEARCH BAR ── */
+.search-bar-wrap {
+  position: relative; margin-bottom: 18px;
+}
+.search-bar {
+  width: 100%; background: var(--bg3); border: 1.5px solid var(--border);
+  border-radius: 50px; color: var(--text); font-family: var(--font-body);
+  font-size: 15px; padding: 13px 50px 13px 48px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,255,136,0.1); }
+.search-bar::placeholder { color: var(--text3); }
+.search-icon {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 18px; pointer-events: none;
+}
+.geo-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: var(--primary); border: none; width: 36px; height: 36px;
+  border-radius: 50%; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; font-size: 16px; transition: all 0.2s;
+}
+.geo-btn:active { transform: translateY(-50%) scale(0.95); }
+.geo-btn.loading { animation: geoPulse 0.8s infinite alternate; }
+@keyframes geoPulse { from{opacity:1} to{opacity:0.5} }
+.geo-status {
+  font-size: 12px; color: var(--text3); margin-top: 6px; padding-left: 16px;
+  min-height: 16px; transition: color 0.3s;
+}
+.geo-status.found { color: var(--primary); }
+.geo-status.error { color: var(--red); }
+  background: linear-gradient(135deg, #00cc6a 0%, #00FF88 100%);
   border-radius: var(--radius); padding: 24px 20px; margin-bottom: 20px; position: relative; overflow: hidden;
 }
 .hero-banner::before {
@@ -167,8 +200,8 @@ select.input-field { cursor: pointer; }
   width: 120px; height: 120px; border-radius: 50%;
   background: rgba(255,255,255,0.1);
 }
-.hero-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #fff; line-height: 1.2; }
-.hero-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 6px; }
+.hero-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #0a2a15; line-height: 1.2; }
+.hero-sub { font-size: 13px; color: rgba(0,30,15,0.75); margin-top: 6px; }
 
 .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 .cat-btn {
@@ -397,7 +430,7 @@ select.input-field { cursor: pointer; }
 
 <!-- HEADER -->
 <header class="app-header">
-  <div class="logo">WOND<span>APP</span></div>
+  <div class="logo"><span class="globe-icon">🌍</span> WOND<span>APP</span></div>
   <div class="lang-selector" id="langSelector"></div>
 </header>
 
@@ -405,6 +438,14 @@ select.input-field { cursor: pointer; }
 
   <!-- ══════════ TAB 1: ORDINA ══════════ -->
   <section class="tab-section active" id="tab-ordina">
+    <!-- Search Bar + Geolocation -->
+    <div class="search-bar-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-bar" id="searchBar" placeholder="Cerca prodotti, servizi, merchant..." oninput="filterProducts(this.value)">
+      <button class="geo-btn" id="geoBtn" onclick="getLocation()" title="Usa la mia posizione">📍</button>
+    </div>
+    <div class="geo-status" id="geoStatus"></div>
+
     <div class="hero-banner">
       <div class="hero-title" id="heroTitle">Ordina qualsiasi cosa</div>
       <div class="hero-sub" id="heroSub">H24 · 7 giorni su 7 · Istantaneo</div>
@@ -963,8 +1004,110 @@ function getTrackingSteps(lang) {
 }
 
 // ══════════════════════════════════════
-// INIT
+// GEOLOCATION
 // ══════════════════════════════════════
+let userLocation = null;
+
+function getLocation() {
+  const btn = document.getElementById('geoBtn');
+  const status = document.getElementById('geoStatus');
+  const searchBar = document.getElementById('searchBar');
+
+  if (!navigator.geolocation) {
+    status.textContent = '⚠️ Geolocalizzazione non supportata dal browser';
+    status.className = 'geo-status error';
+    return;
+  }
+
+  btn.classList.add('loading');
+  status.textContent = '📡 Localizzazione in corso...';
+  status.className = 'geo-status';
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude, accuracy } = position.coords;
+      userLocation = { lat: latitude, lng: longitude };
+
+      btn.classList.remove('loading');
+      status.textContent = '⏳ Recupero indirizzo...';
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=${currentLang}`,
+          { headers: { 'User-Agent': 'WONDAPP/1.0' } }
+        );
+        const data = await res.json();
+        const addr = data.address;
+        const parts = [
+          addr.road || addr.pedestrian || addr.footway,
+          addr.house_number,
+          addr.city || addr.town || addr.village || addr.municipality
+        ].filter(Boolean);
+
+        const locationString = parts.join(', ') || data.display_name?.split(',').slice(0,2).join(',');
+        searchBar.value = locationString;
+        status.textContent = `📍 ${locationString} (±${Math.round(accuracy)}m)`;
+        status.className = 'geo-status found';
+        showToast('📍 Posizione trovata!');
+      } catch (e) {
+        status.textContent = `📍 Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
+        status.className = 'geo-status found';
+      }
+    },
+    (error) => {
+      btn.classList.remove('loading');
+      const msgs = {
+        1: '🚫 Permesso negato. Abilita la posizione nelle impostazioni del browser.',
+        2: '📡 Segnale GPS non disponibile. Riprova.',
+        3: '⏱️ Timeout — riprova tra qualche secondo.'
+      };
+      status.textContent = msgs[error.code] || '❌ Errore sconosciuto';
+      status.className = 'geo-status error';
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+  );
+}
+
+// ══════════════════════════════════════
+// SEARCH FILTER
+// ══════════════════════════════════════
+function filterProducts(query) {
+  if (!query.trim()) {
+    buildProducts(currentCat);
+    return;
+  }
+  const q = query.toLowerCase();
+  const list = document.getElementById('productList');
+  const allProducts = catalog.flat();
+  const filtered = allProducts.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.desc.toLowerCase().includes(q)
+  );
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>Nessun risultato per "${query}"</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((p, i) => {
+    const globalIdx = catalog.flat().indexOf(p);
+    const catIdx = catalog.findIndex(c => c.includes(p));
+    const prodIdx = catalog[catIdx].indexOf(p);
+    return `<div class="product-item" onclick="addToCart(${catIdx},${prodIdx})">
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="product-price">€${p.price.toFixed(2)}</div>
+        <button class="product-add" onclick="event.stopPropagation();addToCart(${catIdx},${prodIdx})">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+
 function init() {
   buildLangSelector();
   applyLang('it');
