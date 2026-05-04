@@ -177,7 +177,7 @@ select.input-field { cursor: pointer; }
   padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
   display: flex; align-items: center; gap: 14px;
 }
-.merchant-card:active, .merchant-card.selected { border-color: var(--primary); background: var(--primary-glow); }
+.merchant-card:active { border-color: var(--primary); background: var(--primary-glow); }
 .merchant-avatar {
   width: 52px; height: 52px; border-radius: 14px; background: var(--bg3);
   display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0;
@@ -186,11 +186,7 @@ select.input-field { cursor: pointer; }
 .merchant-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .merchant-type { font-size: 12px; color: var(--text2); margin-top: 1px; }
 .merchant-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
-.merchant-rating { font-size: 12px; color: var(--gold); font-weight: 600; }
-.merchant-status { font-size: 11px; font-weight: 600; }
-.merchant-status.open { color: var(--primary); }
-.merchant-status.closed { color: var(--red); }
-.no-results { text-align: center; padding: 30px 20px; color: var(--text3); font-size: 14px; }
+.product-info { flex: 1; min-width: 0; }
 
 /* ── SEARCH BAR ── */
 .search-bar-wrap {
@@ -245,17 +241,15 @@ select.input-field { cursor: pointer; }
   cursor: pointer; transition: all 0.2s;
 }
 .product-item:active { border-color: var(--primary); }
-.product-info {}
 .product-name { font-weight: 600; font-size: 15px; }
 .product-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
 .product-price { font-family: var(--font-display); font-weight: 700; color: var(--primary); font-size: 16px; }
 .product-add {
   width: 34px; height: 34px; border-radius: 50%; background: var(--primary);
-  border: none; color: #fff; font-size: 20px; cursor: pointer; display: flex;
+  border: none; color: #062a16; font-size: 20px; cursor: pointer; display: flex;
   align-items: center; justify-content: center; flex-shrink: 0; margin-left: 12px;
 }
 
-.cart-section { margin-top: 4px; }
 .cart-item {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 0; border-bottom: 1px solid var(--border);
@@ -301,11 +295,10 @@ select.input-field { cursor: pointer; }
 .step.done .step-dot { background: var(--primary); border-color: var(--primary); }
 .step.active-step .step-dot {
   background: var(--primary-glow); border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(255,107,0,0.15);
+  box-shadow: 0 0 0 4px rgba(0,255,136,0.2);
   animation: pulse 1.5s infinite;
 }
 @keyframes pulse { 0%,100%{box-shadow:0 0 0 4px rgba(0,255,136,0.2)} 50%{box-shadow:0 0 0 8px rgba(0,255,136,0.06)} }
-.step-content {}
 .step-title { font-weight: 600; font-size: 15px; }
 .step-time { font-size: 12px; color: var(--text2); margin-top: 2px; }
 
@@ -395,7 +388,6 @@ select.input-field { cursor: pointer; }
 }
 .order-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .order-card-id { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
-.order-card-time { font-size: 12px; color: var(--text2); }
 .order-card-items { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.6; }
 .order-card-footer { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
 .order-card-total { font-weight: 700; font-size: 18px; color: var(--primary); }
@@ -471,7 +463,7 @@ select.input-field { cursor: pointer; }
   display: flex; align-items: center; justify-content: center;
 }
 .modal-map {
-  height: 200px; margin: 0 16px; border-radius: var(--radius); overflow: hidden;
+  height: 220px; margin: 0 16px; border-radius: var(--radius); overflow: hidden;
   border: 1px solid var(--border); position: relative;
 }
 .modal-info { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
@@ -497,14 +489,29 @@ select.input-field { cursor: pointer; }
 .nav-apple { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
 .modal-order-btn { margin: 0 16px 24px; }
 
-/* ── WONDAPP MAP MARKER ── */
-.wondapp-marker {
-  background: var(--primary); border: 3px solid #fff;
-  border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
-  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+/* ── LEAFLET POPUP OVERRIDE ── */
+.wondapp-popup .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
-.wondapp-marker-inner { transform: rotate(45deg); font-size: 14px; }
+.wondapp-popup .leaflet-popup-content {
+  margin: 0 !important;
+}
+.wondapp-popup .leaflet-popup-tip-container {
+  display: none !important;
+}
+.leaflet-control-zoom a {
+  background: rgba(8,8,8,0.88) !important;
+  color: #00FF88 !important;
+  border-color: rgba(0,255,136,0.3) !important;
+  font-weight: 700 !important;
+}
+.leaflet-control-zoom a:hover {
+  background: rgba(0,255,136,0.15) !important;
+}
 
 /* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
@@ -1285,7 +1292,7 @@ let currentSearchLabel = '';
 
 // Icon + label from search term (used as fallback for Nominatim results)
 function getContextFromSearch(term) {
-  const t = normalizeQuery(term);
+  const q = normalizeQuery(term);
   const iconMap = [
     { keys:['benzinaio','benzina','carburante','fuel','petrol','diesel'], icon:'⛽', label:'Stazione di servizio' },
     { keys:['farmacia','pharmacy','farmaco'], icon:'💊', label:'Farmacia' },
@@ -1315,7 +1322,7 @@ function getContextFromSearch(term) {
     { keys:['ospedale','hospital'], icon:'🏥', label:'Ospedale' },
   ];
   for (const entry of iconMap) {
-    if (entry.keys.some(k => t.includes(k) || k.includes(t.split(' ')[0]))) {
+    if (entry.keys.some(k => q.includes(k) || k.includes(q.split(' ')[0]))) {
       return { icon: entry.icon, label: entry.label };
     }
   }
@@ -1546,34 +1553,34 @@ async function searchWithNominatim(searchTerm, resultsEl) {
 }
 
 function getIconForTags(tags) {
-  const t = JSON.stringify(tags).toLowerCase();
-  if (t.includes('car_wash') || t.includes('autolavaggio')) return '🚗';
-  if (t.includes('restaurant') || t.includes('pizza') || t.includes('food')) return '🍽️';
-  if (t.includes('pharmacy')) return '💊';
-  if (t.includes('fuel')) return '⛽';
-  if (t.includes('cafe')) return '☕';
-  if (t.includes('supermarket')) return '🛒';
-  if (t.includes('bicycle')) return '🚲';
-  if (t.includes('florist')) return '🌸';
-  if (t.includes('hairdresser') || t.includes('barber')) return '✂️';
-  if (t.includes('laundry')) return '👕';
-  if (t.includes('veterinary')) return '🐾';
-  if (t.includes('bank') || t.includes('atm')) return '🏦';
-  if (t.includes('tobacco')) return '🚬';
-  if (t.includes('bakery') || t.includes('pastry')) return '🥐';
-  if (t.includes('hotel') || t.includes('hostel')) return '🏨';
-  if (t.includes('dentist')) return '🦷';
-  if (t.includes('car_repair') || t.includes('mechanic') || t.includes('officina')) return '🔧';
-  if (t.includes('post')) return '📮';
-  if (t.includes('fitness') || t.includes('sport')) return '💪';
-  if (t.includes('books')) return '📚';
-  if (t.includes('electronics') || t.includes('mobile')) return '📱';
-  if (t.includes('clothes') || t.includes('fashion')) return '👗';
-  if (t.includes('hardware')) return '🔨';
-  if (t.includes('optician')) return '👓';
-  if (t.includes('jewelry')) return '💍';
-  if (t.includes('pet')) return '🐶';
-  if (t.includes('fast_food')) return '🍔';
+  const json = JSON.stringify(tags).toLowerCase();
+  if (json.includes('car_wash') || json.includes('autolavaggio')) return '🚗';
+  if (json.includes('restaurant') || json.includes('pizza') || json.includes('food')) return '🍽️';
+  if (json.includes('pharmacy')) return '💊';
+  if (json.includes('fuel')) return '⛽';
+  if (json.includes('cafe')) return '☕';
+  if (json.includes('supermarket')) return '🛒';
+  if (json.includes('bicycle')) return '🚲';
+  if (json.includes('florist')) return '🌸';
+  if (json.includes('hairdresser') || json.includes('barber')) return '✂️';
+  if (json.includes('laundry')) return '👕';
+  if (json.includes('veterinary')) return '🐾';
+  if (json.includes('bank') || json.includes('atm')) return '🏦';
+  if (json.includes('tobacco')) return '🚬';
+  if (json.includes('bakery') || json.includes('pastry')) return '🥐';
+  if (json.includes('hotel') || json.includes('hostel')) return '🏨';
+  if (json.includes('dentist')) return '🦷';
+  if (json.includes('car_repair') || json.includes('mechanic') || json.includes('officina')) return '🔧';
+  if (json.includes('post')) return '📮';
+  if (json.includes('fitness') || json.includes('sport')) return '💪';
+  if (json.includes('books')) return '📚';
+  if (json.includes('electronics') || json.includes('mobile')) return '📱';
+  if (json.includes('clothes') || json.includes('fashion')) return '👗';
+  if (json.includes('hardware')) return '🔨';
+  if (json.includes('optician')) return '👓';
+  if (json.includes('jewelry')) return '💍';
+  if (json.includes('pet')) return '🐶';
+  if (json.includes('fast_food')) return '🍔';
   return '🏪';
 }
 
@@ -1642,8 +1649,11 @@ function openMerchantDetail(idx) {
 
   const tags = el.tags || {};
   const name = tags.brand || tags.name || 'Negozio';
-  const icon = getIconForTags(tags);
-  const type = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ');
+  const rawIcon = getIconForTags(tags);
+  const icon = rawIcon === '🏪' ? currentSearchIcon : rawIcon;
+  const skipTypes = ['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
+  const rawType = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ').trim();
+  const type = skipTypes.includes(rawType) ? currentSearchLabel : (rawType || currentSearchLabel);
   const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
   const city = tags['addr:city'] || '';
   const address = [street, city].filter(Boolean).join(', ');
@@ -1710,35 +1720,112 @@ function initMerchantMap(lat, lng, name, icon) {
   if (leafletMap) { leafletMap.remove(); leafletMap = null; }
 
   leafletMap = L.map(container, {
-    center: [lat, lng], zoom: 15,
+    center: [lat, lng], zoom: 16,
     zoomControl: false, attributionControl: false
   });
 
+  // Dark map tiles
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19
+    maxZoom: 19, subdomains: 'abcd'
   }).addTo(leafletMap);
 
-  // Custom WONDAPP marker
+  // Zoom control - bottom right
+  L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
+  // WONDAPP watermark logo — top left corner of map
+  const WondappControl = L.Control.extend({
+    options: { position: 'topleft' },
+    onAdd: function() {
+      const div = L.DomUtil.create('div');
+      div.innerHTML = `
+        <div style="
+          background:rgba(8,8,8,0.88);
+          border:1.5px solid rgba(0,255,136,0.4);
+          border-radius:10px;
+          padding:6px 12px;
+          display:flex;
+          align-items:center;
+          gap:6px;
+          backdrop-filter:blur(8px);
+          pointer-events:none;
+        ">
+          <span style="font-size:14px;line-height:1;">🌍</span>
+          <span style="
+            font-family:'Syne',sans-serif;
+            font-size:13px;
+            font-weight:800;
+            color:#ffffff;
+            letter-spacing:-0.3px;
+            line-height:1;
+          ">WOND<span style="color:#00FF88">APP</span></span>
+        </div>`;
+      return div;
+    }
+  });
+  new WondappControl().addTo(leafletMap);
+
+  // Custom WONDAPP marker — pin shape with globe
   const wondappIcon = L.divIcon({
     className: '',
-    html: `<div style="
-      background:#00FF88; border:3px solid #fff; border-radius:50% 50% 50% 0;
-      transform:rotate(-45deg); width:36px; height:36px;
-      display:flex; align-items:center; justify-content:center;
-      box-shadow:0 3px 12px rgba(0,255,136,0.5);
-    ">
-      <div style="transform:rotate(45deg);font-size:16px">🌍</div>
-    </div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -40]
+    html: `
+      <div style="position:relative;width:44px;height:52px;">
+        <div style="
+          position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+          width:0;height:0;
+          border-left:10px solid transparent;
+          border-right:10px solid transparent;
+          border-top:14px solid #00cc6a;
+        "></div>
+        <div style="
+          position:absolute;top:0;left:0;
+          width:44px;height:44px;border-radius:50%;
+          background:linear-gradient(135deg,#00FF88,#00cc6a);
+          border:3px solid #ffffff;
+          box-shadow:0 4px 16px rgba(0,255,136,0.55),0 2px 6px rgba(0,0,0,0.4);
+          display:flex;align-items:center;justify-content:center;
+        ">
+          <span style="font-size:20px;line-height:1;">🌍</span>
+        </div>
+      </div>`,
+    iconSize: [44, 52],
+    iconAnchor: [22, 52],
+    popupAnchor: [0, -56]
   });
+
+  // Custom popup style
+  const popup = L.popup({
+    className: 'wondapp-popup',
+    closeButton: false,
+    offset: [0, -56]
+  }).setContent(`
+    <div style="
+      background:#080808;
+      border:1.5px solid rgba(0,255,136,0.35);
+      border-radius:10px;
+      padding:8px 14px;
+      text-align:center;
+      min-width:120px;
+    ">
+      <div style="font-size:16px;margin-bottom:3px;">${icon}</div>
+      <div style="
+        font-family:'Syne',sans-serif;
+        font-size:13px;font-weight:700;
+        color:#ffffff;line-height:1.3;
+        max-width:160px;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      ">${name}</div>
+      <div style="
+        font-size:10px;color:#00FF88;font-weight:600;
+        margin-top:3px;letter-spacing:0.5px;
+      ">● WONDAPP</div>
+    </div>`);
 
   L.marker([lat, lng], { icon: wondappIcon })
     .addTo(leafletMap)
-    .bindPopup(`<strong style="color:#00FF88">WONDAPP</strong><br>${name}`, { className: 'wondapp-popup' })
+    .bindPopup(popup)
     .openPopup();
-  setTimeout(() => leafletMap && leafletMap.invalidateSize(), 50);
+
+  setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 50);
 }
 
 function closeModal(e) {
@@ -1760,11 +1847,6 @@ function openNav(app) {
     apple: `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
   };
   window.open(urls[app], '_blank');
-}
-
-function getLocationThenSearch(query) {
-  getSilentLocation();
-  setTimeout(() => doSearch(query), 1500);
 }
 
 async function searchByCity() {
@@ -2179,7 +2261,7 @@ function buildCompetitors() {
         <span class="badge ${threatColor}">${c.threat}%</span>
       </div>
       <div class="comp-desc">${c.desc}</div>
-      <div class="comp-tags">${c.tags.map(t => `<span class="comp-tag">${t}</span>`).join('')}</div>
+      <div class="comp-tags">${c.tags.map(tag => `<span class="comp-tag">${tag}</span>`).join('')}</div>
       <div class="threat-bar">
         <div class="threat-label"><span>Threat Level</span><span>${c.threat}%</span></div>
         <div class="threat-track"><div class="threat-fill" style="width:${c.threat}%"></div></div>
@@ -2223,8 +2305,8 @@ function showTyping() {
 }
 
 function removeTyping() {
-  const t = document.getElementById('typingIndicator');
-  if (t) t.remove();
+  const typingEl = document.getElementById('typingIndicator');
+  if (typingEl) typingEl.remove();
 }
 
 function handleChatKey(e) {
@@ -2282,10 +2364,11 @@ function switchTab(tabId, btn) {
 // TOAST
 // ══════════════════════════════════════
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  const toastEl = document.getElementById('toast');
+  if (!toastEl) return;
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(() => toastEl.classList.remove('show'), 2500);
 }
 
 // ══════════════════════════════════════
