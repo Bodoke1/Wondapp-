@@ -1173,63 +1173,128 @@ async function executeOverpassSearch(searchTerm, resultsEl) {
     <div style="font-size:14px">Ricerca in corso...</div>
   </div>`;
 
-  try {
-    let nominatimQ = searchTerm;
+  const osmTag = getOsmQuery(searchTerm);
 
-    const url = `https://nominatim.openstreetmap.org/search?` + new URLSearchParams({
-      q: nominatimQ,
+  // STRATEGY: Overpass for categories (precise), Nominatim for names
+  if (osmTag && userLocation) {
+    await searchWithOverpass(searchTerm, osmTag, resultsEl);
+  } else {
+    await searchWithNominatim(searchTerm, resultsEl);
+  }
+}
+
+async function searchWithOverpass(searchTerm, osmTag, resultsEl) {
+  const { lat, lng } = userLocation;
+  const radius = 5000;
+  try {
+    const query = `[out:json][timeout:15];
+(
+  ${osmTag}(around:${radius},${lat},${lng});
+);
+out center 30;`;
+
+    const res = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: query
+    });
+    if (!res.ok) throw new Error('overpass');
+    const data = await res.json();
+
+    let elements = data.elements
+      .filter(el => {
+        const name = el.tags?.name || '';
+        // Filter out disused/former/unnamed
+        if (!name) return false;
+        if (/^ex\s/i.test(name)) return false;
+        if (el.tags?.disused || el.tags?.abandoned) return false;
+        return true;
+      })
+      .map(el => {
+        const elLat = el.lat || el.center?.lat;
+        const elLng = el.lon || el.center?.lon;
+        const dist = haversine(lat, lng, elLat, elLng);
+        return {
+          tags: {
+            name: el.tags?.name || '',
+            amenity: el.tags?.amenity || el.tags?.shop || '',
+            'addr:street': el.tags?.['addr:street'] || '',
+            'addr:housenumber': el.tags?.['addr:housenumber'] || '',
+            'addr:city': el.tags?.['addr:city'] || el.tags?.['addr:town'] || '',
+            phone: el.tags?.phone || el.tags?.['contact:phone'] || '',
+            opening_hours: el.tags?.opening_hours || '',
+            brand: el.tags?.brand || ''
+          },
+          dist, elLat, elLng
+        };
+      });
+
+    elements.sort((a, b) => a.dist - b.dist);
+    elements = elements.slice(0, 25);
+
+    if (elements.length === 0) {
+      // Fallback to Nominatim if Overpass returns nothing
+      await searchWithNominatim(searchTerm, resultsEl);
+    } else {
+      renderSearchResults(elements, searchTerm);
+    }
+  } catch(e) {
+    // Fallback to Nominatim on Overpass error
+    await searchWithNominatim(searchTerm, resultsEl);
+  }
+}
+
+async function searchWithNominatim(searchTerm, resultsEl) {
+  try {
+    const params = {
+      q: searchTerm,
       format: 'json',
       limit: 30,
       addressdetails: 1,
-      extratags: 1,
-      ...(userLocation ? { lat: userLocation.lat, lon: userLocation.lng, bounded: 0 } : {})
-    });
+      extratags: 1
+    };
 
+    const url = `https://nominatim.openstreetmap.org/search?` + new URLSearchParams(params);
     const response = await fetch(url, {
       headers: { 'User-Agent': 'WONDAPP/1.0', 'Accept-Language': currentLang }
     });
-
     if (!response.ok) throw new Error('Nominatim error');
     const data = await response.json();
 
-    if (!data.length) {
-      renderSearchResults([], searchTerm);
-      return;
-    }
+    const elements = data
+      .filter(item => {
+        const name = item.display_name.split(',')[0];
+        if (/^ex\s/i.test(name)) return false;
+        if (item.type === 'brownfield') return false;
+        if (item.class === 'landuse' && item.type !== 'commercial') return false;
+        return true;
+      })
+      .map(item => {
+        const elLat = parseFloat(item.lat);
+        const elLng = parseFloat(item.lon);
+        const dist = userLocation ? haversine(userLocation.lat, userLocation.lng, elLat, elLng) : 0;
+        const addr = item.address || {};
+        return {
+          tags: {
+            name: item.display_name.split(',')[0],
+            amenity: item.type || item.class,
+            'addr:street': addr.road || addr.pedestrian || '',
+            'addr:housenumber': addr.house_number || '',
+            'addr:city': addr.city || addr.town || addr.village || addr.municipality || '',
+            phone: item.extratags?.phone || '',
+            opening_hours: item.extratags?.opening_hours || '',
+            brand: item.extratags?.brand || ''
+          },
+          dist, elLat, elLng
+        };
+      });
 
-    // Map to internal format with distance
-    const elements = data.map(item => {
-      const elLat = parseFloat(item.lat);
-      const elLng = parseFloat(item.lon);
-      const dist = userLocation ? haversine(userLocation.lat, userLocation.lng, elLat, elLng) : 0;
-      const addr = item.address || {};
-      return {
-        tags: {
-          name: item.display_name.split(',')[0],
-          amenity: item.type || item.class,
-          'addr:street': addr.road || addr.pedestrian || '',
-          'addr:housenumber': addr.house_number || '',
-          'addr:city': addr.city || addr.town || addr.village || addr.municipality || '',
-          phone: item.extratags?.phone || '',
-          opening_hours: item.extratags?.opening_hours || '',
-          website: item.extratags?.website || ''
-        },
-        dist,
-        elLat,
-        elLng,
-        type: item.type
-      };
-    });
-
-    // Sort by distance if we have GPS
     if (userLocation) elements.sort((a, b) => a.dist - b.dist);
-
     renderSearchResults(elements, searchTerm);
 
-  } catch (err) {
+  } catch(err) {
     resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
       <div style="font-size:32px;margin-bottom:10px">⚠️</div>
-      <div style="font-size:14px">Errore di connessione. Riprova.</div>
+      <div style="font-size:14px">Errore connessione. Riprova.</div>
     </div>`;
   }
 }
@@ -1279,30 +1344,30 @@ function renderSearchResults(elements, query) {
 
   resultsEl.innerHTML = `
     <div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding-left:4px;display:flex;justify-content:space-between;align-items:center">
-      <span><strong style="color:var(--primary)">${elements.length}</strong> negozi trovati vicino a te</span>
-      <span style="color:var(--text3);font-size:11px">📍 dal più vicino</span>
+      <span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${userLocation?' vicino a te':''}</span>
+      ${userLocation ? `<span style="color:var(--text3);font-size:11px">📍 dal più vicino</span>` : ''}
     </div>
     ${elements.map((el, i) => {
       const tags = el.tags || {};
-      const name = tags.name || tags['name:it'] || tags['name:en'] || '';
-      if (!name || name.toLowerCase().includes('senza nome')) return '';
+      const name = tags.brand || tags.name || '';
+      if (!name) return '';
       const icon = getIconForTags(tags);
-      const type = tags.amenity || tags.shop || tags.tourism || tags.leisure || '';
+      const type = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ');
       const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
-      const city = tags['addr:city'] || tags['addr:town'] || '';
+      const city = tags['addr:city'] || '';
       const address = [street, city].filter(Boolean).join(', ');
-      const phone = tags.phone || tags['contact:phone'] || '';
       const hours = tags.opening_hours || '';
-      const website = tags.website || tags['contact:website'] || '';
+      const phone = tags.phone || '';
+      const distStr = userLocation && el.dist > 0 ? `📏 ${formatDist(el.dist)}` : '';
 
       return `<div class="merchant-card" onclick="openMerchantDetail(${i})">
         <div class="merchant-avatar">${icon}</div>
         <div class="merchant-info">
           <div class="merchant-name">${name}</div>
-          <div class="merchant-type">${type.replace(/_/g,' ')}</div>
+          ${type ? `<div class="merchant-type">${type}</div>` : ''}
           ${address ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">📍 ${address}</div>` : ''}
           <div class="merchant-meta">
-            <span style="font-size:12px;font-weight:700;color:var(--primary)">📏 ${formatDist(el.dist)}</span>
+            ${distStr ? `<span style="font-size:12px;font-weight:700;color:var(--primary)">${distStr}</span>` : ''}
             ${hours ? `<span style="font-size:11px;color:var(--text2)">🕐 ${hours.split(';')[0]}</span>` : ''}
             ${phone ? `<span style="font-size:11px;color:var(--blue)">📞</span>` : ''}
           </div>
