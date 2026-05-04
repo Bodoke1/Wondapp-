@@ -1077,21 +1077,43 @@ const osmMap = [
   { keys:['taxi','uber','cabify','trasporto'],                              q:`node["amenity"="taxi"]` },
 ];
 
+function normalizeQuery(raw) {
+  // Remove common qualifiers that don't affect category
+  return raw
+    .toLowerCase()
+    .replace(/\bper\s+(macchine|auto|bici|animali|bambini|uomo|donna|uomini|donne|adulti|anziani)\b/g, '')
+    .replace(/\b(di lusso|economico|economica|vicino|aperto|chiuso|h24|notturno|express|rapido|rapida)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function getOsmQuery(searchTerm) {
-  const q = searchTerm.toLowerCase().trim();
-  // Try exact match first, then word-boundary match
+  const q = normalizeQuery(searchTerm);
+
+  // 1. Exact full match
   for (const entry of osmMap) {
-    // Exact match
     if (entry.keys.some(k => k === q)) return entry.q;
   }
+
+  // 2. Word-boundary match on full query
   for (const entry of osmMap) {
-    // Query starts with key or key is fully contained as a word
     if (entry.keys.some(k => {
-      if (k.length < 4) return false; // skip very short keys to avoid false positives
-      const regex = new RegExp(`(^|\\s)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(\\s|$)`);
-      return regex.test(q) || q === k;
+      if (k.length < 4) return false;
+      const safe = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`(^|\\s)${safe}(\\s|$)`).test(q);
     })) return entry.q;
   }
+
+  // 3. Try just the first word (handles "autolavaggio per macchine" → "autolavaggio")
+  const firstWord = q.split(' ')[0];
+  if (firstWord && firstWord !== q) {
+    for (const entry of osmMap) {
+      if (entry.keys.some(k => k === firstWord || (k.length >= 4 &&
+        new RegExp(`(^|\\s)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(\\s|$)`).test(firstWord)
+      ))) return entry.q;
+    }
+  }
+
   return null;
 }
 
@@ -1223,13 +1245,14 @@ async function executeOverpassSearch(searchTerm, resultsEl) {
 
   let osmTag = getOsmQuery(searchTerm);
 
-  // If not in static map → ask AI
+  // If not in static map → ask AI (only if API available)
   if (!osmTag && userLocation) {
     resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
       <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🧠</div>
       <div style="font-size:14px">MEMORI-AI analizza la ricerca...</div>
     </div>`;
-    const aiResult = await getOsmTagFromAI(searchTerm);
+    const normalizedTerm = normalizeQuery(searchTerm);
+    const aiResult = await getOsmTagFromAI(normalizedTerm);
     if (aiResult.found && aiResult.query) {
       osmTag = aiResult.query;
     }
@@ -1367,6 +1390,7 @@ async function searchWithNominatim(searchTerm, resultsEl) {
 
 function getIconForTags(tags) {
   const t = JSON.stringify(tags).toLowerCase();
+  if (t.includes('car_wash') || t.includes('autolavaggio')) return '🚗';
   if (t.includes('restaurant') || t.includes('pizza') || t.includes('food')) return '🍽️';
   if (t.includes('pharmacy')) return '💊';
   if (t.includes('fuel')) return '⛽';
@@ -1409,9 +1433,12 @@ function renderSearchResults(elements, query, radius = 0) {
     return;
   }
 
+  const nearestDist = elements[0]?.dist || 0;
+  const proximityText = nearestDist > 10000 ? 'nella tua regione' : nearestDist > 3000 ? 'nella tua area' : 'vicino a te';
+
   resultsEl.innerHTML = `
     <div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding-left:4px;display:flex;justify-content:space-between;align-items:center">
-      <span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${userLocation?' vicino a te':''}</span>
+      <span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${userLocation?' '+proximityText:''}</span>
       ${userLocation ? `<span style="color:var(--text3);font-size:11px">📍 dal più vicino</span>` : ''}
     </div>
     ${elements.map((el, i) => {
@@ -1419,19 +1446,23 @@ function renderSearchResults(elements, query, radius = 0) {
       const name = tags.brand || tags.name || '';
       if (!name) return '';
       const icon = getIconForTags(tags);
+      const skipTypes = ['roof','yes','building','construction','brownfield','landuse','residential','area'];
       const type = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ');
+      const showType = skipTypes.includes(type.trim()) ? '' : type;
       const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
       const city = tags['addr:city'] || '';
       const address = [street, city].filter(Boolean).join(', ');
       const hours = tags.opening_hours || '';
       const phone = tags.phone || '';
-      const distStr = userLocation && el.dist > 0 ? `📏 ${formatDist(el.dist)}` : '';
+      const dist = el.dist || 0;
+      const distStr = dist > 0 ? `📏 ${formatDist(dist)}` : '';
+      const proximityLabel = dist > 10000 ? 'zona' : dist > 3000 ? 'area' : 'vicino';
 
       return `<div class="merchant-card" onclick="openMerchantDetail(${i})">
         <div class="merchant-avatar">${icon}</div>
         <div class="merchant-info">
           <div class="merchant-name">${name}</div>
-          ${type ? `<div class="merchant-type">${type}</div>` : ''}
+          ${showType ? `<div class="merchant-type">${showType}</div>` : ''}
           ${address ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">📍 ${address}</div>` : ''}
           <div class="merchant-meta">
             ${distStr ? `<span style="font-size:12px;font-weight:700;color:var(--primary)">${distStr}</span>` : ''}
