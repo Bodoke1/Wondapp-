@@ -294,6 +294,14 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
       </div>
       <div style="margin-left:auto"><span class="badge badge-orange" id="memoriLang">IT</span></div>
     </div>
+    <div id="apiKeyBanner" style="display:none;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;flex-shrink:0;">
+      <div style="font-size:12px;color:#FF4444;font-weight:700;margin-bottom:8px;">&#128274; API Key richiesta per MEMORI-AI</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="flex:1;background:#1a1a1a;border:1.5px solid #2a2a2a;border-radius:8px;color:#fff;font-size:13px;padding:9px 12px;outline:none;font-family:monospace;">
+        <button onclick="saveApiKey()" style="background:#00FF88;border:none;border-radius:8px;color:#062a16;font-weight:700;font-size:13px;padding:9px 16px;cursor:pointer;white-space:nowrap;">Salva</button>
+      </div>
+      <div style="font-size:11px;color:#555;margin-top:6px;">La chiave non viene salvata — solo in memoria durante la sessione.</div>
+    </div>
     <div class="chat-container">
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-row">
@@ -401,6 +409,9 @@ ja:{
 searchPlaceholder:"\u5e97\u8217\u3001\u30ec\u30b9\u30c8\u30e9\u30f3\u3001\u85ac\u5c40\u3092\u691c\u7d22...",
 heroTitle:"\u3044\u3064\u3067\u3082\u4f55\u3067\u3082\u6ce8\u6587",heroSub:"24\u6642\u9593 \u00b7 \u90317\u65e5 \u00b7 \u5373\u6642",catLabel:"\u30ab\u30c6\u30b4\u30ea\u30fc",prodLabel:"\u5546\u54c1\u30fb\u30b5\u30fc\u30d3\u30b9",cartLabel:"\u3054\u6ce8\u6587",cartEmpty:"\u5546\u54c1\u304c\u8ffd\u52a0\u3055\u308c\u3066\u3044\u307e\u305b\u3093",totalLabel:"\u5408\u8a08",noteLabel:"\u304a\u5e97\u3078\u306e\u30e1\u30e2",notePlaceholder:"\u4f8b\uff1a\u30e9\u30af\u30c8\u30fc\u30b9\u306a\u3057\u3001\u30a4\u30f3\u30bf\u30fc\u30db\u30f32...",sendOrderTxt:"\u6ce8\u6587\u3092\u9001\u308b",trackingTitle:"\u6ce8\u6587\u30c8\u30e9\u30c3\u30ad\u30f3\u30b0",clienteBtn:"\u304a\u5ba2\u69d8",merchantBtn:"\u5e97\u8217",noOrderTxt:"\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u6ce8\u6587\u306f\u3042\u308a\u307e\u305b\u3093\u3002\n\u6ce8\u6587\u30bf\u30d6\u304b\u3089\u6ce8\u6587\u3057\u3066\u304f\u3060\u3055\u3044\uff01",incomingLabel:"\u53d7\u4ed8\u4e2d\u306e\u6ce8\u6587",aiStatusTxt:"24\u6642\u9593\u30aa\u30f3\u30e9\u30a4\u30f3",chatPlaceholder:"\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u5165\u529b...",dashTitle:"\u30de\u30fc\u30c1\u30e3\u30f3\u30c8\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",statOrdersLabel:"\u672c\u65e5\u306e\u6ce8\u6587",statRevenueLabel:"\u672c\u65e5\u306e\u53ce\u76ca",statTimeLabel:"\u5e73\u5747\u6642\u9593",statRatingLabel:"\u8a55\u4fa1",activeOrdersTitle:"\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u6ce8\u6587",noActiveOrdersTxt:"\u73fe\u5728\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u6ce8\u6587\u306f\u3042\u308a\u307e\u305b\u3093",completedTitle:"\u672c\u65e5\u5b8c\u4e86",intelSub:"\u30b0\u30ed\u30fc\u30d0\u30eb\u7af6\u5408\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u76e3\u8996",acceptBtn:"\u2713 \u627f\u8a8d",rejectBtn:"\u2717 \u62d2\u5426",orderSent:"\u2705 \u6ce8\u6587\u3092\u9001\u4fe1\u3057\u307e\u3057\u305f\uff01",orderAccepted:"\u2705 \u6ce8\u6587\u3092\u627f\u8a8d\u3057\u307e\u3057\u305f\uff01",orderRejected:"\u274c \u6ce8\u6587\u3092\u62d2\u5426\u3057\u307e\u3057\u305f",memoriWelcome:"\u3053\u3093\u306b\u3061\u306f\uff01MEMORI-AI\u3067\u3059\u3002WONDAPP\u306e24\u6642\u9593\u30a2\u30b7\u30b9\u30bf\u30f3\u30c8\u3067\u3059\u3002\u4eca\u65e5\u306f\u3069\u306e\u3088\u3046\u306b\u304a\u624b\u4f1d\u3044\u3067\u304d\u307e\u3059\u304b\uff1f",nav_ordina:"\u6ce8\u6587",nav_tracking:"\u8ffd\u8de1",nav_memori:"MEMORI-AI",nav_dashboard:"\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",nav_intel:"\u60c5\u5831",categories:["\ud83c\udf55 \u30d5\u30fc\u30c9","\ud83d\udc8a \u85ac\u5c40","\ud83d\udeb2 \u4fee\u7406","\ud83d\udecd \u8cb7\u3044\u7269","\ud83c\udf38 \u82b1","\ud83d\udd27 \u8077\u4eba"],trackOrderDetail:"\u6700\u7d42\u66f4\u65b0",distLabel:"\u8ddd\u96e2",addressLabel:"\u4f4f\u6240",phoneLabel:"\u96fb\u8a71",hoursLabel:"\u55b6\u696d\u6642\u9593",noInfoLabel:"\u8ffd\u52a0\u60c5\u5831\u306f\u3042\u308a\u307e\u305b\u3093"
 }};
+
+// API KEY (set via UI)
+let ANTHROPIC_API_KEY='';
 
 // STATE
 let currentLang='it',currentCat=0,cart=[],orderCounter=1000,activeOrder=null,dashboardOrders=[],completedToday=[],statOrderCount=0,statRevenue=0,chatHistory=[];
@@ -543,7 +554,7 @@ return null;
 
 async function getOsmTagFromAI(searchTerm){
 try{
-const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({
 model:'claude-sonnet-4-20250514',max_tokens:150,
 system:`You are an OpenStreetMap expert. Convert search term to Overpass API node query. Return ONLY JSON: {"query":"node[\\"amenity\\"=\\"pharmacy\\"]","found":true} or {"found":false}`,
 messages:[{role:'user',content:`Search: "${searchTerm}"`}]
@@ -629,42 +640,62 @@ if(osmTag&&userLocation){await searchWithOverpass(searchTerm,osmTag,rEl);}
 else{await searchWithNominatim(searchTerm,rEl);}
 }
 
-async function searchWithOverpass(searchTerm,osmTag,rEl,radius=3000){
+async function searchWithOverpass(searchTerm,osmTag,rEl,radius=5000){
 const{lat,lng}=userLocation;
 try{
-const q=`[out:json][timeout:20];\n(\n  ${osmTag}(around:${radius},${lat},${lng});\n);\nout center 30;`;
+const wayTag=osmTag.replace(/^node/,'way');
+const relTag=osmTag.replace(/^node/,'relation');
+const q=`[out:json][timeout:30];
+(
+  ${osmTag}(around:${radius},${lat},${lng});
+  ${wayTag}(around:${radius},${lat},${lng});
+  ${relTag}(around:${radius},${lat},${lng});
+);
+out center 60;`;
 const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:q});
 if(!res.ok)throw new Error();
 const data=await res.json();
+const namesSeen=new Set();
 let els=data.elements.filter(el=>{
-const n=el.tags?.name||el.tags?.brand||'';
-if(!n)return false;
-if(/^ex\s/i.test(n))return false;
-if(el.tags?.disused||el.tags?.abandoned)return false;
-return true;
+  const n=el.tags?.name||el.tags?.brand||'';
+  if(!n)return false;
+  if(/^ex[\s-]/i.test(n))return false;
+  if(el.tags?.disused==='yes'||el.tags?.abandoned==='yes')return false;
+  return true;
 }).map(el=>{
-const eLat=el.lat||el.center?.lat,eLng=el.lon||el.center?.lon;
-const dist=haversine(lat,lng,eLat,eLng);
-return{tags:{name:el.tags?.brand||el.tags?.name||'',amenity:el.tags?.amenity||el.tags?.shop||'',
-'addr:street':el.tags?.['addr:street']||'','addr:housenumber':el.tags?.['addr:housenumber']||'',
-'addr:city':el.tags?.['addr:city']||el.tags?.['addr:town']||'',
-phone:el.tags?.phone||el.tags?.['contact:phone']||'',
-opening_hours:el.tags?.opening_hours||'',brand:el.tags?.brand||''},dist,elLat:eLat,elLng:eLng};
-});
-els.sort((a,b)=>a.dist-b.dist);els=els.slice(0,25);
-if(els.length===0&&radius<20000){
-const nr=radius===3000?10000:20000;
-rEl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text2)"><div style="animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:13px">Espando ricerca a ${nr/1000}km...</div></div>`;
-await searchWithOverpass(searchTerm,osmTag,rEl,nr);return;
+  const eLat=el.lat||el.center?.lat,eLng=el.lon||el.center?.lon;
+  if(!eLat||!eLng)return null;
+  return{tags:{
+    name:el.tags?.brand||el.tags?.name||'',
+    amenity:el.tags?.amenity||el.tags?.shop||el.tags?.tourism||el.tags?.leisure||'',
+    'addr:street':el.tags?.['addr:street']||'',
+    'addr:housenumber':el.tags?.['addr:housenumber']||'',
+    'addr:city':el.tags?.['addr:city']||el.tags?.['addr:town']||el.tags?.['addr:municipality']||'',
+    phone:el.tags?.phone||el.tags?.['contact:phone']||'',
+    opening_hours:el.tags?.opening_hours||'',
+    brand:el.tags?.brand||''
+  },dist:haversine(lat,lng,eLat,eLng),elLat:eLat,elLng:eLng};
+}).filter(Boolean);
+els.sort((a,b)=>a.dist-b.dist);
+const deduped=[];
+for(const el of els){
+  const key=(el.tags.name||'').toLowerCase().trim();
+  if(!key||namesSeen.has(key))continue;
+  namesSeen.add(key);deduped.push(el);
 }
-if(els.length===0){await searchWithNominatim(searchTerm,rEl);}
-else{window._lastSearchResults=els;renderSearchResults(els,searchTerm,radius);}
+const result=deduped.slice(0,40);
+if(result.length===0&&radius<30000){
+  const nr=radius===5000?15000:30000;
+  rEl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text2)"><div style="font-size:20px;margin-bottom:8px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:13px">Nessuno trovato in ${radius/1000}km, espando a ${nr/1000}km...</div></div>`;
+  await searchWithOverpass(searchTerm,osmTag,rEl,nr);return;
+}
+if(result.length===0){await searchWithNominatim(searchTerm,rEl);}
+else{window._lastSearchResults=result;renderSearchResults(result,searchTerm,radius);}
 }catch(e){await searchWithNominatim(searchTerm,rEl);}
 }
-
 async function searchWithNominatim(searchTerm,rEl){
 try{
-const url=`https://nominatim.openstreetmap.org/search?`+new URLSearchParams({q:searchTerm,format:'json',limit:30,addressdetails:1,extratags:1});
+const url=`https://nominatim.openstreetmap.org/search?`+new URLSearchParams({q:searchTerm,format:'json',limit:50,addressdetails:1,extratags:1,dedupe:1});
 const r=await fetch(url,{headers:{'User-Agent':'WONDAPP/1.0','Accept-Language':currentLang}});
 if(!r.ok)throw new Error();
 const data=await r.json();
@@ -727,12 +758,13 @@ rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text3)"><d
 return;
 }
 const nd=elements[0]?.dist||0;
-const pt=nd>10000?'nella tua regione':nd>3000?'nella tua area':'vicino a te';
+const farthest=elements[elements.length-1]?.dist||0;
+const rangeStr=userLocation&&nd>0?` &#183; ${formatDist(nd)}–${formatDist(farthest)}`:'';
 const skipT=['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
 rEl.innerHTML=`
 <div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding-left:4px;display:flex;justify-content:space-between;align-items:center">
-<span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${userLocation?' '+pt:''}</span>
-${userLocation?`<span style="color:var(--text3);font-size:11px">&#128205; dal pi\u00f9 vicino</span>`:''}
+<span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${rangeStr}</span>
+${userLocation?`<span style="color:var(--text3);font-size:11px">&#128205; dal più vicino</span>`:''}
 </div>
 ${elements.map((el,i)=>{
 const tags=el.tags||{};const name=tags.brand||tags.name||'';if(!name)return'';
@@ -811,8 +843,14 @@ function closeModalDirect(){document.getElementById('merchantModal').classList.r
 function openNav(app){
 if(!currentMerchantCoords)return;
 const{lat,lng}=currentMerchantCoords;
-const urls={gmaps:`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,waze:`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,apple:`http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`};
-window.open(urls[app],'_blank');
+const urls={
+  gmaps:`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+  waze:`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
+  apple:`https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
+};
+const a=document.createElement('a');
+a.href=urls[app];a.target='_blank';a.rel='noopener noreferrer';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
 async function searchByCity(){
@@ -1009,12 +1047,13 @@ function removeTyping(){const t=document.getElementById('typingIndicator');if(t)
 function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
 async function sendChat(){
 const input=el('chatInput');const text=input.value.trim();if(!text)return;
+if(!ANTHROPIC_API_KEY){checkApiKey();showToast('&#128274; Inserisci la API Key');return;}
 input.value='';input.style.height='auto';
 addUserMessage(text);showTyping();
 try{
 const ln={it:'italiano',en:'English',es:'espa\u00f1ol',fr:'fran\u00e7ais',de:'Deutsch',zh:'\u4e2d\u6587',ja:'\u65e5\u672c\u8a9e'}[currentLang]||'italiano';
 const sys=`Sei MEMORI-AI, l'assistente AI integrato in WONDAPP \u2014 una piattaforma universale H24 per ordinare da merchant locali. Rispondi sempre in ${ln}. Sei utile, conciso e conosci tutto su WONDAPP. Tono: amichevole e professionale.`;
-const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:chatHistory.slice(-20).map(m=>({role:m.role,content:m.content}))})});
+const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:chatHistory.slice(-20).map(m=>({role:m.role,content:m.content}))})});
 const data=await r.json();removeTyping();
 addAIMessage(data.content?.[0]?.text||'Mi dispiace, errore di connessione.');
 }catch(e){removeTyping();addAIMessage('\u26a0\ufe0f Errore di connessione. Riprova tra qualche secondo.');}
@@ -1028,6 +1067,21 @@ el('tab-'+tabId).classList.add('active');
 if(btn)btn.classList.add('active');
 if(tabId==='tracking')renderTrackingUI();
 if(tabId==='dashboard')updateDashboard();
+if(tabId==='memori')checkApiKey();
+}
+
+// API KEY
+function saveApiKey(){
+  const input=document.getElementById('apiKeyInput');
+  const val=(input?input.value:'').trim();
+  if(!val||!val.startsWith('sk-ant-')){showToast('&#10060; Chiave non valida');return;}
+  ANTHROPIC_API_KEY=val;
+  document.getElementById('apiKeyBanner').style.display='none';
+  showToast('&#128274; API Key salvata &#10003;');
+  if(input)input.value='';
+}
+function checkApiKey(){
+  if(!ANTHROPIC_API_KEY){document.getElementById('apiKeyBanner').style.display='block';}
 }
 
 // TOAST
