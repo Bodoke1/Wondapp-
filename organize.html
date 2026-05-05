@@ -684,13 +684,48 @@ for(const el of els){
   namesSeen.add(key);deduped.push(el);
 }
 const result=deduped.slice(0,40);
-if(result.length===0&&radius<30000){
+if(result.length<5&&radius<30000){
   const nr=radius===5000?15000:30000;
   rEl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text2)"><div style="font-size:20px;margin-bottom:8px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:13px">Nessuno trovato in ${radius/1000}km, espando a ${nr/1000}km...</div></div>`;
   await searchWithOverpass(searchTerm,osmTag,rEl,nr);return;
 }
 if(result.length===0){await searchWithNominatim(searchTerm,rEl);}
-else{window._lastSearchResults=result;renderSearchResults(result,searchTerm,radius);}
+else{
+  // Supplement with Nominatim if fewer than 8 results
+  if(result.length<8){
+    try{
+      const url=`https://nominatim.openstreetmap.org/search?`+new URLSearchParams({q:searchTerm,format:'json',limit:30,addressdetails:1,extratags:1,dedupe:1});
+      const nr=await fetch(url,{headers:{'User-Agent':'WONDAPP/1.0','Accept-Language':currentLang}});
+      if(nr.ok){
+        const nd=await nr.json();
+        const extraEls=nd.filter(i=>{
+          const n=i.display_name.split(',')[0];
+          return !(/^ex[\s-]/i.test(n))&&i.type!=='brownfield'&&!(i.class==='landuse'&&i.type!=='commercial');
+        }).map(i=>{
+          const eLat=parseFloat(i.lat),eLng=parseFloat(i.lon);
+          const dist=haversine(lat,lng,eLat,eLng);
+          const a=i.address||{};
+          return{tags:{name:i.display_name.split(',')[0],amenity:i.type||i.class,
+            'addr:street':a.road||'','addr:housenumber':a.house_number||'',
+            'addr:city':a.city||a.town||a.village||'',
+            phone:i.extratags?.phone||'',opening_hours:i.extratags?.opening_hours||'',brand:''},
+            dist,elLat:eLat,elLng:eLng};
+        });
+        const existingNames=new Set(result.map(r=>r.tags.name.toLowerCase().trim()));
+        const merged=[...result];
+        for(const e of extraEls){
+          const k=(e.tags.name||'').toLowerCase().trim();
+          if(k&&!existingNames.has(k)&&e.dist<30000){existingNames.add(k);merged.push(e);}
+        }
+        merged.sort((a,b)=>a.dist-b.dist);
+        window._lastSearchResults=merged.slice(0,40);
+        renderSearchResults(merged.slice(0,40),searchTerm,radius);
+        return;
+      }
+    }catch(e2){}
+  }
+  window._lastSearchResults=result;renderSearchResults(result,searchTerm,radius);
+}
 }catch(e){await searchWithNominatim(searchTerm,rEl);}
 }
 async function searchWithNominatim(searchTerm,rEl){
