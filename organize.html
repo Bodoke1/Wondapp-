@@ -1144,7 +1144,7 @@ function checkApiKey(){
 function saveHereKey(){
   const input=document.getElementById('hereKeyInput');
   const val=(input?input.value:'').trim();
-  if(!val){showToast('&#10060; Chiave non valida');return;}
+  if(!val||val.length<10){showToast('&#10060; Chiave non valida');return;}
   FSQ_API_KEY=val;
   document.getElementById('hereKeyBanner').style.display='none';
   showToast('&#128247; Foursquare API Key salvata &#10003;');
