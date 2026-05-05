@@ -232,6 +232,17 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
       <span class="search-icon">&#128269;</span>
       <input type="text" class="search-bar" id="searchBar" placeholder="Cerca negozi, ristoranti, farmacie..." oninput="filterProducts(this.value)">
     </div>
+    <div id="hereKeyBanner" style="display:none;background:rgba(249,72,119,0.08);border:1px solid rgba(249,72,119,0.35);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:16px;">&#128506;</span>
+        <div style="font-size:12px;color:#FF6300;font-weight:700;">Foursquare Places &mdash; risultati completi, gratis 1.000/giorno</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="hereKeyInput" placeholder="Incolla qui la tua Foursquare API Key..." style="flex:1;background:#1a1a1a;border:1.5px solid #2a2a2a;border-radius:8px;color:#fff;font-size:13px;padding:9px 12px;outline:none;font-family:monospace;">
+        <button onclick="saveHereKey()" style="background:#F94877;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:13px;padding:9px 16px;cursor:pointer;white-space:nowrap;">Salva</button>
+      </div>
+      <div style="font-size:11px;color:#555;margin-top:6px;">Gratis su foursquare.com/developers &nbsp;&#8226;&nbsp; Nessuna carta richiesta &nbsp;&#8226;&nbsp; Solo in memoria sessione.</div>
+    </div>
     <div id="merchantResults" style="display:none"></div>
     <div id="mainOrderContent">
       <div class="hero-banner">
@@ -412,6 +423,7 @@ heroTitle:"\u3044\u3064\u3067\u3082\u4f55\u3067\u3082\u6ce8\u6587",heroSub:"24\u
 
 // API KEY (set via UI)
 let ANTHROPIC_API_KEY='';
+let FSQ_API_KEY='';
 
 // STATE
 let currentLang='it',currentCat=0,cart=[],orderCounter=1000,activeOrder=null,dashboardOrders=[],completedToday=[],statOrderCount=0,statRevenue=0,chatHistory=[];
@@ -603,9 +615,12 @@ clearTimeout(searchTimeout);
 const q=query.trim();
 const rEl=document.getElementById('merchantResults');
 const mc=document.getElementById('mainOrderContent');
-if(!q){rEl.style.display='none';mc.style.display='block';buildProducts(currentCat);return;}
+if(!q){rEl.style.display='none';mc.style.display='block';
+document.getElementById('hereKeyBanner').style.display='none';
+buildProducts(currentCat);return;}
 mc.style.display='none';rEl.style.display='block';
 rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:14px">Ricerca in corso...</div></div>`;
+if(!FSQ_API_KEY){document.getElementById('hereKeyBanner').style.display='block';}
 searchTimeout=setTimeout(()=>doSearch(q),400);
 }
 
@@ -630,6 +645,12 @@ async function executeOverpassSearch(searchTerm,rEl){
 rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:14px">Ricerca in corso...</div></div>`;
 const ctx=getContextFromSearch(searchTerm);
 currentSearchIcon=ctx.icon;currentSearchLabel=ctx.label;
+// Try HERE Places first if API key available — much better coverage
+if(FSQ_API_KEY&&userLocation){
+  rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#128506;</div><div style="font-size:14px">Ricerca Foursquare Places...</div></div>`;
+  const fsqOk=await searchWithFoursquare(searchTerm,rEl);
+  if(fsqOk)return;
+}
 let osmTag=getOsmQuery(searchTerm);
 if(!osmTag&&userLocation){
 rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#129504;</div><div style="font-size:14px">MEMORI-AI analizza la ricerca...</div></div>`;
@@ -1117,6 +1138,65 @@ function saveApiKey(){
 }
 function checkApiKey(){
   if(!ANTHROPIC_API_KEY){document.getElementById('apiKeyBanner').style.display='block';}
+}
+
+// HERE PLACES API
+function saveHereKey(){
+  const input=document.getElementById('hereKeyInput');
+  const val=(input?input.value:'').trim();
+  if(!val){showToast('&#10060; Chiave non valida');return;}
+  FSQ_API_KEY=val;
+  document.getElementById('hereKeyBanner').style.display='none';
+  showToast('&#128247; Foursquare API Key salvata &#10003;');
+  if(input)input.value='';
+}
+
+async function searchWithFoursquare(searchTerm,rEl){
+  if(!FSQ_API_KEY||!userLocation)return false;
+  try{
+    const{lat,lng}=userLocation;
+    const params=new URLSearchParams({
+      query:searchTerm,
+      ll:`${lat},${lng}`,
+      radius:30000,
+      limit:40,
+      sort:'DISTANCE'
+    });
+    const res=await fetch(`https://api.foursquare.com/v3/places/search?${params}`,{
+      headers:{
+        'Authorization':FSQ_API_KEY,
+        'Accept':'application/json'
+      }
+    });
+    if(!res.ok)return false;
+    const data=await res.json();
+    const results=data.results||[];
+    if(results.length===0)return false;
+    const els=results.map(r=>{
+      const geo=r.geocodes?.main||{};
+      const loc=r.location||{};
+      const dist=r.distance||0;
+      const hours=r.hours?.display||'';
+      const phone=(r.tel||'');
+      return{
+        tags:{
+          name:r.name||'',
+          amenity:(r.categories?.[0]?.name||'').toLowerCase(),
+          'addr:street':loc.address||'',
+          'addr:housenumber':'',
+          'addr:city':loc.locality||loc.region||'',
+          phone,opening_hours:hours,brand:''
+        },
+        dist,
+        elLat:geo.latitude||0,
+        elLng:geo.longitude||0
+      };
+    }).filter(el=>el.elLat!==0&&el.tags.name!=='');
+    els.sort((a,b)=>a.dist-b.dist);
+    window._lastSearchResults=els;
+    renderSearchResults(els,searchTerm,0);
+    return true;
+  }catch(e){return false;}
 }
 
 // TOAST
