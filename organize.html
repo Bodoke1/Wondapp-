@@ -423,7 +423,7 @@ heroTitle:"\u3044\u3064\u3067\u3082\u4f55\u3067\u3082\u6ce8\u6587",heroSub:"24\u
 
 // API KEY (set via UI)
 let ANTHROPIC_API_KEY='';
-let FSQ_API_KEY='';
+let FSQ_API_KEY='HJWKVWBPXLNJ4ZI4HIYKWAGRQLWQW3MMFW05BAI1A0RL2WP2';
 
 // STATE
 let currentLang='it',currentCat=0,cart=[],orderCounter=1000,activeOrder=null,dashboardOrders=[],completedToday=[],statOrderCount=0,statRevenue=0,chatHistory=[];
@@ -620,7 +620,7 @@ document.getElementById('hereKeyBanner').style.display='none';
 buildProducts(currentCat);return;}
 mc.style.display='none';rEl.style.display='block';
 rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:14px">Ricerca in corso...</div></div>`;
-if(!FSQ_API_KEY){document.getElementById('hereKeyBanner').style.display='block';}
+// FSQ key pre-configured
 searchTimeout=setTimeout(()=>doSearch(q),400);
 }
 
