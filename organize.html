@@ -6,412 +6,167 @@
 <title>WONDAPP</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WONDAPP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #080808;
-  --bg2: #111111;
-  --bg3: #1a1a1a;
-  --card: #141414;
-  --border: #2a2a2a;
-  --primary: #00FF88;
-  --primary-glow: rgba(0,255,136,0.12);
-  --primary-dark: #00cc6a;
-  --gold: #FFB800;
-  --text: #ffffff;
-  --text2: #aaaaaa;
-  --text3: #555555;
-  --green: #00C851;
-  --red: #FF4444;
-  --blue: #4A90FF;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --tab-h: 70px;
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --bg: #080808; --bg2: #111111; --bg3: #1a1a1a; --card: #141414; --border: #2a2a2a;
+  --primary: #00FF88; --primary-glow: rgba(0,255,136,0.12); --primary-dark: #00cc6a;
+  --gold: #FFB800; --text: #ffffff; --text2: #aaaaaa; --text3: #555555;
+  --green: #00C851; --red: #FF4444; --blue: #4A90FF;
+  --radius: 16px; --radius-sm: 10px; --tab-h: 70px; --header-h: 75px;
+  --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
-  overflow-x: hidden;
-}
-
-/* ── TOAST ── */
-#toast {
-  position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
-  background: var(--primary); color: #062a16; padding: 12px 24px; border-radius: 40px;
-  font-size: 14px; font-weight: 600; z-index: 9999; transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
-  white-space: nowrap; pointer-events: none;
-}
+.leaflet-container { box-sizing: content-box; }
+.leaflet-container * { box-sizing: content-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; max-width: 480px; margin: 0 auto; position: relative; overflow-x: hidden; }
+#toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--primary); color: #062a16; padding: 12px 24px; border-radius: 40px; font-size: 14px; font-weight: 600; z-index: 9999; transition: transform 0.4s cubic-bezier(.34,1.56,.64,1); white-space: nowrap; pointer-events: none; }
 #toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ── HEADER ── */
-.app-header {
-  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 480px;
-  background: rgba(8,8,8,0.92); backdrop-filter: blur(20px);
-  z-index: 100; padding: 14px 20px 10px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.logo {
-  font-family: var(--font-display); font-size: 22px; font-weight: 800;
-  letter-spacing: -0.5px; color: var(--text);
-}
+.app-header { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(8,8,8,0.92); backdrop-filter: blur(20px); z-index: 100; padding: 14px 20px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
 .logo span { color: var(--primary); }
-.lang-selector {
-  display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
-}
-.lang-btn {
-  background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
-  font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 20px;
-  cursor: pointer; transition: all 0.2s; font-family: var(--font-body);
-}
+.lang-selector { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.lang-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
 .lang-btn.active { background: var(--primary); color: #062a16; border-color: var(--primary); }
-
-/* ── MAIN CONTENT ── */
-.main-content {
-  padding-top: 75px; padding-bottom: calc(var(--tab-h) + 20px);
-  min-height: 100vh;
-}
-
-/* ── SECTIONS ── */
+.main-content { padding-top: var(--header-h); padding-bottom: calc(var(--tab-h) + 20px); min-height: 100vh; }
 .tab-section { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; }
 .tab-section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 480px; height: var(--tab-h);
-  background: rgba(12,12,12,0.96); backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border);
-  display: flex; z-index: 100;
-}
-.nav-btn {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px; cursor: pointer; border: none; background: transparent;
-  color: var(--text3); font-size: 10px; font-weight: 600; font-family: var(--font-body);
-  transition: all 0.2s; padding: 8px 4px; letter-spacing: 0.3px;
-}
+#tab-memori.active { display: flex; flex-direction: column; height: calc(100vh - var(--header-h) - var(--tab-h)); padding-bottom: 16px; overflow: hidden; }
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: var(--tab-h); background: rgba(12,12,12,0.96); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; z-index: 100; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; border: none; background: transparent; color: var(--text3); font-size: 10px; font-weight: 600; font-family: var(--font-body); transition: all 0.2s; padding: 8px 4px; letter-spacing: 0.3px; }
 .nav-btn .icon { font-size: 20px; transition: transform 0.2s; }
 .nav-btn.active { color: var(--primary); }
 .nav-btn.active .icon { transform: scale(1.15); }
-
-/* ── CARDS ── */
-.card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
-}
-.card-title {
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
-  color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
-}
-
-/* ── BUTTONS ── */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 14px 24px; border-radius: var(--radius); border: none; cursor: pointer;
-  font-family: var(--font-body); font-size: 15px; font-weight: 600;
-  transition: all 0.2s; width: 100%; margin-bottom: 10px;
-}
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+.card-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: var(--radius); border: none; cursor: pointer; font-family: var(--font-body); font-size: 15px; font-weight: 600; transition: all 0.2s; width: 100%; margin-bottom: 10px; }
 .btn-primary { background: var(--primary); color: #062a16; }
 .btn-primary:active { background: var(--primary-dark); transform: scale(0.98); }
-.btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
-.btn-outline:active { border-color: var(--primary); color: var(--primary); }
 .btn-green { background: var(--green); color: #fff; }
 .btn-red { background: var(--red); color: #fff; }
 .btn-sm { padding: 9px 16px; font-size: 13px; width: auto; margin-bottom: 0; border-radius: var(--radius-sm); }
-
-/* ── INPUTS ── */
-.input-field {
-  background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  color: var(--text); font-family: var(--font-body); font-size: 15px;
-  padding: 13px 16px; width: 100%; outline: none; transition: border-color 0.2s;
-  -webkit-text-fill-color: var(--text); caret-color: var(--primary);
-}
+.input-field { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body); font-size: 15px; padding: 13px 16px; width: 100%; outline: none; transition: border-color 0.2s; -webkit-text-fill-color: var(--text); caret-color: var(--primary); }
 .input-field:focus { border-color: var(--primary); }
 .input-field::placeholder { color: var(--text3); }
-.input-field:-webkit-autofill,
-.input-field:-webkit-autofill:hover,
-.input-field:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-select.input-field { cursor: pointer; }
-.input-label {
-  font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase;
-  letter-spacing: 0.8px; margin-bottom: 6px; display: block;
-}
+.input-field:-webkit-autofill, .input-field:-webkit-autofill:hover, .input-field:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important; -webkit-text-fill-color: #ffffff !important; }
+.input-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block; }
 .form-group { margin-bottom: 14px; }
-
-/* ── BADGE ── */
-.badge {
-  display: inline-block; padding: 3px 10px; border-radius: 20px;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
-}
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
 .badge-orange { background: var(--primary-glow); color: var(--primary); border: 1px solid var(--primary); }
 .badge-green { background: rgba(0,200,81,0.12); color: var(--green); border: 1px solid rgba(0,200,81,0.3); }
 .badge-red { background: rgba(255,68,68,0.12); color: var(--red); border: 1px solid rgba(255,68,68,0.3); }
 .badge-blue { background: rgba(74,144,255,0.12); color: var(--blue); border: 1px solid rgba(74,144,255,0.3); }
 .badge-gold { background: rgba(255,184,0,0.12); color: var(--gold); border: 1px solid rgba(255,184,0,0.3); }
-
-/* ═══════════════════════════════════
-   TAB 1 — ORDINA
-═══════════════════════════════════ */
 .globe-icon { font-size: 20px; margin-right: 2px; animation: spin 12s linear infinite; display: inline-block; }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 @keyframes geoPulse { from{opacity:1} to{opacity:0.4} }
-
-/* ── MERCHANT CARDS ── */
-.merchant-results { margin-bottom: 16px; }
-.merchant-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; gap: 14px;
-}
+.merchant-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px; }
 .merchant-card:active { border-color: var(--primary); background: var(--primary-glow); }
-.merchant-avatar {
-  width: 52px; height: 52px; border-radius: 14px; background: var(--bg3);
-  display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0;
-}
+.merchant-avatar { width: 52px; height: 52px; border-radius: 14px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
 .merchant-info { flex: 1; min-width: 0; }
 .merchant-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .merchant-type { font-size: 12px; color: var(--text2); margin-top: 1px; }
 .merchant-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
-.product-info { flex: 1; min-width: 0; }
-
-/* ── SEARCH BAR ── */
-.search-bar-wrap {
-  position: relative; margin-bottom: 18px;
-}
-.search-bar {
-  width: 100%; background: var(--bg3); border: 1.5px solid var(--border);
-  border-radius: 50px; color: var(--text); font-family: var(--font-body);
-  font-size: 15px; padding: 14px 20px 14px 48px; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-text-fill-color: var(--text);
-  caret-color: var(--primary);
-}
+.search-bar-wrap { position: relative; margin-bottom: 18px; }
+.search-bar { width: 100%; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 50px; color: var(--text); font-family: var(--font-body); font-size: 15px; padding: 14px 20px 14px 48px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; -webkit-text-fill-color: var(--text); caret-color: var(--primary); }
 .search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,255,136,0.08); }
 .search-bar::placeholder { color: var(--text3); }
-.search-bar:-webkit-autofill,
-.search-bar:-webkit-autofill:hover,
-.search-bar:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
-  -webkit-text-fill-color: #ffffff !important;
-  border-color: var(--primary) !important;
-}
-.search-icon {
-  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-  font-size: 18px; pointer-events: none;
-}
-.hero-banner {
-  background: linear-gradient(135deg, #00cc6a 0%, #00FF88 100%);
-  border-radius: var(--radius); padding: 24px 20px; margin-bottom: 20px; position: relative; overflow: hidden;
-}
-.hero-banner::before {
-  content: ''; position: absolute; top: -30px; right: -20px;
-  width: 120px; height: 120px; border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-}
+.search-bar:-webkit-autofill, .search-bar:-webkit-autofill:hover, .search-bar:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important; -webkit-text-fill-color: #ffffff !important; border-color: var(--primary) !important; }
+.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
+.hero-banner { background: linear-gradient(135deg, #00cc6a 0%, #00FF88 100%); border-radius: var(--radius); padding: 24px 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.hero-banner::before { content: ''; position: absolute; top: -30px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); }
 .hero-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #0a2a15; line-height: 1.2; }
 .hero-sub { font-size: 13px; color: rgba(0,30,15,0.75); margin-top: 6px; }
-
 .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.cat-btn {
-  background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s;
-  font-size: 11px; font-weight: 600; color: var(--text2);
-}
+.cat-btn { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 11px; font-weight: 600; color: var(--text2); }
 .cat-btn .cat-icon { font-size: 24px; display: block; margin-bottom: 6px; }
 .cat-btn.active, .cat-btn:active { border-color: var(--primary); color: var(--primary); background: var(--primary-glow); }
-
 .product-list { margin-bottom: 20px; }
-.product-item {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
-  cursor: pointer; transition: all 0.2s;
-}
+.product-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
 .product-item:active { border-color: var(--primary); }
 .product-name { font-weight: 600; font-size: 15px; }
 .product-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
 .product-price { font-family: var(--font-display); font-weight: 700; color: var(--primary); font-size: 16px; }
-.product-add {
-  width: 34px; height: 34px; border-radius: 50%; background: var(--primary);
-  border: none; color: #062a16; font-size: 20px; cursor: pointer; display: flex;
-  align-items: center; justify-content: center; flex-shrink: 0; margin-left: 12px;
-}
-
-.cart-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
-}
+.product-add { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); border: none; color: #062a16; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 12px; }
+.cart-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .cart-item:last-child { border-bottom: none; }
 .cart-item-name { font-size: 14px; font-weight: 500; }
 .cart-item-qty { font-size: 12px; color: var(--text2); margin-top: 1px; }
 .cart-item-price { font-weight: 700; color: var(--primary); }
-.cart-total {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 0 4px; font-family: var(--font-display); font-size: 18px; font-weight: 700;
-}
+.cart-total { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 4px; font-family: var(--font-display); font-size: 18px; font-weight: 700; }
 .cart-empty { text-align: center; color: var(--text3); padding: 20px; font-size: 14px; }
-
-/* ═══════════════════════════════════
-   TAB 2 — TRACKING
-═══════════════════════════════════ */
-.view-toggle {
-  display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 20px;
-}
-.view-btn {
-  flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer;
-  font-size: 13px; font-weight: 600; color: var(--text2); transition: all 0.2s;
-}
+.view-toggle { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 20px; }
+.view-btn { flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text2); transition: all 0.2s; }
 .view-btn.active { background: var(--primary); color: #062a16; }
-
 .tracking-steps { padding: 10px 0; }
-.step {
-  display: flex; align-items: flex-start; gap: 14px; padding-bottom: 24px; position: relative;
-}
+.step { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 24px; position: relative; }
 .step:last-child { padding-bottom: 0; }
-.step::after {
-  content: ''; position: absolute; left: 15px; top: 34px;
-  width: 2px; height: calc(100% - 10px); background: var(--border);
-}
+.step::after { content: ''; position: absolute; left: 15px; top: 34px; width: 2px; height: calc(100% - 10px); background: var(--border); }
 .step:last-child::after { display: none; }
 .step.done::after { background: var(--primary); }
-.step-dot {
-  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 14px;
-  background: var(--bg3); border: 2px solid var(--border); z-index: 1;
-}
+.step-dot { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; background: var(--bg3); border: 2px solid var(--border); z-index: 1; }
 .step.done .step-dot { background: var(--primary); border-color: var(--primary); }
-.step.active-step .step-dot {
-  background: var(--primary-glow); border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0,255,136,0.2);
-  animation: pulse 1.5s infinite;
-}
+.step.active-step .step-dot { background: var(--primary-glow); border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,255,136,0.2); animation: pulse 1.5s infinite; }
 @keyframes pulse { 0%,100%{box-shadow:0 0 0 4px rgba(0,255,136,0.2)} 50%{box-shadow:0 0 0 8px rgba(0,255,136,0.06)} }
+.step-content { flex: 1; min-width: 0; }
 .step-title { font-weight: 600; font-size: 15px; }
 .step-time { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
-.order-info-card {
-  background: linear-gradient(135deg, var(--primary-glow), transparent);
-  border: 1px solid var(--primary); border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
-}
+.order-info-card { background: linear-gradient(135deg, var(--primary-glow), transparent); border: 1px solid var(--primary); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
 .order-id { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--primary); }
 .order-detail { font-size: 13px; color: var(--text2); margin-top: 4px; }
-
-/* ═══════════════════════════════════
-   TAB 3 — MEMORI-AI
-═══════════════════════════════════ */
-.chat-container { display: flex; flex-direction: column; height: calc(100vh - 160px); }
-.chat-header-info {
-  display: flex; align-items: center; gap: 12px; padding: 14px;
-  background: var(--card); border-radius: var(--radius); margin-bottom: 14px; border: 1px solid var(--border);
-}
-.ai-avatar {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--gold));
-  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
-}
+.chat-header-info { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--card); border-radius: var(--radius); margin-bottom: 14px; border: 1px solid var(--border); flex-shrink: 0; }
+.ai-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
 .ai-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
 .ai-status { font-size: 12px; color: var(--green); }
-
-.chat-messages {
-  flex: 1; overflow-y: auto; padding: 4px 0 14px; display: flex; flex-direction: column; gap: 12px;
-  scrollbar-width: none;
-}
+.chat-container { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 4px 0 14px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; min-height: 0; }
 .chat-messages::-webkit-scrollbar { display: none; }
-
 .msg { max-width: 82%; animation: msgIn 0.3s ease; }
 @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .msg-user { align-self: flex-end; }
 .msg-ai { align-self: flex-start; }
-.msg-bubble {
-  padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5;
-}
+.msg-bubble { padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; }
 .msg-user .msg-bubble { background: var(--primary); color: #062a16; border-bottom-right-radius: 4px; }
 .msg-ai .msg-bubble { background: var(--bg3); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
 .msg-time { font-size: 10px; color: var(--text3); margin-top: 4px; padding: 0 4px; }
 .msg-user .msg-time { text-align: right; }
-
 .typing-indicator { display: flex; gap: 5px; padding: 14px 16px; }
-.typing-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--text3);
-  animation: typingBounce 1.2s infinite;
-}
+.typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); animation: typingBounce 1.2s infinite; }
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-8px)} }
-
-.chat-input-row {
-  display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border); align-items: flex-end;
-}
-.chat-input {
-  flex: 1; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 22px;
-  color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 12px 16px;
-  outline: none; resize: none; min-height: 46px; max-height: 120px; line-height: 1.4;
-  transition: border-color 0.2s;
-}
+.chat-input-row { display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border); align-items: flex-end; flex-shrink: 0; }
+.chat-input { flex: 1; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 22px; color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 12px 16px; outline: none; resize: none; min-height: 46px; max-height: 120px; line-height: 1.4; transition: border-color 0.2s; -webkit-text-fill-color: var(--text); }
 .chat-input:focus { border-color: var(--primary); }
-.send-btn {
-  width: 46px; height: 46px; border-radius: 50%; background: var(--primary);
-  border: none; color: #062a16; font-size: 18px; cursor: pointer; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
+.send-btn { width: 46px; height: 46px; border-radius: 50%; background: var(--primary); border: none; color: #062a16; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .send-btn:active { transform: scale(0.95); background: var(--primary-dark); }
-
-/* ═══════════════════════════════════
-   TAB 4 — DASHBOARD
-═══════════════════════════════════ */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
-}
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .stat-icon { font-size: 22px; margin-bottom: 8px; }
 .stat-value { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--text); }
 .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-card.highlight { background: var(--primary-glow); border-color: var(--primary); }
 .stat-card.highlight .stat-value { color: var(--primary); }
-
-.order-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 16px; margin-bottom: 10px;
-}
+.order-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
 .order-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .order-card-id { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
 .order-card-items { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.6; }
 .order-card-footer { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
 .order-card-total { font-weight: 700; font-size: 18px; color: var(--primary); }
 .order-actions { display: flex; gap: 8px; }
-
-.section-title {
-  font-family: var(--font-display); font-size: 18px; font-weight: 700;
-  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-}
-
-/* ═══════════════════════════════════
-   TAB 5 — INTEL
-═══════════════════════════════════ */
-.intel-header {
-  background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-  border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
-}
+.section-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.intel-header { background: linear-gradient(135deg, #0d0d0d, #1a1a1a); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
 .intel-title { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
 .intel-sub { font-size: 13px; color: var(--text2); margin-top: 4px; }
-
-.competitor-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 16px; margin-bottom: 10px;
-}
+.competitor-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
 .comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .comp-name-row { display: flex; align-items: center; gap: 10px; }
 .comp-logo { font-size: 24px; }
@@ -419,1961 +174,869 @@ select.input-field { cursor: pointer; }
 .comp-type { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
 .comp-desc { font-size: 13px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
 .comp-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.comp-tag {
-  font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
-  background: var(--bg3); color: var(--text2); border: 1px solid var(--border);
-}
+.comp-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
 .threat-bar { margin-top: 12px; }
 .threat-label { font-size: 11px; color: var(--text2); margin-bottom: 5px; display: flex; justify-content: space-between; }
 .threat-track { background: var(--bg3); border-radius: 4px; height: 5px; overflow: hidden; }
 .threat-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), var(--gold)); transition: width 1s ease; }
-
-/* ── MERCHANT DETAIL MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
-  display: none; align-items: flex-end; justify-content: center;
-  backdrop-filter: blur(4px);
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
 .modal-overlay.open { display: flex; }
-.modal-sheet {
-  background: var(--bg2); border-radius: 24px 24px 0 0;
-  width: 100%; max-width: 480px; max-height: 88vh;
-  overflow-y: auto; animation: slideUp 0.35s cubic-bezier(.34,1.56,.64,1);
-  scrollbar-width: none;
-}
+.modal-sheet { background: var(--bg2); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto; animation: slideUp 0.35s cubic-bezier(.34,1.56,.64,1); scrollbar-width: none; }
 .modal-sheet::-webkit-scrollbar { display: none; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.modal-handle {
-  width: 40px; height: 4px; background: var(--border); border-radius: 2px;
-  margin: 12px auto 0;
-}
-.modal-header {
-  display: flex; align-items: center; gap: 14px; padding: 16px 20px 12px;
-}
-.modal-avatar {
-  width: 56px; height: 56px; border-radius: 16px; background: var(--bg3);
-  display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
-  border: 2px solid var(--primary);
-}
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
+.modal-header { display: flex; align-items: center; gap: 14px; padding: 16px 20px 12px; }
+.modal-avatar { width: 56px; height: 56px; border-radius: 16px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; border: 2px solid var(--primary); }
 .modal-name { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
 .modal-type { font-size: 12px; color: var(--text2); margin-top: 2px; }
-.modal-close {
-  margin-left: auto; background: var(--bg3); border: none; color: var(--text2);
-  width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.modal-map {
-  height: 220px; margin: 0 16px; border-radius: var(--radius); overflow: hidden;
-  border: 1px solid var(--border); position: relative;
-}
+.modal-close { margin-left: auto; background: var(--bg3); border: none; color: var(--text2); width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-map { height: 220px; margin: 0 16px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); position: relative; }
 .modal-info { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
-.info-row {
-  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
-  background: var(--bg3); border-radius: var(--radius-sm);
-}
+.info-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg3); border-radius: var(--radius-sm); }
 .info-row-icon { font-size: 18px; flex-shrink: 0; }
 .info-row-text { flex: 1; }
 .info-row-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
 .info-row-value { font-size: 14px; font-weight: 500; color: var(--text); margin-top: 2px; }
 .info-row a { color: var(--primary); text-decoration: none; }
 .modal-nav-btns { padding: 0 16px 12px; display: flex; gap: 10px; }
-.nav-app-btn {
-  flex: 1; padding: 13px 8px; border-radius: var(--radius-sm); border: none;
-  cursor: pointer; font-family: var(--font-body); font-size: 13px; font-weight: 700;
-  display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s;
-}
+.nav-app-btn { flex: 1; padding: 13px 8px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-family: var(--font-body); font-size: 13px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
 .nav-app-btn:active { transform: scale(0.97); }
 .nav-app-btn .nav-icon { font-size: 20px; }
 .nav-gmaps { background: #1a73e8; color: #fff; }
 .nav-waze { background: #33ccff; color: #000; }
 .nav-apple { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
 .modal-order-btn { margin: 0 16px 24px; }
-
-/* ── LEAFLET POPUP OVERRIDE ── */
-.wondapp-popup .leaflet-popup-content-wrapper {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-}
-.wondapp-popup .leaflet-popup-content {
-  margin: 0 !important;
-}
-.wondapp-popup .leaflet-popup-tip-container {
-  display: none !important;
-}
-.leaflet-control-zoom a {
-  background: rgba(8,8,8,0.88) !important;
-  color: #00FF88 !important;
-  border-color: rgba(0,255,136,0.3) !important;
-  font-weight: 700 !important;
-}
-.leaflet-control-zoom a:hover {
-  background: rgba(0,255,136,0.15) !important;
-}
-
-/* scrollbar */
+.wondapp-popup .leaflet-popup-content-wrapper { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; }
+.wondapp-popup .leaflet-popup-content { margin: 0 !important; }
+.wondapp-popup .leaflet-popup-tip-container { display: none !important; }
+.leaflet-control-zoom a { background: rgba(8,8,8,0.88) !important; color: #00FF88 !important; border-color: rgba(0,255,136,0.3) !important; font-weight: 700 !important; }
+.leaflet-control-zoom a:hover { background: rgba(0,255,136,0.15) !important; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-/* divider */
 .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-
-/* empty state */
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
 .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
 .empty-state p { font-size: 14px; }
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
-
-<!-- HEADER -->
 <header class="app-header">
-  <div class="logo"><span class="globe-icon">🌍</span> WOND<span>APP</span></div>
+  <div class="logo"><span class="globe-icon">&#127758;</span> WOND<span>APP</span></div>
   <div class="lang-selector" id="langSelector"></div>
 </header>
-
 <main class="main-content">
-
-  <!-- ══════════ TAB 1: ORDINA ══════════ -->
   <section class="tab-section active" id="tab-ordina">
-    <!-- Search Bar -->
     <div class="search-bar-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon">&#128269;</span>
       <input type="text" class="search-bar" id="searchBar" placeholder="Cerca negozi, ristoranti, farmacie..." oninput="filterProducts(this.value)">
     </div>
-
     <div id="merchantResults" style="display:none"></div>
     <div id="mainOrderContent">
-    <div class="hero-banner">
-      <div class="hero-title" id="heroTitle">Ordina qualsiasi cosa</div>
-      <div class="hero-sub" id="heroSub">H24 · 7 giorni su 7 · Istantaneo</div>
-    </div>
-
-    <!-- Categories -->
-    <div class="card-title" id="catLabel">Categoria</div>
-    <div class="category-grid" id="categoryGrid"></div>
-
-    <!-- Products -->
-    <div class="card-title" id="prodLabel">Prodotti & Servizi</div>
-    <div class="product-list" id="productList"></div>
-
-    <!-- Cart -->
-    <div class="card" id="cartSection">
-      <div class="card-title" id="cartLabel">Il tuo ordine</div>
-      <div id="cartItems"><div class="cart-empty" id="cartEmpty">Nessun articolo aggiunto</div></div>
-      <div class="cart-total" id="cartTotal" style="display:none">
-        <span id="totalLabel">Totale</span>
-        <span id="totalAmount">€0.00</span>
+      <div class="hero-banner">
+        <div class="hero-title" id="heroTitle">Ordina qualsiasi cosa</div>
+        <div class="hero-sub" id="heroSub">H24 &middot; 7 giorni su 7 &middot; Istantaneo</div>
       </div>
-      <hr class="divider" id="cartDivider" style="display:none">
-      <div class="form-group" id="noteGroup">
-        <label class="input-label" id="noteLabel">Note per il merchant</label>
-        <input type="text" class="input-field" id="orderNote" placeholder="Es: senza lattosio, citofono 2...">
+      <div class="card-title" id="catLabel">Categoria</div>
+      <div class="category-grid" id="categoryGrid"></div>
+      <div class="card-title" id="prodLabel">Prodotti &amp; Servizi</div>
+      <div class="product-list" id="productList"></div>
+      <div class="card" id="cartSection">
+        <div class="card-title" id="cartLabel">Il tuo ordine</div>
+        <div id="cartItems"><div class="cart-empty" id="cartEmpty">Nessun articolo aggiunto</div></div>
+        <div class="cart-total" id="cartTotal" style="display:none">
+          <span id="totalLabel">Totale</span><span id="totalAmount">&euro;0.00</span>
+        </div>
+        <hr class="divider" id="cartDivider" style="display:none">
+        <div class="form-group" id="noteGroup">
+          <label class="input-label" id="noteLabel">Note per il merchant</label>
+          <input type="text" class="input-field" id="orderNote" placeholder="Es: senza lattosio, citofono 2...">
+        </div>
+        <button class="btn btn-primary" id="sendOrderBtn" onclick="sendOrder()" style="display:none">
+          &#128640; <span id="sendOrderTxt">Invia Ordine</span>
+        </button>
       </div>
-      <button class="btn btn-primary" id="sendOrderBtn" onclick="sendOrder()" style="display:none">
-        🚀 <span id="sendOrderTxt">Invia Ordine</span>
-      </button>
     </div>
-    </div><!-- end mainOrderContent -->
   </section>
   <section class="tab-section" id="tab-tracking">
-    <div class="section-title">📦 <span id="trackingTitle">Tracking Ordine</span></div>
-
+    <div class="section-title">&#128230; <span id="trackingTitle">Tracking Ordine</span></div>
     <div class="view-toggle">
-      <div class="view-btn active" id="viewCustomer" onclick="setView('customer')">👤 <span id="clienteBtn">Cliente</span></div>
-      <div class="view-btn" id="viewMerchant" onclick="setView('merchant')">🏪 <span id="merchantBtn">Merchant</span></div>
+      <div class="view-btn active" id="viewCustomer" onclick="setView('customer')">&#128100; <span id="clienteBtn">Cliente</span></div>
+      <div class="view-btn" id="viewMerchant" onclick="setView('merchant')">&#127978; <span id="merchantBtn">Merchant</span></div>
     </div>
-
     <div id="trackingOrderInfo" style="display:none">
       <div class="order-info-card">
         <div class="order-id" id="trackOrderId">#WD-0000</div>
         <div class="order-detail" id="trackOrderDetail">In attesa di conferma...</div>
       </div>
     </div>
-
     <div id="noActiveOrder">
       <div class="empty-state">
-        <div class="empty-icon">📭</div>
+        <div class="empty-icon">&#128333;</div>
         <p id="noOrderTxt">Nessun ordine attivo.<br>Effettua un ordine dalla tab Ordina!</p>
       </div>
     </div>
-
     <div id="trackingSteps" style="display:none">
-      <div class="card">
-        <div class="tracking-steps" id="trackingStepsList"></div>
-      </div>
+      <div class="card"><div class="tracking-steps" id="trackingStepsList"></div></div>
     </div>
-
-    <!-- Merchant view -->
     <div id="merchantView" style="display:none">
-      <div class="section-title" style="margin-top:10px">📥 <span id="incomingLabel">Ordini in Arrivo</span></div>
+      <div class="section-title" style="margin-top:10px">&#128229; <span id="incomingLabel">Ordini in Arrivo</span></div>
       <div id="merchantOrdersList"></div>
     </div>
   </section>
-
-  <!-- ══════════ TAB 3: MEMORI-AI ══════════ -->
   <section class="tab-section" id="tab-memori">
     <div class="chat-header-info">
-      <div class="ai-avatar">🧠</div>
+      <div class="ai-avatar">&#129504;</div>
       <div>
         <div class="ai-name">MEMORI-AI</div>
-        <div class="ai-status">● <span id="aiStatusTxt">Online 24/7</span></div>
+        <div class="ai-status">&#9679; <span id="aiStatusTxt">Online 24/7</span></div>
       </div>
       <div style="margin-left:auto"><span class="badge badge-orange" id="memoriLang">IT</span></div>
     </div>
-
     <div class="chat-container">
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-row">
         <textarea class="chat-input" id="chatInput" rows="1" placeholder="Scrivi un messaggio..." onkeydown="handleChatKey(event)"></textarea>
-        <button class="send-btn" onclick="sendChat()">➤</button>
+        <button class="send-btn" onclick="sendChat()">&#9658;</button>
       </div>
     </div>
   </section>
-
-  <!-- ══════════ TAB 4: DASHBOARD ══════════ -->
   <section class="tab-section" id="tab-dashboard">
-    <div class="section-title">📊 <span id="dashTitle">Dashboard Merchant</span></div>
-
+    <div class="section-title">&#128202; <span id="dashTitle">Dashboard Merchant</span></div>
     <div class="stats-grid">
       <div class="stat-card highlight">
-        <div class="stat-icon">🛒</div>
+        <div class="stat-icon">&#128722;</div>
         <div class="stat-value" id="statOrders">0</div>
         <div class="stat-label" id="statOrdersLabel">Ordini Oggi</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">💶</div>
-        <div class="stat-value" id="statRevenue">€0</div>
+        <div class="stat-icon">&#128182;</div>
+        <div class="stat-value" id="statRevenue">&euro;0</div>
         <div class="stat-label" id="statRevenueLabel">Ricavi Oggi</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">⏱️</div>
-        <div class="stat-value" id="statAvgTime">0m</div>
+        <div class="stat-icon">&#9201;</div>
+        <div class="stat-value" id="statAvgTime">&mdash;</div>
         <div class="stat-label" id="statTimeLabel">Tempo Medio</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">⭐</div>
-        <div class="stat-value" id="statRating">—</div>
+        <div class="stat-icon">&#11088;</div>
+        <div class="stat-value" id="statRating">&mdash;</div>
         <div class="stat-label" id="statRatingLabel">Valutazione</div>
       </div>
     </div>
-
-    <div class="section-title">📥 <span id="activeOrdersTitle">Ordini Attivi</span></div>
+    <div class="section-title">&#128229; <span id="activeOrdersTitle">Ordini Attivi</span></div>
     <div id="dashboardOrders">
-      <div class="empty-state">
-        <div class="empty-icon">🎉</div>
-        <p id="noActiveOrdersTxt">Nessun ordine attivo al momento</p>
-      </div>
+      <div class="empty-state"><div class="empty-icon">&#127881;</div><p id="noActiveOrdersTxt">Nessun ordine attivo al momento</p></div>
     </div>
-
-    <div class="section-title" style="margin-top:6px">✅ <span id="completedTitle">Completati Oggi</span></div>
+    <div class="section-title" style="margin-top:6px">&#9989; <span id="completedTitle">Completati Oggi</span></div>
     <div id="completedOrders"></div>
   </section>
-
-  <!-- ══════════ TAB 5: INTEL ══════════ -->
   <section class="tab-section" id="tab-intel">
     <div class="intel-header">
-      <div class="intel-title">🕵️ INTEL</div>
+      <div class="intel-title">&#128373; INTEL</div>
       <div class="intel-sub" id="intelSub">Monitoraggio competitivo globale in tempo reale</div>
     </div>
-
     <div id="competitorsList"></div>
   </section>
-
 </main>
-
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" data-tab="ordina" onclick="switchTab('ordina',this)">
-    <span class="icon">🛍️</span>
-    <span data-key="nav_ordina">Ordina</span>
-  </button>
-  <button class="nav-btn" data-tab="tracking" onclick="switchTab('tracking',this)">
-    <span class="icon">📦</span>
-    <span data-key="nav_tracking">Tracking</span>
-  </button>
-  <button class="nav-btn" data-tab="memori" onclick="switchTab('memori',this)">
-    <span class="icon">🧠</span>
-    <span data-key="nav_memori">MEMORI-AI</span>
-  </button>
-  <button class="nav-btn" data-tab="dashboard" onclick="switchTab('dashboard',this)">
-    <span class="icon">📊</span>
-    <span data-key="nav_dashboard">Dashboard</span>
-  </button>
-  <button class="nav-btn" data-tab="intel" onclick="switchTab('intel',this)">
-    <span class="icon">🕵️</span>
-    <span data-key="nav_intel">Intel</span>
-  </button>
+  <button class="nav-btn active" data-tab="ordina" onclick="switchTab('ordina',this)"><span class="icon">&#128717;</span><span data-key="nav_ordina">Ordina</span></button>
+  <button class="nav-btn" data-tab="tracking" onclick="switchTab('tracking',this)"><span class="icon">&#128230;</span><span data-key="nav_tracking">Tracking</span></button>
+  <button class="nav-btn" data-tab="memori" onclick="switchTab('memori',this)"><span class="icon">&#129504;</span><span data-key="nav_memori">MEMORI-AI</span></button>
+  <button class="nav-btn" data-tab="dashboard" onclick="switchTab('dashboard',this)"><span class="icon">&#128202;</span><span data-key="nav_dashboard">Dashboard</span></button>
+  <button class="nav-btn" data-tab="intel" onclick="switchTab('intel',this)"><span class="icon">&#128373;</span><span data-key="nav_intel">Intel</span></button>
 </nav>
-
-<!-- MERCHANT DETAIL MODAL -->
 <div class="modal-overlay" id="merchantModal" onclick="closeModal(event)">
   <div class="modal-sheet" id="modalSheet">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <div class="modal-avatar" id="modalAvatar">🏪</div>
-      <div>
-        <div class="modal-name" id="modalName">—</div>
-        <div class="modal-type" id="modalType"></div>
-      </div>
-      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+      <div class="modal-avatar" id="modalAvatar">&#127978;</div>
+      <div><div class="modal-name" id="modalName">&mdash;</div><div class="modal-type" id="modalType"></div></div>
+      <button class="modal-close" onclick="closeModalDirect()">&#10005;</button>
     </div>
-
     <div class="modal-map" id="modalMap"></div>
-
     <div class="modal-info" id="modalInfo"></div>
-
     <div class="modal-nav-btns">
-      <button class="nav-app-btn nav-gmaps" id="btnGmaps" onclick="openNav('gmaps')">
-        <span class="nav-icon">🗺️</span>Google Maps
-      </button>
-      <button class="nav-app-btn nav-waze" id="btnWaze" onclick="openNav('waze')">
-        <span class="nav-icon">🚗</span>Waze
-      </button>
-      <button class="nav-app-btn nav-apple" id="btnApple" onclick="openNav('apple')">
-        <span class="nav-icon">🍎</span>Apple Maps
-      </button>
+      <button class="nav-app-btn nav-gmaps" onclick="openNav('gmaps')"><span class="nav-icon">&#128506;</span>Google Maps</button>
+      <button class="nav-app-btn nav-waze" onclick="openNav('waze')"><span class="nav-icon">&#128663;</span>Waze</button>
+      <button class="nav-app-btn nav-apple" onclick="openNav('apple')"><span class="nav-icon">&#127822;</span>Apple Maps</button>
     </div>
-
     <div class="modal-order-btn">
-      <button class="btn btn-primary" onclick="closeModalDirect();showToast('🛍️ Seleziona prodotti e ordina!')">
-        🛍️ Ordina da questo negozio
+      <button class="btn btn-primary" onclick="closeModalDirect();showToast('&#128717; Seleziona prodotti e ordina!')">
+        &#128717; Ordina da questo negozio
       </button>
     </div>
   </div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-// ══════════════════════════════════════
-// TRANSLATIONS
-// ══════════════════════════════════════
-const T = {
-  it: {
-    heroTitle: "Ordina qualsiasi cosa",
-    heroSub: "H24 · 7 giorni su 7 · Istantaneo",
-    catLabel: "CATEGORIA",
-    prodLabel: "PRODOTTI & SERVIZI",
-    cartLabel: "IL TUO ORDINE",
-    cartEmpty: "Nessun articolo aggiunto",
-    totalLabel: "Totale",
-    noteLabel: "NOTE PER IL MERCHANT",
-    notePlaceholder: "Es: senza lattosio, citofono 2...",
-    sendOrderTxt: "Invia Ordine",
-    trackingTitle: "Tracking Ordine",
-    clienteBtn: "Cliente",
-    merchantBtn: "Merchant",
-    noOrderTxt: "Nessun ordine attivo.\nEffettua un ordine dalla tab Ordina!",
-    incomingLabel: "Ordini in Arrivo",
-    aiStatusTxt: "Online 24/7",
-    chatPlaceholder: "Scrivi un messaggio...",
-    dashTitle: "Dashboard Merchant",
-    statOrdersLabel: "Ordini Oggi",
-    statRevenueLabel: "Ricavi Oggi",
-    statTimeLabel: "Tempo Medio",
-    statRatingLabel: "Valutazione",
-    activeOrdersTitle: "Ordini Attivi",
-    noActiveOrdersTxt: "Nessun ordine attivo al momento",
-    completedTitle: "Completati Oggi",
-    intelSub: "Monitoraggio competitivo globale in tempo reale",
-    acceptBtn: "✓ Accetta",
-    rejectBtn: "✗ Rifiuta",
-    orderSent: "✅ Ordine inviato!",
-    orderAccepted: "✅ Ordine accettato!",
-    orderRejected: "❌ Ordine rifiutato",
-    memoriWelcome: "Ciao! Sono MEMORI-AI, il tuo assistente H24 per WONDAPP. Come posso aiutarti oggi?",
-    nav_ordina: "Ordina",
-    nav_tracking: "Tracking",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "Dashboard",
-    nav_intel: "Intel",
-    categories: ["🍕 Cibo", "💊 Farmacia", "🚲 Riparazioni", "🛒 Spesa", "🌸 Fiori", "🔧 Artigiani"],
-    trackOrderDetail: "Ultimo aggiornamento"
-  },
-  en: {
-    heroTitle: "Order anything, anytime",
-    heroSub: "H24 · 7 days a week · Instant",
-    catLabel: "CATEGORY",
-    prodLabel: "PRODUCTS & SERVICES",
-    cartLabel: "YOUR ORDER",
-    cartEmpty: "No items added yet",
-    totalLabel: "Total",
-    noteLabel: "NOTE FOR MERCHANT",
-    notePlaceholder: "E.g.: no gluten, ring doorbell 2...",
-    sendOrderTxt: "Send Order",
-    trackingTitle: "Order Tracking",
-    clienteBtn: "Customer",
-    merchantBtn: "Merchant",
-    noOrderTxt: "No active orders.\nPlace an order from the Order tab!",
-    incomingLabel: "Incoming Orders",
-    aiStatusTxt: "Online 24/7",
-    chatPlaceholder: "Type a message...",
-    dashTitle: "Merchant Dashboard",
-    statOrdersLabel: "Orders Today",
-    statRevenueLabel: "Revenue Today",
-    statTimeLabel: "Avg. Time",
-    statRatingLabel: "Rating",
-    activeOrdersTitle: "Active Orders",
-    noActiveOrdersTxt: "No active orders at the moment",
-    completedTitle: "Completed Today",
-    intelSub: "Real-time global competitive monitoring",
-    acceptBtn: "✓ Accept",
-    rejectBtn: "✗ Reject",
-    orderSent: "✅ Order sent!",
-    orderAccepted: "✅ Order accepted!",
-    orderRejected: "❌ Order rejected",
-    memoriWelcome: "Hello! I'm MEMORI-AI, your 24/7 WONDAPP assistant. How can I help you today?",
-    nav_ordina: "Order",
-    nav_tracking: "Tracking",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "Dashboard",
-    nav_intel: "Intel",
-    categories: ["🍕 Food", "💊 Pharmacy", "🚲 Repairs", "🛒 Grocery", "🌸 Flowers", "🔧 Artisans"],
-    trackOrderDetail: "Last update"
-  },
-  es: {
-    heroTitle: "Pide lo que quieras",
-    heroSub: "H24 · 7 días a la semana · Instantáneo",
-    catLabel: "CATEGORÍA",
-    prodLabel: "PRODUCTOS Y SERVICIOS",
-    cartLabel: "TU PEDIDO",
-    cartEmpty: "Sin artículos añadidos",
-    totalLabel: "Total",
-    noteLabel: "NOTA PARA EL COMERCIANTE",
-    notePlaceholder: "Ej: sin gluten, timbre 2...",
-    sendOrderTxt: "Enviar Pedido",
-    trackingTitle: "Seguimiento del Pedido",
-    clienteBtn: "Cliente",
-    merchantBtn: "Comerciante",
-    noOrderTxt: "Sin pedidos activos.\n¡Haz un pedido desde la pestaña Pedir!",
-    incomingLabel: "Pedidos Entrantes",
-    aiStatusTxt: "En línea 24/7",
-    chatPlaceholder: "Escribe un mensaje...",
-    dashTitle: "Panel del Comerciante",
-    statOrdersLabel: "Pedidos Hoy",
-    statRevenueLabel: "Ingresos Hoy",
-    statTimeLabel: "Tiempo Medio",
-    statRatingLabel: "Valoración",
-    activeOrdersTitle: "Pedidos Activos",
-    noActiveOrdersTxt: "Sin pedidos activos en este momento",
-    completedTitle: "Completados Hoy",
-    intelSub: "Monitoreo competitivo global en tiempo real",
-    acceptBtn: "✓ Aceptar",
-    rejectBtn: "✗ Rechazar",
-    orderSent: "✅ Pedido enviado!",
-    orderAccepted: "✅ Pedido aceptado!",
-    orderRejected: "❌ Pedido rechazado",
-    memoriWelcome: "¡Hola! Soy MEMORI-AI, tu asistente H24 de WONDAPP. ¿Cómo puedo ayudarte hoy?",
-    nav_ordina: "Pedir",
-    nav_tracking: "Seguimiento",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "Panel",
-    nav_intel: "Intel",
-    categories: ["🍕 Comida", "💊 Farmacia", "🚲 Reparaciones", "🛒 Compras", "🌸 Flores", "🔧 Artesanos"],
-    trackOrderDetail: "Última actualización"
-  },
-  fr: {
-    heroTitle: "Commandez n'importe quoi",
-    heroSub: "H24 · 7 jours sur 7 · Instantané",
-    catLabel: "CATÉGORIE",
-    prodLabel: "PRODUITS & SERVICES",
-    cartLabel: "VOTRE COMMANDE",
-    cartEmpty: "Aucun article ajouté",
-    totalLabel: "Total",
-    noteLabel: "NOTE POUR LE MARCHAND",
-    notePlaceholder: "Ex: sans lactose, interphone 2...",
-    sendOrderTxt: "Envoyer la Commande",
-    trackingTitle: "Suivi de Commande",
-    clienteBtn: "Client",
-    merchantBtn: "Marchand",
-    noOrderTxt: "Aucune commande active.\nPassez une commande depuis l'onglet Commander!",
-    incomingLabel: "Commandes Entrantes",
-    aiStatusTxt: "En ligne 24/7",
-    chatPlaceholder: "Écrivez un message...",
-    dashTitle: "Tableau de Bord Marchand",
-    statOrdersLabel: "Commandes Aujourd'hui",
-    statRevenueLabel: "Revenus Aujourd'hui",
-    statTimeLabel: "Temps Moyen",
-    statRatingLabel: "Évaluation",
-    activeOrdersTitle: "Commandes Actives",
-    noActiveOrdersTxt: "Aucune commande active pour le moment",
-    completedTitle: "Terminées Aujourd'hui",
-    intelSub: "Surveillance concurrentielle mondiale en temps réel",
-    acceptBtn: "✓ Accepter",
-    rejectBtn: "✗ Refuser",
-    orderSent: "✅ Commande envoyée!",
-    orderAccepted: "✅ Commande acceptée!",
-    orderRejected: "❌ Commande refusée",
-    memoriWelcome: "Bonjour! Je suis MEMORI-AI, votre assistant H24 WONDAPP. Comment puis-je vous aider?",
-    nav_ordina: "Commander",
-    nav_tracking: "Suivi",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "Tableau",
-    nav_intel: "Intel",
-    categories: ["🍕 Nourriture", "💊 Pharmacie", "🚲 Réparations", "🛒 Courses", "🌸 Fleurs", "🔧 Artisans"],
-    trackOrderDetail: "Dernière mise à jour"
-  },
-  de: {
-    heroTitle: "Bestelle alles, jederzeit",
-    heroSub: "H24 · 7 Tage die Woche · Sofort",
-    catLabel: "KATEGORIE",
-    prodLabel: "PRODUKTE & DIENSTE",
-    cartLabel: "DEINE BESTELLUNG",
-    cartEmpty: "Keine Artikel hinzugefügt",
-    totalLabel: "Gesamt",
-    noteLabel: "NOTIZ FÜR DEN HÄNDLER",
-    notePlaceholder: "Z.B.: ohne Laktose, Klingel 2...",
-    sendOrderTxt: "Bestellung senden",
-    trackingTitle: "Bestellverfolgung",
-    clienteBtn: "Kunde",
-    merchantBtn: "Händler",
-    noOrderTxt: "Keine aktive Bestellung.\nBestelle über den Tab Bestellen!",
-    incomingLabel: "Eingehende Bestellungen",
-    aiStatusTxt: "Online 24/7",
-    chatPlaceholder: "Nachricht schreiben...",
-    dashTitle: "Händler-Dashboard",
-    statOrdersLabel: "Bestellungen Heute",
-    statRevenueLabel: "Umsatz Heute",
-    statTimeLabel: "Durchschn. Zeit",
-    statRatingLabel: "Bewertung",
-    activeOrdersTitle: "Aktive Bestellungen",
-    noActiveOrdersTxt: "Keine aktiven Bestellungen im Moment",
-    completedTitle: "Heute Abgeschlossen",
-    intelSub: "Globales Wettbewerbs-Monitoring in Echtzeit",
-    acceptBtn: "✓ Annehmen",
-    rejectBtn: "✗ Ablehnen",
-    orderSent: "✅ Bestellung gesendet!",
-    orderAccepted: "✅ Bestellung angenommen!",
-    orderRejected: "❌ Bestellung abgelehnt",
-    memoriWelcome: "Hallo! Ich bin MEMORI-AI, dein 24/7 WONDAPP-Assistent. Wie kann ich dir helfen?",
-    nav_ordina: "Bestellen",
-    nav_tracking: "Verfolgung",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "Dashboard",
-    nav_intel: "Intel",
-    categories: ["🍕 Essen", "💊 Apotheke", "🚲 Reparaturen", "🛒 Einkäufe", "🌸 Blumen", "🔧 Handwerk"],
-    trackOrderDetail: "Letztes Update"
-  },
-  zh: {
-    heroTitle: "随时订购任何东西",
-    heroSub: "24小时 · 每周7天 · 即时",
-    catLabel: "类别",
-    prodLabel: "产品与服务",
-    cartLabel: "您的订单",
-    cartEmpty: "尚未添加任何商品",
-    totalLabel: "总计",
-    noteLabel: "给商家的备注",
-    notePlaceholder: "例如：无乳糖，门铃2...",
-    sendOrderTxt: "发送订单",
-    trackingTitle: "订单追踪",
-    clienteBtn: "客户",
-    merchantBtn: "商家",
-    noOrderTxt: "无活动订单。\n请从订购标签下单！",
-    incomingLabel: "待处理订单",
-    aiStatusTxt: "24/7在线",
-    chatPlaceholder: "输入消息...",
-    dashTitle: "商家仪表板",
-    statOrdersLabel: "今日订单",
-    statRevenueLabel: "今日收入",
-    statTimeLabel: "平均时间",
-    statRatingLabel: "评分",
-    activeOrdersTitle: "活动订单",
-    noActiveOrdersTxt: "目前无活动订单",
-    completedTitle: "今日完成",
-    intelSub: "全球竞争实时监控",
-    acceptBtn: "✓ 接受",
-    rejectBtn: "✗ 拒绝",
-    orderSent: "✅ 订单已发送！",
-    orderAccepted: "✅ 订单已接受！",
-    orderRejected: "❌ 订单已拒绝",
-    memoriWelcome: "你好！我是MEMORI-AI，您的WONDAPP 24/7助手。今天我能帮您做什么？",
-    nav_ordina: "订购",
-    nav_tracking: "追踪",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "仪表板",
-    nav_intel: "情报",
-    categories: ["🍕 餐饮", "💊 药店", "🚲 维修", "🛒 购物", "🌸 鲜花", "🔧 工匠"],
-    trackOrderDetail: "最后更新"
-  },
-  ja: {
-    heroTitle: "いつでも何でも注文",
-    heroSub: "24時間 · 週7日 · 即時",
-    catLabel: "カテゴリー",
-    prodLabel: "商品・サービス",
-    cartLabel: "ご注文",
-    cartEmpty: "商品が追加されていません",
-    totalLabel: "合計",
-    noteLabel: "お店へのメモ",
-    notePlaceholder: "例：ラクトースなし、インターホン2...",
-    sendOrderTxt: "注文を送る",
-    trackingTitle: "注文トラッキング",
-    clienteBtn: "お客様",
-    merchantBtn: "店舗",
-    noOrderTxt: "アクティブな注文はありません。\n注文タブから注文してください！",
-    incomingLabel: "受付中の注文",
-    aiStatusTxt: "24時間オンライン",
-    chatPlaceholder: "メッセージを入力...",
-    dashTitle: "マーチャントダッシュボード",
-    statOrdersLabel: "本日の注文",
-    statRevenueLabel: "本日の収益",
-    statTimeLabel: "平均時間",
-    statRatingLabel: "評価",
-    activeOrdersTitle: "アクティブな注文",
-    noActiveOrdersTxt: "現在アクティブな注文はありません",
-    completedTitle: "本日完了",
-    intelSub: "グローバル競合リアルタイム監視",
-    acceptBtn: "✓ 承認",
-    rejectBtn: "✗ 拒否",
-    orderSent: "✅ 注文を送信しました！",
-    orderAccepted: "✅ 注文を承認しました！",
-    orderRejected: "❌ 注文を拒否しました",
-    memoriWelcome: "こんにちは！MEMORI-AIです。WONDAPPの24時間アシスタントです。今日はどのようにお手伝いできますか？",
-    nav_ordina: "注文",
-    nav_tracking: "追跡",
-    nav_memori: "MEMORI-AI",
-    nav_dashboard: "ダッシュボード",
-    nav_intel: "情報",
-    categories: ["🍕 フード", "💊 薬局", "🚲 修理", "🛒 買い物", "🌸 花", "🔧 職人"],
-    trackOrderDetail: "最終更新"
-  }
-};
+const T={
+it:{
+searchPlaceholder:"Cerca negozi, ristoranti, farmacie...",
+heroTitle:"Ordina qualsiasi cosa",heroSub:"H24 \u00b7 7 giorni su 7 \u00b7 Istantaneo",catLabel:"CATEGORIA",prodLabel:"PRODOTTI & SERVIZI",cartLabel:"IL TUO ORDINE",cartEmpty:"Nessun articolo aggiunto",totalLabel:"Totale",noteLabel:"NOTE PER IL MERCHANT",notePlaceholder:"Es: senza lattosio, citofono 2...",sendOrderTxt:"Invia Ordine",trackingTitle:"Tracking Ordine",clienteBtn:"Cliente",merchantBtn:"Merchant",noOrderTxt:"Nessun ordine attivo.\nEffettua un ordine dalla tab Ordina!",incomingLabel:"Ordini in Arrivo",aiStatusTxt:"Online 24/7",chatPlaceholder:"Scrivi un messaggio...",dashTitle:"Dashboard Merchant",statOrdersLabel:"Ordini Oggi",statRevenueLabel:"Ricavi Oggi",statTimeLabel:"Tempo Medio",statRatingLabel:"Valutazione",activeOrdersTitle:"Ordini Attivi",noActiveOrdersTxt:"Nessun ordine attivo al momento",completedTitle:"Completati Oggi",intelSub:"Monitoraggio competitivo globale in tempo reale",acceptBtn:"\u2713 Accetta",rejectBtn:"\u2717 Rifiuta",orderSent:"\u2705 Ordine inviato!",orderAccepted:"\u2705 Ordine accettato!",orderRejected:"\u274c Ordine rifiutato",memoriWelcome:"Ciao! Sono MEMORI-AI, il tuo assistente H24 per WONDAPP. Come posso aiutarti oggi?",nav_ordina:"Ordina",nav_tracking:"Tracking",nav_memori:"MEMORI-AI",nav_dashboard:"Dashboard",nav_intel:"Intel",categories:["\ud83c\udf55 Cibo","\ud83d\udc8a Farmacia","\ud83d\udeb2 Riparazioni","\ud83d\udecd Spesa","\ud83c\udf38 Fiori","\ud83d\udd27 Artigiani"],trackOrderDetail:"Ultimo aggiornamento",distLabel:"Distanza",addressLabel:"Indirizzo",phoneLabel:"Telefono",hoursLabel:"Orari",noInfoLabel:"Nessuna info aggiuntiva disponibile"
+},
+en:{
+searchPlaceholder:"Search shops, restaurants, pharmacies...",
+heroTitle:"Order anything, anytime",heroSub:"H24 \u00b7 7 days a week \u00b7 Instant",catLabel:"CATEGORY",prodLabel:"PRODUCTS & SERVICES",cartLabel:"YOUR ORDER",cartEmpty:"No items added yet",totalLabel:"Total",noteLabel:"NOTE FOR MERCHANT",notePlaceholder:"E.g.: no gluten, ring doorbell 2...",sendOrderTxt:"Send Order",trackingTitle:"Order Tracking",clienteBtn:"Customer",merchantBtn:"Merchant",noOrderTxt:"No active orders.\nPlace an order from the Order tab!",incomingLabel:"Incoming Orders",aiStatusTxt:"Online 24/7",chatPlaceholder:"Type a message...",dashTitle:"Merchant Dashboard",statOrdersLabel:"Orders Today",statRevenueLabel:"Revenue Today",statTimeLabel:"Avg. Time",statRatingLabel:"Rating",activeOrdersTitle:"Active Orders",noActiveOrdersTxt:"No active orders at the moment",completedTitle:"Completed Today",intelSub:"Real-time global competitive monitoring",acceptBtn:"\u2713 Accept",rejectBtn:"\u2717 Reject",orderSent:"\u2705 Order sent!",orderAccepted:"\u2705 Order accepted!",orderRejected:"\u274c Order rejected",memoriWelcome:"Hello! I'm MEMORI-AI, your 24/7 WONDAPP assistant. How can I help you today?",nav_ordina:"Order",nav_tracking:"Tracking",nav_memori:"MEMORI-AI",nav_dashboard:"Dashboard",nav_intel:"Intel",categories:["\ud83c\udf55 Food","\ud83d\udc8a Pharmacy","\ud83d\udeb2 Repairs","\ud83d\udecd Grocery","\ud83c\udf38 Flowers","\ud83d\udd27 Artisans"],trackOrderDetail:"Last update",distLabel:"Distance",addressLabel:"Address",phoneLabel:"Phone",hoursLabel:"Hours",noInfoLabel:"No additional info available"
+},
+es:{
+searchPlaceholder:"Buscar tiendas, restaurantes, farmacias...",
+heroTitle:"Pide lo que quieras",heroSub:"H24 \u00b7 7 d\u00edas a la semana \u00b7 Instant\u00e1neo",catLabel:"CATEGOR\u00cdA",prodLabel:"PRODUCTOS Y SERVICIOS",cartLabel:"TU PEDIDO",cartEmpty:"Sin art\u00edculos a\u00f1adidos",totalLabel:"Total",noteLabel:"NOTA PARA EL COMERCIANTE",notePlaceholder:"Ej: sin gluten, timbre 2...",sendOrderTxt:"Enviar Pedido",trackingTitle:"Seguimiento del Pedido",clienteBtn:"Cliente",merchantBtn:"Comerciante",noOrderTxt:"Sin pedidos activos.\n\u00a1Haz un pedido desde la pesta\u00f1a Pedir!",incomingLabel:"Pedidos Entrantes",aiStatusTxt:"En l\u00ednea 24/7",chatPlaceholder:"Escribe un mensaje...",dashTitle:"Panel del Comerciante",statOrdersLabel:"Pedidos Hoy",statRevenueLabel:"Ingresos Hoy",statTimeLabel:"Tiempo Medio",statRatingLabel:"Valoraci\u00f3n",activeOrdersTitle:"Pedidos Activos",noActiveOrdersTxt:"Sin pedidos activos en este momento",completedTitle:"Completados Hoy",intelSub:"Monitoreo competitivo global en tiempo real",acceptBtn:"\u2713 Aceptar",rejectBtn:"\u2717 Rechazar",orderSent:"\u2705 Pedido enviado!",orderAccepted:"\u2705 Pedido aceptado!",orderRejected:"\u274c Pedido rechazado",memoriWelcome:"\u00a1Hola! Soy MEMORI-AI, tu asistente H24 de WONDAPP. \u00bfC\u00f3mo puedo ayudarte hoy?",nav_ordina:"Pedir",nav_tracking:"Seguimiento",nav_memori:"MEMORI-AI",nav_dashboard:"Panel",nav_intel:"Intel",categories:["\ud83c\udf55 Comida","\ud83d\udc8a Farmacia","\ud83d\udeb2 Reparaciones","\ud83d\udecd Compras","\ud83c\udf38 Flores","\ud83d\udd27 Artesanos"],trackOrderDetail:"\u00daltima actualizaci\u00f3n",distLabel:"Distancia",addressLabel:"Direcci\u00f3n",phoneLabel:"Tel\u00e9fono",hoursLabel:"Horario",noInfoLabel:"Sin informaci\u00f3n adicional"
+},
+fr:{
+searchPlaceholder:"Chercher boutiques, restaurants, pharmacies...",
+heroTitle:"Commandez n'importe quoi",heroSub:"H24 \u00b7 7 jours sur 7 \u00b7 Instantan\u00e9",catLabel:"CAT\u00c9GORIE",prodLabel:"PRODUITS & SERVICES",cartLabel:"VOTRE COMMANDE",cartEmpty:"Aucun article ajout\u00e9",totalLabel:"Total",noteLabel:"NOTE POUR LE MARCHAND",notePlaceholder:"Ex: sans lactose, interphone 2...",sendOrderTxt:"Envoyer la Commande",trackingTitle:"Suivi de Commande",clienteBtn:"Client",merchantBtn:"Marchand",noOrderTxt:"Aucune commande active.\nPassez une commande depuis l'onglet Commander!",incomingLabel:"Commandes Entrantes",aiStatusTxt:"En ligne 24/7",chatPlaceholder:"\u00c9crivez un message...",dashTitle:"Tableau de Bord Marchand",statOrdersLabel:"Commandes Aujourd'hui",statRevenueLabel:"Revenus Aujourd'hui",statTimeLabel:"Temps Moyen",statRatingLabel:"\u00c9valuation",activeOrdersTitle:"Commandes Actives",noActiveOrdersTxt:"Aucune commande active pour le moment",completedTitle:"Termin\u00e9es Aujourd'hui",intelSub:"Surveillance concurrentielle mondiale en temps r\u00e9el",acceptBtn:"\u2713 Accepter",rejectBtn:"\u2717 Refuser",orderSent:"\u2705 Commande envoy\u00e9e!",orderAccepted:"\u2705 Commande accept\u00e9e!",orderRejected:"\u274c Commande refus\u00e9e",memoriWelcome:"Bonjour! Je suis MEMORI-AI, votre assistant H24 WONDAPP. Comment puis-je vous aider?",nav_ordina:"Commander",nav_tracking:"Suivi",nav_memori:"MEMORI-AI",nav_dashboard:"Tableau",nav_intel:"Intel",categories:["\ud83c\udf55 Nourriture","\ud83d\udc8a Pharmacie","\ud83d\udeb2 R\u00e9parations","\ud83d\udecd Courses","\ud83c\udf38 Fleurs","\ud83d\udd27 Artisans"],trackOrderDetail:"Derni\u00e8re mise \u00e0 jour",distLabel:"Distance",addressLabel:"Adresse",phoneLabel:"T\u00e9l\u00e9phone",hoursLabel:"Horaires",noInfoLabel:"Aucune information suppl\u00e9mentaire"
+},
+de:{
+searchPlaceholder:"Gesch\u00e4fte, Restaurants, Apotheken suchen...",
+heroTitle:"Bestelle alles, jederzeit",heroSub:"H24 \u00b7 7 Tage die Woche \u00b7 Sofort",catLabel:"KATEGORIE",prodLabel:"PRODUKTE & DIENSTE",cartLabel:"DEINE BESTELLUNG",cartEmpty:"Keine Artikel hinzugef\u00fcgt",totalLabel:"Gesamt",noteLabel:"NOTIZ F\u00dcR DEN H\u00c4NDLER",notePlaceholder:"Z.B.: ohne Laktose, Klingel 2...",sendOrderTxt:"Bestellung senden",trackingTitle:"Bestellverfolgung",clienteBtn:"Kunde",merchantBtn:"H\u00e4ndler",noOrderTxt:"Keine aktive Bestellung.\nBestelle \u00fcber den Tab Bestellen!",incomingLabel:"Eingehende Bestellungen",aiStatusTxt:"Online 24/7",chatPlaceholder:"Nachricht schreiben...",dashTitle:"H\u00e4ndler-Dashboard",statOrdersLabel:"Bestellungen Heute",statRevenueLabel:"Umsatz Heute",statTimeLabel:"Durchschn. Zeit",statRatingLabel:"Bewertung",activeOrdersTitle:"Aktive Bestellungen",noActiveOrdersTxt:"Keine aktiven Bestellungen im Moment",completedTitle:"Heute Abgeschlossen",intelSub:"Globales Wettbewerbs-Monitoring in Echtzeit",acceptBtn:"\u2713 Annehmen",rejectBtn:"\u2717 Ablehnen",orderSent:"\u2705 Bestellung gesendet!",orderAccepted:"\u2705 Bestellung angenommen!",orderRejected:"\u274c Bestellung abgelehnt",memoriWelcome:"Hallo! Ich bin MEMORI-AI, dein 24/7 WONDAPP-Assistent. Wie kann ich dir helfen?",nav_ordina:"Bestellen",nav_tracking:"Verfolgung",nav_memori:"MEMORI-AI",nav_dashboard:"Dashboard",nav_intel:"Intel",categories:["\ud83c\udf55 Essen","\ud83d\udc8a Apotheke","\ud83d\udeb2 Reparaturen","\ud83d\udecd Eink\u00e4ufe","\ud83c\udf38 Blumen","\ud83d\udd27 Handwerk"],trackOrderDetail:"Letztes Update",distLabel:"Entfernung",addressLabel:"Adresse",phoneLabel:"Telefon",hoursLabel:"\u00d6ffnungszeiten",noInfoLabel:"Keine weiteren Informationen"
+},
+zh:{
+searchPlaceholder:"\u641c\u7d22\u5546\u5e97\u3001\u9910\u5385\u3001\u836f\u5e97...",
+heroTitle:"\u968f\u65f6\u8ba2\u8d2d\u4efb\u4f55\u4e1c\u897f",heroSub:"24\u5c0f\u65f6 \u00b7 \u6bcf\u54687\u5929 \u00b7 \u5373\u65f6",catLabel:"\u7c7b\u522b",prodLabel:"\u4ea7\u54c1\u4e0e\u670d\u52a1",cartLabel:"\u60a8\u7684\u8ba2\u5355",cartEmpty:"\u5c1a\u672a\u6dfb\u52a0\u4efb\u4f55\u5546\u54c1",totalLabel:"\u603b\u8ba1",noteLabel:"\u7ed9\u5546\u5bb6\u7684\u5907\u6ce8",notePlaceholder:"\u4f8b\u5982\uff1a\u65e0\u4e73\u7cd6\uff0c\u95e8\u94832...",sendOrderTxt:"\u53d1\u9001\u8ba2\u5355",trackingTitle:"\u8ba2\u5355\u8ffd\u8e2a",clienteBtn:"\u5ba2\u6237",merchantBtn:"\u5546\u5bb6",noOrderTxt:"\u65e0\u6d3b\u52a8\u8ba2\u5355\u3002\n\u8bf7\u4ece\u8ba2\u8d2d\u6807\u7b7e\u4e0b\u5355\uff01",incomingLabel:"\u5f85\u5904\u7406\u8ba2\u5355",aiStatusTxt:"24/7\u5728\u7ebf",chatPlaceholder:"\u8f93\u5165\u6d88\u606f...",dashTitle:"\u5546\u5bb6\u4eea\u8868\u677f",statOrdersLabel:"\u4eca\u65e5\u8ba2\u5355",statRevenueLabel:"\u4eca\u65e5\u6536\u5165",statTimeLabel:"\u5e73\u5747\u65f6\u95f4",statRatingLabel:"\u8bc4\u5206",activeOrdersTitle:"\u6d3b\u52a8\u8ba2\u5355",noActiveOrdersTxt:"\u76ee\u524d\u65e0\u6d3b\u52a8\u8ba2\u5355",completedTitle:"\u4eca\u65e5\u5b8c\u6210",intelSub:"\u5168\u7403\u7ade\u4e89\u5b9e\u65f6\u76d1\u63a7",acceptBtn:"\u2713 \u63a5\u53d7",rejectBtn:"\u2717 \u62d2\u7edd",orderSent:"\u2705 \u8ba2\u5355\u5df2\u53d1\u9001\uff01",orderAccepted:"\u2705 \u8ba2\u5355\u5df2\u63a5\u53d7\uff01",orderRejected:"\u274c \u8ba2\u5355\u5df2\u62d2\u7edd",memoriWelcome:"\u4f60\u597d\uff01\u6211\u662fMEMORI-AI\uff0c\u60a8\u7684WONDAPP 24/7\u52a9\u624b\u3002\u4eca\u5929\u6211\u80fd\u5e2e\u60a8\u505a\u4ec0\u4e48\uff1f",nav_ordina:"\u8ba2\u8d2d",nav_tracking:"\u8ffd\u8e2a",nav_memori:"MEMORI-AI",nav_dashboard:"\u4eea\u8868\u677f",nav_intel:"\u60c5\u62a5",categories:["\ud83c\udf55 \u9910\u996e","\ud83d\udc8a \u836f\u5e97","\ud83d\udeb2 \u7ef4\u4fee","\ud83d\udecd \u8d2d\u7269","\ud83c\udf38 \u9c9c\u82b1","\ud83d\udd27 \u5de5\u5320"],trackOrderDetail:"\u6700\u540e\u66f4\u65b0",distLabel:"\u8ddd\u79bb",addressLabel:"\u5730\u5740",phoneLabel:"\u7535\u8bdd",hoursLabel:"\u8425\u4e1a\u65f6\u95f4",noInfoLabel:"\u6682\u65e0\u5176\u4ed6\u4fe1\u606f"
+},
+ja:{
+searchPlaceholder:"\u5e97\u8217\u3001\u30ec\u30b9\u30c8\u30e9\u30f3\u3001\u85ac\u5c40\u3092\u691c\u7d22...",
+heroTitle:"\u3044\u3064\u3067\u3082\u4f55\u3067\u3082\u6ce8\u6587",heroSub:"24\u6642\u9593 \u00b7 \u90317\u65e5 \u00b7 \u5373\u6642",catLabel:"\u30ab\u30c6\u30b4\u30ea\u30fc",prodLabel:"\u5546\u54c1\u30fb\u30b5\u30fc\u30d3\u30b9",cartLabel:"\u3054\u6ce8\u6587",cartEmpty:"\u5546\u54c1\u304c\u8ffd\u52a0\u3055\u308c\u3066\u3044\u307e\u305b\u3093",totalLabel:"\u5408\u8a08",noteLabel:"\u304a\u5e97\u3078\u306e\u30e1\u30e2",notePlaceholder:"\u4f8b\uff1a\u30e9\u30af\u30c8\u30fc\u30b9\u306a\u3057\u3001\u30a4\u30f3\u30bf\u30fc\u30db\u30f32...",sendOrderTxt:"\u6ce8\u6587\u3092\u9001\u308b",trackingTitle:"\u6ce8\u6587\u30c8\u30e9\u30c3\u30ad\u30f3\u30b0",clienteBtn:"\u304a\u5ba2\u69d8",merchantBtn:"\u5e97\u8217",noOrderTxt:"\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u6ce8\u6587\u306f\u3042\u308a\u307e\u305b\u3093\u3002\n\u6ce8\u6587\u30bf\u30d6\u304b\u3089\u6ce8\u6587\u3057\u3066\u304f\u3060\u3055\u3044\uff01",incomingLabel:"\u53d7\u4ed8\u4e2d\u306e\u6ce8\u6587",aiStatusTxt:"24\u6642\u9593\u30aa\u30f3\u30e9\u30a4\u30f3",chatPlaceholder:"\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u5165\u529b...",dashTitle:"\u30de\u30fc\u30c1\u30e3\u30f3\u30c8\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",statOrdersLabel:"\u672c\u65e5\u306e\u6ce8\u6587",statRevenueLabel:"\u672c\u65e5\u306e\u53ce\u76ca",statTimeLabel:"\u5e73\u5747\u6642\u9593",statRatingLabel:"\u8a55\u4fa1",activeOrdersTitle:"\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u6ce8\u6587",noActiveOrdersTxt:"\u73fe\u5728\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u6ce8\u6587\u306f\u3042\u308a\u307e\u305b\u3093",completedTitle:"\u672c\u65e5\u5b8c\u4e86",intelSub:"\u30b0\u30ed\u30fc\u30d0\u30eb\u7af6\u5408\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u76e3\u8996",acceptBtn:"\u2713 \u627f\u8a8d",rejectBtn:"\u2717 \u62d2\u5426",orderSent:"\u2705 \u6ce8\u6587\u3092\u9001\u4fe1\u3057\u307e\u3057\u305f\uff01",orderAccepted:"\u2705 \u6ce8\u6587\u3092\u627f\u8a8d\u3057\u307e\u3057\u305f\uff01",orderRejected:"\u274c \u6ce8\u6587\u3092\u62d2\u5426\u3057\u307e\u3057\u305f",memoriWelcome:"\u3053\u3093\u306b\u3061\u306f\uff01MEMORI-AI\u3067\u3059\u3002WONDAPP\u306e24\u6642\u9593\u30a2\u30b7\u30b9\u30bf\u30f3\u30c8\u3067\u3059\u3002\u4eca\u65e5\u306f\u3069\u306e\u3088\u3046\u306b\u304a\u624b\u4f1d\u3044\u3067\u304d\u307e\u3059\u304b\uff1f",nav_ordina:"\u6ce8\u6587",nav_tracking:"\u8ffd\u8de1",nav_memori:"MEMORI-AI",nav_dashboard:"\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",nav_intel:"\u60c5\u5831",categories:["\ud83c\udf55 \u30d5\u30fc\u30c9","\ud83d\udc8a \u85ac\u5c40","\ud83d\udeb2 \u4fee\u7406","\ud83d\udecd \u8cb7\u3044\u7269","\ud83c\udf38 \u82b1","\ud83d\udd27 \u8077\u4eba"],trackOrderDetail:"\u6700\u7d42\u66f4\u65b0",distLabel:"\u8ddd\u96e2",addressLabel:"\u4f4f\u6240",phoneLabel:"\u96fb\u8a71",hoursLabel:"\u55b6\u696d\u6642\u9593",noInfoLabel:"\u8ffd\u52a0\u60c5\u5831\u306f\u3042\u308a\u307e\u305b\u3093"
+}};
 
-// ══════════════════════════════════════
 // STATE
-// ══════════════════════════════════════
-let currentLang = 'it';
-let currentCat = 0;
-let cart = [];
-let orderCounter = 1000;
-let activeOrder = null;
-let dashboardOrders = [];
-let completedToday = [];
-let statOrderCount = 0;
-let statRevenue = 0;
-let chatHistory = [];
+let currentLang='it',currentCat=0,cart=[],orderCounter=1000,activeOrder=null,dashboardOrders=[],completedToday=[],statOrderCount=0,statRevenue=0,chatHistory=[];
 
-// ══════════════════════════════════════
-// PRODUCT CATALOG
-// ══════════════════════════════════════
-const catalog = [
-  // Cibo
-  [
-    { name: "🍕 Pizza Margherita", desc: "Pomodoro, fior di latte, basilico", price: 8.50 },
-    { name: "🍝 Pasta al Ragù", desc: "Tagliatelle fatte in casa", price: 10.00 },
-    { name: "🥗 Insalata Mista", desc: "Verdure fresche di stagione", price: 6.00 },
-    { name: "🍔 Burger Classico", desc: "Angus, lattuga, pomodoro, cipolla", price: 12.00 },
-    { name: "🥤 Bibita", desc: "Coca-Cola, Fanta, acqua", price: 2.50 },
-  ],
-  // Farmacia
-  [
-    { name: "💊 Tachipirina 500mg", desc: "Confezione da 20 compresse", price: 4.20 },
-    { name: "🩹 Kit Pronto Soccorso", desc: "Cerotti, garze, disinfettante", price: 8.90 },
-    { name: "😷 Mascherine FFP2", desc: "Confezione da 10", price: 5.50 },
-    { name: "💉 Vitamina C 1000mg", desc: "30 compresse effervescenti", price: 6.80 },
-    { name: "🌡️ Termometro Digitale", desc: "Misurazione in 10 secondi", price: 14.90 },
-  ],
-  // Riparazioni
-  [
-    { name: "🚲 Riparazione Foratura", desc: "Camera d'aria + montaggio", price: 15.00 },
-    { name: "⚙️ Revisione Completa", desc: "Freni, catena, cambio, cerchi", price: 45.00 },
-    { name: "🔧 Sostituzione Catena", desc: "Catena + pulizia", price: 25.00 },
-    { name: "💡 Installazione Luce", desc: "Anteriore + posteriore LED", price: 20.00 },
-    { name: "🛞 Nuovo Pneumatico", desc: "Copertone + camera + montaggio", price: 30.00 },
-  ],
-  // Spesa
-  [
-    { name: "🥛 Latte Intero 1L", desc: "Latte fresco pastorizzato", price: 1.80 },
-    { name: "🥚 Uova Bio (6)", desc: "Galline allevate a terra", price: 3.50 },
-    { name: "🍞 Pane Fresco", desc: "Pagnotta artigianale 500g", price: 2.80 },
-    { name: "🫒 Olio EVO", desc: "Extra vergine di oliva, 750ml", price: 9.90 },
-    { name: "🍅 Passata di Pomodoro", desc: "Artigianale, 700ml", price: 3.20 },
-  ],
-  // Fiori
-  [
-    { name: "🌹 Rose Rosse (10)", desc: "Fresche di giornata, con carta regalo", price: 18.00 },
-    { name: "🌻 Girasoli (5)", desc: "Mazzo girasoli freschi", price: 12.00 },
-    { name: "💐 Mazzo Misto", desc: "Stagionali, colorati e profumati", price: 22.00 },
-    { name: "🌺 Orchidea Bianca", desc: "Pianta in vaso con sottovaso", price: 25.00 },
-    { name: "🌿 Pianta Verde", desc: "Ficus, Pothos o Sansevieria", price: 15.00 },
-  ],
-  // Artigiani
-  [
-    { name: "🔑 Duplicato Chiave", desc: "Copia standard in 15 minuti", price: 8.00 },
-    { name: "👗 Orlo Pantaloni", desc: "Modifica sartoriale rapida", price: 12.00 },
-    { name: "🖼️ Incorniciatura", desc: "Cornice su misura + vetro", price: 35.00 },
-    { name: "🔌 Riparazione Elettrica", desc: "Sopralluogo + piccoli interventi", price: 50.00 },
-    { name: "🪚 Falegnameria", desc: "Riparazione mobili e infissi", price: 60.00 },
-  ]
+// CATALOG
+const catalog=[[
+{name:"\ud83c\udf55 Pizza Margherita",desc:"Pomodoro, fior di latte, basilico",price:8.50},
+{name:"\ud83c\udf5d Pasta al Rag\u00f9",desc:"Tagliatelle fatte in casa",price:10.00},
+{name:"\ud83e\udd57 Insalata Mista",desc:"Verdure fresche di stagione",price:6.00},
+{name:"\ud83c\udf54 Burger Classico",desc:"Angus, lattuga, pomodoro, cipolla",price:12.00},
+{name:"\ud83e\udd64 Bibita",desc:"Coca-Cola, Fanta, acqua",price:2.50}
+],[
+{name:"\ud83d\udc8a Tachipirina 500mg",desc:"Confezione da 20 compresse",price:4.20},
+{name:"\ud83e\ude79 Kit Pronto Soccorso",desc:"Cerotti, garze, disinfettante",price:8.90},
+{name:"\ud83d\ude37 Mascherine FFP2",desc:"Confezione da 10",price:5.50},
+{name:"\ud83d\udc89 Vitamina C 1000mg",desc:"30 compresse effervescenti",price:6.80},
+{name:"\ud83c\udf21\ufe0f Termometro Digitale",desc:"Misurazione in 10 secondi",price:14.90}
+],[
+{name:"\ud83d\udeb2 Riparazione Foratura",desc:"Camera d'aria + montaggio",price:15.00},
+{name:"\u2699\ufe0f Revisione Completa",desc:"Freni, catena, cambio, cerchi",price:45.00},
+{name:"\ud83d\udd27 Sostituzione Catena",desc:"Catena + pulizia",price:25.00},
+{name:"\ud83d\udca1 Installazione Luce",desc:"Anteriore + posteriore LED",price:20.00},
+{name:"\ud83d\udee5\ufe0f Nuovo Pneumatico",desc:"Copertone + camera + montaggio",price:30.00}
+],[
+{name:"\ud83e\udd5b Latte Intero 1L",desc:"Latte fresco pastorizzato",price:1.80},
+{name:"\ud83e\udd5a Uova Bio (6)",desc:"Galline allevate a terra",price:3.50},
+{name:"\ud83c\udf5e Pane Fresco",desc:"Pagnotta artigianale 500g",price:2.80},
+{name:"🫒 Olio EVO",desc:"Extra vergine di oliva, 750ml",price:9.90},
+{name:"\ud83c\udf45 Passata di Pomodoro",desc:"Artigianale, 700ml",price:3.20}
+],[
+{name:"\ud83c\udf39 Rose Rosse (10)",desc:"Fresche di giornata, con carta regalo",price:18.00},
+{name:"\ud83c\udf3b Girasoli (5)",desc:"Mazzo girasoli freschi",price:12.00},
+{name:"\ud83d\udc90 Mazzo Misto",desc:"Stagionali, colorati e profumati",price:22.00},
+{name:"\ud83c\udf3a Orchidea Bianca",desc:"Pianta in vaso con sottovaso",price:25.00},
+{name:"\ud83c\udf3f Pianta Verde",desc:"Ficus, Pothos o Sansevieria",price:15.00}
+],[
+{name:"\ud83d\udd11 Duplicato Chiave",desc:"Copia standard in 15 minuti",price:8.00},
+{name:"\ud83d\udc57 Orlo Pantaloni",desc:"Modifica sartoriale rapida",price:12.00},
+{name:"\ud83d\uddbc\ufe0f Incorniciatura",desc:"Cornice su misura + vetro",price:35.00},
+{name:"\ud83d\udd0c Riparazione Elettrica",desc:"Sopralluogo + piccoli interventi",price:50.00},
+{name:"\ud83e\ude9a Falegnameria",desc:"Riparazione mobili e infissi",price:60.00}
+]];
+
+// COMPETITORS
+const competitors=[
+{logo:"\ud83d\udfe0",name:"Uber Eats",type:"Food Delivery",threat:85,desc:"Leader mondiale food delivery. Forte in citt\u00e0. Commissioni alte per merchant (30%). Gap: no H24 garantito, no servizi non-food.",tags:["Food","Delivery","Global"]},
+{logo:"\ud83d\udce6",name:"Amazon",type:"E-commerce + Delivery",threat:90,desc:"Ecosistema dominante. Prime Now per consegne rapide. Gap: non copre merchant locali piccoli, no ordini artigiani.",tags:["E-commerce","Prime","Global"]},
+{logo:"\ud83e\udd16",name:"ChatGPT",type:"AI Assistant",threat:70,desc:"AI conversazionale avanzata. Non ha integrazione merchant diretta. Gap: no ordering, no tracking, no merchant dashboard.",tags:["AI","Chat","OpenAI"]},
+{logo:"\ud83c\udfb5",name:"TikTok Shop",type:"Social Commerce",threat:65,desc:"Shopping integrato nei video. Crescita esplosiva Z-Gen. Gap: no servizi locali, no B2B, no food.",tags:["Social","Video","Commerce"]},
+{logo:"\ud83d\uded2",name:"AliExpress",type:"Global Marketplace",threat:55,desc:"Marketplace asiatico con tempi lunghi. Gap: consegne lente, no merchant locali, no servizi.",tags:["Asia","Marketplace","Price"]},
+{logo:"\ud83d\udfe1",name:"Glovo",type:"Quick Commerce",threat:80,desc:"Quick commerce pan-europeo. Simile a WONDAPP ma solo food/farmacia. Gap: no artigiani, no riparazioni.",tags:["Quick","Europe","Delivery"]},
+{logo:"\ud83d\udc8e",name:"Gemini",type:"AI Platform",threat:60,desc:"AI Google con integrazione Maps. Potenziale ordering futuro. Gap: ancora senza marketplace integrato.",tags:["AI","Google","Maps"]},
+{logo:"\ud83c\udfe8",name:"Booking.com",type:"Travel & Services",threat:40,desc:"Leader servizi travel. Espansione su experiences. Gap: no prodotti locali, no food, no artigiani.",tags:["Travel","Services","Global"]},
+{logo:"\ud83d\udfe2",name:"Shopify",type:"SaaS Commerce",threat:50,desc:"Piattaforma SaaS per merchant. No app consumer diretta. Gap: no aggregazione ordini H24, no AI assistant.",tags:["SaaS","Merchant","B2B"]},
+{logo:"\ud83d\udcac",name:"WhatsApp Business",type:"Messaging Commerce",threat:65,desc:"Ordini via chat usato da molti merchant. Nessuna infrastruttura nativa. Gap: no dashboard, no tracking, no AI.",tags:["Messaging","Local","Manual"]}
 ];
 
-// ══════════════════════════════════════
-// COMPETITORS DATA
-// ══════════════════════════════════════
-const competitors = [
-  { logo: "🟠", name: "Uber Eats", type: "Food Delivery", threat: 85, desc: "Leader mondiale food delivery. Forte in città. Commissioni alte per merchant (30%). Gap: no H24 garantito, no servizi non-food.", tags: ["Food", "Delivery", "Global"] },
-  { logo: "📦", name: "Amazon", type: "E-commerce + Delivery", threat: 90, desc: "Ecosistema dominante. Prime Now per consegne rapide. Gap: non copre merchant locali piccoli, no ordini artigiani.", tags: ["E-commerce", "Prime", "Global"] },
-  { logo: "🤖", name: "ChatGPT", type: "AI Assistant", threat: 70, desc: "AI conversazionale avanzata. Non ha integrazione merchant diretta. Gap: no ordering, no tracking, no merchant dashboard.", tags: ["AI", "Chat", "OpenAI"] },
-  { logo: "🎵", name: "TikTok Shop", type: "Social Commerce", threat: 65, desc: "Shopping integrato nei video. Crescita esplosiva Z-Gen. Gap: no servizi locali, no B2B, no food.", tags: ["Social", "Video", "Commerce"] },
-  { logo: "🛍️", name: "AliExpress", type: "Global Marketplace", threat: 55, desc: "Marketplace asiatico con tempi lunghi. Gap: consegne lente, no merchant locali, no servizi.", tags: ["Asia", "Marketplace", "Price"] },
-  { logo: "🟡", name: "Glovo", type: "Quick Commerce", threat: 80, desc: "Quick commerce pan-europeo. Simile a WONDAPP ma solo food/farmacia. Gap: no artigiani, no riparazioni.", tags: ["Quick", "Europe", "Delivery"] },
-  { logo: "💎", name: "Gemini", type: "AI Platform", threat: 60, desc: "AI Google con integrazione Maps. Potenziale ordering futuro. Gap: ancora senza marketplace integrato.", tags: ["AI", "Google", "Maps"] },
-  { logo: "🏨", name: "Booking.com", type: "Travel & Services", threat: 40, desc: "Leader servizi travel. Espansione su experiences. Gap: no prodotti locali, no food, no artigiani.", tags: ["Travel", "Services", "Global"] },
-  { logo: "🟢", name: "Shopify", type: "SaaS Commerce", threat: 50, desc: "Piattaforma SaaS per merchant. No app consumer diretta. Gap: no aggregazione ordini H24, no AI assistant.", tags: ["SaaS", "Merchant", "B2B"] },
-  { logo: "💬", name: "WhatsApp Business", type: "Messaging Commerce", threat: 65, desc: "Ordini via chat usato da molti merchant. Nessuna infrastruttura nativa. Gap: no dashboard, no tracking, no AI.", tags: ["Messaging", "Local", "Manual"] },
-];
-
-// ══════════════════════════════════════
-// TRACKING STEPS TEMPLATES
-// ══════════════════════════════════════
-function getTrackingSteps(lang) {
-  const steps = {
-    it: ["📝 Ordine ricevuto", "✅ Confermato dal merchant", "⚙️ In preparazione", "🚀 In consegna", "🎉 Consegnato!"],
-    en: ["📝 Order received", "✅ Confirmed by merchant", "⚙️ Being prepared", "🚀 Out for delivery", "🎉 Delivered!"],
-    es: ["📝 Pedido recibido", "✅ Confirmado por el comerciante", "⚙️ En preparación", "🚀 En camino", "🎉 ¡Entregado!"],
-    fr: ["📝 Commande reçue", "✅ Confirmée par le marchand", "⚙️ En préparation", "🚀 En livraison", "🎉 Livré!"],
-    de: ["📝 Bestellung erhalten", "✅ Vom Händler bestätigt", "⚙️ In Vorbereitung", "🚀 Unterwegs", "🎉 Geliefert!"],
-    zh: ["📝 已收到订单", "✅ 商家已确认", "⚙️ 准备中", "🚀 配送中", "🎉 已送达！"],
-    ja: ["📝 注文受付", "✅ 店舗確認済", "⚙️ 準備中", "🚀 配送中", "🎉 お届け完了！"],
-  };
-  return steps[lang] || steps.it;
+// TRACKING STEPS
+function getTrackingSteps(lang){
+const s={
+it:["\ud83d\udcdd Ordine ricevuto","\u2705 Confermato dal merchant","\u2699\ufe0f In preparazione","\ud83d\ude80 In consegna","\ud83c\udf89 Consegnato!"],
+en:["\ud83d\udcdd Order received","\u2705 Confirmed by merchant","\u2699\ufe0f Being prepared","\ud83d\ude80 Out for delivery","\ud83c\udf89 Delivered!"],
+es:["\ud83d\udcdd Pedido recibido","\u2705 Confirmado por el comerciante","\u2699\ufe0f En preparaci\u00f3n","\ud83d\ude80 En camino","\ud83c\udf89 \u00a1Entregado!"],
+fr:["\ud83d\udcdd Commande re\u00e7ue","\u2705 Confirm\u00e9e par le marchand","\u2699\ufe0f En pr\u00e9paration","\ud83d\ude80 En livraison","\ud83c\udf89 Livr\u00e9!"],
+de:["\ud83d\udcdd Bestellung erhalten","\u2705 Vom H\u00e4ndler best\u00e4tigt","\u2699\ufe0f In Vorbereitung","\ud83d\ude80 Unterwegs","\ud83c\udf89 Geliefert!"],
+zh:["\ud83d\udcdd \u5df2\u6536\u5230\u8ba2\u5355","\u2705 \u5546\u5bb6\u5df2\u786e\u8ba4","\u2699\ufe0f \u51c6\u5907\u4e2d","\ud83d\ude80 \u914d\u9001\u4e2d","\ud83c\udf89 \u5df2\u9001\u8fbe\uff01"],
+ja:["\ud83d\udcdd \u6ce8\u6587\u53d7\u4ed8","\u2705 \u5e97\u8217\u78ba\u8a8d\u6e08","\u2699\ufe0f \u6e96\u5099\u4e2d","\ud83d\ude80 \u914d\u9001\u4e2d","\ud83c\udf89 \u304a\u5c4a\u3051\u5b8c\u4e86\uff01"]
+};
+return s[lang]||s.it;
 }
 
-// ══════════════════════════════════════
 // GEOLOCATION
-// ══════════════════════════════════════
-let userLocation = null;
+let userLocation=null;
+function getSilentLocation(){
+if(!navigator.geolocation)return;
+navigator.geolocation.getCurrentPosition(
+pos=>{userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};},
+()=>{},{enableHighAccuracy:true,timeout:8000,maximumAge:60000}
+);
+}
 
-function getLocation() { getSilentLocation(); }
-
-// ══════════════════════════════════════
-// OSM TAG MAPPING — universale
-// ══════════════════════════════════════
-const osmMap = [
-  { keys:['pizza','pizzeria'],                   q:`node["amenity"="restaurant"]["cuisine"~"pizza",i]` },
-  { keys:['ristorante','restaurant','mangiare','cibo','food','sushi','cinese','messicano','indiano','thai','kebab','poke','burger','hamburgeria','trattoria','osteria','cucina'],  q:`node["amenity"="restaurant"]` },
-  { keys:['bar','caffè','caffe','cafe','coffee','cappuccino','colazione'],  q:`node["amenity"="cafe"]` },
-  { keys:['farmacia','pharmacy','medicine','medicinale','farmaco'],         q:`node["amenity"="pharmacy"]` },
-  { keys:['benzinaio','benzina','carburante','gas','petrol','diesel','rifornimento'], q:`node["amenity"="fuel"]` },
-  { keys:['supermercato','supermarket','spesa','alimentari','grocery','coop','esselunga','lidl','aldi','conad'], q:`node["shop"="supermarket"]` },
-  { keys:['bici','bicicletta','bicycle','ciclista','bike','riparazione bici'], q:`node["shop"="bicycle"]` },
-  { keys:['fiori','fiorista','flowers','rose','bouquet','florist'],         q:`node["shop"="florist"]` },
-  { keys:['parrucchiere','barber','capelli','barbiere','hairdresser','salon','salone'], q:`node["shop"~"hairdresser|barber"]` },
-  { keys:['lavanderia','laundry','tintoria','stireria'],                         q:`node["shop"~"laundry|dry_cleaning"]` },
-  { keys:['veterinario','vet','animali','cane','gatto'],                    q:`node["amenity"="veterinary"]` },
-  { keys:['banca','bank','bancomat','atm'],                                 q:`node["amenity"~"bank|atm"]` },
-  { keys:['tabaccheria','tabacco','tabacchi','sigarette','gratta','lotto'], q:`node["shop"="tobacco"]` },
-  { keys:['panetteria','bakery','pane','forno','pasticceria','cornetto','brioche'], q:`node["shop"~"bakery|pastry"]` },
-  { keys:['gelateria','gelato','ice cream','gelati'],                       q:`node["amenity"~"ice_cream|cafe"]["name"~"gelat",i]` },
-  { keys:['ospedale','hospital','pronto soccorso','emergenza'],             q:`node["amenity"="hospital"]` },
-  { keys:['dentista','dentist','dente','odontoiatra'],                      q:`node["amenity"="dentist"]` },
-  { keys:['autolavaggio','car wash','car_wash','lavaggio auto','autolavaggi'],  q:`node["amenity"="car_wash"]` },
-  { keys:['gommista','pneumatici','gomme','tyre','tire'],                       q:`node["shop"="tyres"]` },
-  { keys:['autofficina','officina','meccanico','carrozzeria','car repair','auto repair'], q:`node["shop"="car_repair"]` },
-  { keys:['concessionaria','auto nuove','auto usate','dealer','car dealer'],    q:`node["shop"~"car|car_dealer"]` },
-  { keys:['hotel','albergo','hostel','b&b','bed and breakfast','dormire'],  q:`node["tourism"~"hotel|hostel|guest_house"]` },
-  { keys:['posta','poste','corriere','spedizione','postale'],               q:`node["amenity"="post_office"]` },
-  { keys:['palestra','gym','fitness','sport','piscina'],                    q:`node["leisure"~"fitness_centre|sports_centre|swimming_pool"]` },
-  { keys:['libreria','libri','books','fumetti'],                            q:`node["shop"="books"]` },
-  { keys:['elettronica','computer','telefono','smartphone','riparazione telefono'], q:`node["shop"~"electronics|mobile_phone"]` },
-  { keys:['abbigliamento','vestiti','moda','clothes','fashion','scarpe','shoes'], q:`node["shop"~"clothes|shoes|fashion"]` },
-  { keys:['ferramenta','hardware','utensili','bricolage'],                  q:`node["shop"="hardware"]` },
-  { keys:['ottico','occhiali','vista','lenti'],                             q:`node["shop"="optician"]` },
-  { keys:['elettrodomestici','lavatrice','frigorifero','forno','lavastoviglie','asciugatrice','appliance','home appliance'], q:`node["shop"~"appliance|electronics|hifi"]` },
-  { keys:['mobile','mobili','arredamento','ikea','divano','letto','cucina componibile','furniture'], q:`node["shop"="furniture"]` },
-  { keys:['gioielleria','gioielli','orologeria','anello','collana'],        q:`node["shop"~"jewelry|watches"]` },
-  { keys:['photography','fotografo','foto','stampa foto'],                  q:`node["shop"="photo"]` },
-  { keys:['animali','pet shop','cibo animali','petshop'],                   q:`node["shop"="pet"]` },
-  { keys:['fast food','mcdonald','kfc','subway'],                           q:`node["amenity"="fast_food"]` },
-  { keys:['parcheggio','parking','garage','posto auto'],                    q:`node["amenity"="parking"]` },
-  { keys:['taxi','uber','cabify','trasporto'],                              q:`node["amenity"="taxi"]` },
+// OSM TAG MAP
+const osmMap=[
+{keys:['pizza','pizzeria'],q:`node["amenity"="restaurant"]["cuisine"~"pizza",i]`},
+{keys:['ristorante','restaurant','mangiare','cibo','food','sushi','cinese','messicano','indiano','thai','kebab','burger','hamburgeria','trattoria'],q:`node["amenity"="restaurant"]`},
+{keys:['bar','caffe','cafe','coffee','cappuccino','colazione'],q:`node["amenity"="cafe"]`},
+{keys:['farmacia','pharmacy','medicinale','farmaco'],q:`node["amenity"="pharmacy"]`},
+{keys:['benzinaio','benzina','carburante','gas','petrol','diesel'],q:`node["amenity"="fuel"]`},
+{keys:['supermercato','supermarket','spesa','alimentari','grocery'],q:`node["shop"="supermarket"]`},
+{keys:['bici','bicicletta','bicycle','bike'],q:`node["shop"="bicycle"]`},
+{keys:['fiori','fiorista','flowers','florist'],q:`node["shop"="florist"]`},
+{keys:['parrucchiere','barber','barbiere','hairdresser','salon'],q:`node["shop"~"hairdresser|barber"]`},
+{keys:['lavanderia','laundry','tintoria'],q:`node["shop"~"laundry|dry_cleaning"]`},
+{keys:['veterinario','vet'],q:`node["amenity"="veterinary"]`},
+{keys:['banca','bank','bancomat','atm'],q:`node["amenity"~"bank|atm"]`},
+{keys:['tabaccheria','tabacco','tabacchi'],q:`node["shop"="tobacco"]`},
+{keys:['panetteria','bakery','pane','forno','pasticceria'],q:`node["shop"~"bakery|pastry"]`},
+{keys:['ospedale','hospital'],q:`node["amenity"="hospital"]`},
+{keys:['dentista','dentist'],q:`node["amenity"="dentist"]`},
+{keys:['autolavaggio','car wash','car_wash'],q:`node["amenity"="car_wash"]`},
+{keys:['gommista','pneumatici','gomme'],q:`node["shop"="tyres"]`},
+{keys:['autofficina','officina','meccanico','carrozzeria'],q:`node["shop"="car_repair"]`},
+{keys:['hotel','albergo','hostel'],q:`node["tourism"~"hotel|hostel|guest_house"]`},
+{keys:['posta','poste','postale'],q:`node["amenity"="post_office"]`},
+{keys:['palestra','gym','fitness'],q:`node["leisure"~"fitness_centre|sports_centre"]`},
+{keys:['libreria','libri','books'],q:`node["shop"="books"]`},
+{keys:['elettronica','computer','smartphone'],q:`node["shop"~"electronics|mobile_phone"]`},
+{keys:['abbigliamento','vestiti','clothes','scarpe'],q:`node["shop"~"clothes|shoes"]`},
+{keys:['ferramenta','hardware','utensili'],q:`node["shop"="hardware"]`},
+{keys:['ottico','occhiali'],q:`node["shop"="optician"]`},
+{keys:['elettrodomestici','lavatrice','frigorifero'],q:`node["shop"~"appliance|electronics"]`},
+{keys:['mobile','mobili','arredamento'],q:`node["shop"="furniture"]`},
+{keys:['animali','pet shop','petshop'],q:`node["shop"="pet"]`},
+{keys:['fast food','mcdonald','kfc'],q:`node["amenity"="fast_food"]`},
+{keys:['parcheggio','parking','garage'],q:`node["amenity"="parking"]`}
 ];
 
-function normalizeQuery(raw) {
-  // Remove common qualifiers that don't affect category
-  return raw
-    .toLowerCase()
-    .replace(/\bper\s+(macchine|auto|bici|animali|bambini|uomo|donna|uomini|donne|adulti|anziani)\b/g, '')
-    .replace(/\b(di lusso|economico|economica|vicino|aperto|chiuso|h24|notturno|express|rapido|rapida)\b/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+function normalizeQuery(raw){
+return raw.toLowerCase()
+.replace(/\bper\s+(macchine|auto|bici|animali|bambini|uomo|donna)\b/g,'')
+.replace(/\b(di lusso|economico|vicino|aperto|h24|notturno|express|rapido)\b/g,'')
+.replace(/\s+/g,' ').trim();
 }
 
-function getOsmQuery(searchTerm) {
-  const q = normalizeQuery(searchTerm);
-
-  // 1. Exact full match
-  for (const entry of osmMap) {
-    if (entry.keys.some(k => k === q)) return entry.q;
-  }
-
-  // 2. Word-boundary match on full query
-  for (const entry of osmMap) {
-    if (entry.keys.some(k => {
-      if (k.length < 4) return false;
-      const safe = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return new RegExp(`(^|\\s)${safe}(\\s|$)`).test(q);
-    })) return entry.q;
-  }
-
-  // 3. Try just the first word (handles "autolavaggio per macchine" → "autolavaggio")
-  const firstWord = q.split(' ')[0];
-  if (firstWord && firstWord !== q) {
-    for (const entry of osmMap) {
-      if (entry.keys.some(k => k === firstWord || (k.length >= 4 &&
-        new RegExp(`(^|\\s)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(\\s|$)`).test(firstWord)
-      ))) return entry.q;
-    }
-  }
-
-  return null;
+function getOsmQuery(searchTerm){
+const q=normalizeQuery(searchTerm);
+for(const e of osmMap){if(e.keys.some(k=>k===q))return e.q;}
+for(const e of osmMap){if(e.keys.some(k=>{
+if(k.length<4)return false;
+const s=k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+return new RegExp(`(^|\\s)${s}(\\s|$)`).test(q);
+}))return e.q;}
+const fw=q.split(' ')[0];
+if(fw&&fw!==q){for(const e of osmMap){if(e.keys.some(k=>k===fw||(k.length>=4&&
+new RegExp(`(^|\\s)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(\\s|$)`).test(fw)
+)))return e.q;}
+}
+return null;
 }
 
-// ══════════════════════════════════════
-// AI-POWERED SEARCH RESOLVER
-// ══════════════════════════════════════
-async function getOsmTagFromAI(searchTerm) {
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 150,
-        system: `You are an OpenStreetMap expert for WONDAPP, a universal ordering app.
-Convert any search term into an Overpass API OSM node query.
-Return ONLY a valid JSON object, no markdown, no explanation:
-{"query": "node[\\"amenity\\"=\\"pharmacy\\"]", "found": true}
-If truly unmappable: {"found": false}
-Examples:
-- "lavatrice" → node["shop"~"appliance|electronics"]
-- "parrucchiere" → node["shop"~"hairdresser|barber"]
-- "autolavaggio" → node["amenity"="car_wash"]
-- "notaio" → node["office"="notary"]
-- "dentista" → node["amenity"="dentist"]
-- "tabacchi" → node["shop"="tobacco"]
-- "mercato" → node["amenity"="marketplace"]
-Use the most specific OSM tag. Support all languages.`,
-        messages: [{ role: 'user', content: `Search: "${searchTerm}"` }]
-      })
-    });
-    const data = await response.json();
-    const text = data.content?.[0]?.text || '{"found":false}';
-    const clean = text.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
-  } catch(e) {
-    return { found: false };
-  }
+async function getOsmTagFromAI(searchTerm){
+try{
+const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+model:'claude-sonnet-4-20250514',max_tokens:150,
+system:`You are an OpenStreetMap expert. Convert search term to Overpass API node query. Return ONLY JSON: {"query":"node[\\"amenity\\"=\\"pharmacy\\"]","found":true} or {"found":false}`,
+messages:[{role:'user',content:`Search: "${searchTerm}"`}]
+})});
+const d=await r.json();
+const t=d.content?.[0]?.text||'{"found":false}';
+return JSON.parse(t.replace(/\`\`\`json|\`\`\`/g,'').trim());
+}catch(e){return{found:false};}
 }
 
+function haversine(lat1,lng1,lat2,lng2){
+const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function formatDist(m){return m<1000?`${Math.round(m)}m`:`${(m/1000).toFixed(1)}km`;}
 
-function haversine(lat1, lng1, lat2, lng2) {
-  const R = 6371000;
-  const dLat = (lat2-lat1)*Math.PI/180;
-  const dLng = (lng2-lng1)*Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+// SEARCH
+let searchTimeout=null,currentSearchIcon='&#127978;',currentSearchLabel='';
+
+function getContextFromSearch(term){
+const q=normalizeQuery(term);
+const m=[
+{keys:['benzinaio','benzina','fuel','petrol'],icon:'&#9981;',label:'Stazione di servizio'},
+{keys:['farmacia','pharmacy'],icon:'&#128138;',label:'Farmacia'},
+{keys:['ristorante','restaurant','pizza','cibo','food'],icon:'&#127869;',label:'Ristorante'},
+{keys:['bar','caffe','cafe','coffee'],icon:'&#9749;',label:'Bar / Caff\u00e8'},
+{keys:['supermercato','supermarket','spesa'],icon:'&#128722;',label:'Supermercato'},
+{keys:['bici','bicycle','bike'],icon:'&#128690;',label:'Negozio bici'},
+{keys:['fiori','fiorista','florist'],icon:'&#127800;',label:'Fiorista'},
+{keys:['parrucchiere','barbiere','barber'],icon:'&#9986;',label:'Parrucchiere'},
+{keys:['lavanderia','laundry'],icon:'&#128085;',label:'Lavanderia'},
+{keys:['veterinario','vet'],icon:'&#128062;',label:'Veterinario'},
+{keys:['autolavaggio','car wash'],icon:'&#128663;',label:'Autolavaggio'},
+{keys:['hotel','albergo'],icon:'&#127976;',label:'Hotel'},
+{keys:['dentista','dentist'],icon:'&#129461;',label:'Dentista'},
+{keys:['palestra','gym','fitness'],icon:'&#128170;',label:'Palestra'},
+{keys:['ospedale','hospital'],icon:'&#127973;',label:'Ospedale'},
+];
+for(const e of m){if(e.keys.some(k=>q.includes(k)||k.includes(q.split(' ')[0])))return{icon:e.icon,label:e.label};}
+return{icon:'&#127978;',label:''};
 }
 
-function formatDist(m) {
-  return m < 1000 ? `${Math.round(m)}m` : `${(m/1000).toFixed(1)}km`;
+function filterProducts(query){
+clearTimeout(searchTimeout);
+const q=query.trim();
+const rEl=document.getElementById('merchantResults');
+const mc=document.getElementById('mainOrderContent');
+if(!q){rEl.style.display='none';mc.style.display='block';buildProducts(currentCat);return;}
+mc.style.display='none';rEl.style.display='block';
+rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:14px">Ricerca in corso...</div></div>`;
+searchTimeout=setTimeout(()=>doSearch(q),400);
 }
 
-// ══════════════════════════════════════
-// SEARCH FILTER — REAL OSM
-// ══════════════════════════════════════
-let searchTimeout = null;
-let currentSearchIcon = '🏪';
-let currentSearchLabel = '';
-
-// Icon + label from search term (used as fallback for Nominatim results)
-function getContextFromSearch(term) {
-  const q = normalizeQuery(term);
-  const iconMap = [
-    { keys:['benzinaio','benzina','carburante','fuel','petrol','diesel'], icon:'⛽', label:'Stazione di servizio' },
-    { keys:['farmacia','pharmacy','farmaco'], icon:'💊', label:'Farmacia' },
-    { keys:['ristorante','restaurant','pizza','sushi','cibo','food'], icon:'🍽️', label:'Ristorante' },
-    { keys:['bar','caffe','cafe','coffee'], icon:'☕', label:'Bar / Caffè' },
-    { keys:['supermercato','supermarket','spesa'], icon:'🛒', label:'Supermercato' },
-    { keys:['bici','bicicletta','bicycle','bike'], icon:'🚲', label:'Negozio bici' },
-    { keys:['fiori','fiorista','florist'], icon:'🌸', label:'Fiorista' },
-    { keys:['parrucchiere','barbiere','barber','hairdresser'], icon:'✂️', label:'Parrucchiere' },
-    { keys:['lavanderia','laundry','tintoria'], icon:'👕', label:'Lavanderia' },
-    { keys:['veterinario','vet'], icon:'🐾', label:'Veterinario' },
-    { keys:['autolavaggio','car wash','car_wash'], icon:'🚗', label:'Autolavaggio' },
-    { keys:['gommista','pneumatici','gomme'], icon:'🔩', label:'Gommista' },
-    { keys:['autofficina','officina','meccanico','carrozzeria'], icon:'🔧', label:'Officina' },
-    { keys:['hotel','albergo','hostel'], icon:'🏨', label:'Hotel' },
-    { keys:['dentista','dentist'], icon:'🦷', label:'Dentista' },
-    { keys:['posta','poste'], icon:'📮', label:'Ufficio postale' },
-    { keys:['palestra','gym','fitness'], icon:'💪', label:'Palestra' },
-    { keys:['banca','bank','bancomat','atm'], icon:'🏦', label:'Banca' },
-    { keys:['tabaccheria','tabacco','tabacchi'], icon:'🚬', label:'Tabaccheria' },
-    { keys:['panetteria','bakery','pane','forno'], icon:'🥐', label:'Panetteria' },
-    { keys:['libreria','libri'], icon:'📚', label:'Libreria' },
-    { keys:['elettrodomestici','lavatrice','frigorifero'], icon:'🏠', label:'Elettrodomestici' },
-    { keys:['elettronica','computer','telefono','smartphone'], icon:'📱', label:'Elettronica' },
-    { keys:['mobile','mobili','arredamento'], icon:'🛋️', label:'Arredamento' },
-    { keys:['parcheggio','parking','garage'], icon:'🅿️', label:'Parcheggio' },
-    { keys:['ospedale','hospital'], icon:'🏥', label:'Ospedale' },
-  ];
-  for (const entry of iconMap) {
-    if (entry.keys.some(k => q.includes(k) || k.includes(q.split(' ')[0]))) {
-      return { icon: entry.icon, label: entry.label };
-    }
-  }
-  return { icon: '🏪', label: '' };
+async function doSearch(query){
+const rEl=document.getElementById('merchantResults');
+const locPat=/\s+(?:a|in|near|vicino a|dans|en|bei|\u00e0|cerca de)\s+(.+)$/i;
+const locM=query.match(locPat);
+let searchTerm=query,cityOverride=null;
+if(locM){searchTerm=query.replace(locPat,'').trim();cityOverride=locM[1].trim();}
+if(cityOverride&&!userLocation){
+rEl.innerHTML=`<div style="text-align:center;padding:24px;color:var(--text2)"><div style="font-size:24px;margin-bottom:8px;animation:geoPulse 0.8s infinite alternate">&#127760;</div><div style="font-size:13px">Ricerca: <strong style="color:var(--primary)">${searchTerm}</strong> a <strong style="color:var(--primary)">${cityOverride}</strong></div></div>`;
+await executeOverpassSearch(`${searchTerm} ${cityOverride}`,rEl);return;
+}
+if(!userLocation){
+rEl.innerHTML=`<div style="text-align:center;padding:24px 16px"><div style="font-size:32px;margin-bottom:12px">&#128205;</div><div style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:6px">Dove cerchi?</div><div style="color:var(--text2);font-size:13px;margin-bottom:16px">Inserisci una citt\u00e0 o attiva il GPS</div><div style="display:flex;gap:8px"><input type="text" class="input-field" id="manualCity" placeholder="Es: Milano, Roma, Paris..." style="border-radius:50px;padding:12px 16px" onkeydown="if(event.key==='Enter')searchByCity()"><button onclick="searchByCity()" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:20px;cursor:pointer;flex-shrink:0;color:#062a16">&#8250;</button></div></div>`;
+return;
+}
+await executeOverpassSearch(searchTerm,rEl);
 }
 
-function filterProducts(query) {
-  clearTimeout(searchTimeout);
-  const q = query.trim();
-  const resultsEl = document.getElementById('merchantResults');
-  const mainContent = document.getElementById('mainOrderContent');
-
-  if (!q) {
-    resultsEl.style.display = 'none';
-    mainContent.style.display = 'block';
-    buildProducts(currentCat);
-    return;
-  }
-
-  mainContent.style.display = 'none';
-  resultsEl.style.display = 'block';
-  resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
-    <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🔍</div>
-    <div style="font-size:14px">Ricerca in corso...</div>
-  </div>`;
-
-  searchTimeout = setTimeout(() => doSearch(q), 400);
+async function executeOverpassSearch(searchTerm,rEl){
+rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:14px">Ricerca in corso...</div></div>`;
+const ctx=getContextFromSearch(searchTerm);
+currentSearchIcon=ctx.icon;currentSearchLabel=ctx.label;
+let osmTag=getOsmQuery(searchTerm);
+if(!osmTag&&userLocation){
+rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#129504;</div><div style="font-size:14px">MEMORI-AI analizza la ricerca...</div></div>`;
+const ai=await getOsmTagFromAI(normalizeQuery(searchTerm));
+if(ai.found&&ai.query)osmTag=ai.query;
+}
+if(osmTag&&userLocation){await searchWithOverpass(searchTerm,osmTag,rEl);}
+else{await searchWithNominatim(searchTerm,rEl);}
 }
 
-async function doSearch(query) {
-  const resultsEl = document.getElementById('merchantResults');
-
-  // Smart parsing: "benzinaio a Milano" / "pizza in Roma" / "farmacia near Paris"
-  const locPattern = /\s+(?:a|in|near|vicino a|dans|en|bei|à|cerca de|в)\s+(.+)$/i;
-  const locMatch = query.match(locPattern);
-  let searchTerm = query;
-  let cityOverride = null;
-
-  if (locMatch) {
-    searchTerm = query.replace(locPattern, '').trim();
-    cityOverride = locMatch[1].trim();
-  }
-
-  // Se c'è città nella query, geocodifica subito senza chiedere GPS
-  if (cityOverride && !userLocation) {
-    resultsEl.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text2)">
-      <div style="font-size:24px;margin-bottom:8px;animation:geoPulse 0.8s infinite alternate">🌍</div>
-      <div style="font-size:13px">Ricerca: <strong style="color:var(--primary)">${searchTerm}</strong> a <strong style="color:var(--primary)">${cityOverride}</strong></div>
-    </div>`;
-    // Use full query directly with Nominatim — most accurate
-    const fullQuery = `${searchTerm} ${cityOverride}`;
-    await executeOverpassSearch(fullQuery, resultsEl);
-    return;
-  }
-
-  if (!userLocation) {
-    resultsEl.innerHTML = `<div style="text-align:center;padding:24px 16px">
-      <div style="font-size:32px;margin-bottom:12px">📍</div>
-      <div style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:6px">Dove cerchi?</div>
-      <div style="color:var(--text2);font-size:13px;margin-bottom:16px">Inserisci una città o attiva il GPS</div>
-      <div style="display:flex;gap:8px">
-        <input type="text" class="input-field" id="manualCity" placeholder="Es: Milano, Roma, Paris..." style="border-radius:50px;padding:12px 16px" onkeydown="if(event.key==='Enter')searchByCity()">
-        <button onclick="searchByCity()" style="background:var(--primary);border:none;border-radius:50%;width:46px;height:46px;font-size:20px;cursor:pointer;flex-shrink:0;color:#062a16">›</button>
-      </div>
-    </div>`;
-    return;
-  }
-
-  await executeOverpassSearch(searchTerm, resultsEl);
+async function searchWithOverpass(searchTerm,osmTag,rEl,radius=3000){
+const{lat,lng}=userLocation;
+try{
+const q=`[out:json][timeout:20];\n(\n  ${osmTag}(around:${radius},${lat},${lng});\n);\nout center 30;`;
+const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:q});
+if(!res.ok)throw new Error();
+const data=await res.json();
+let els=data.elements.filter(el=>{
+const n=el.tags?.name||el.tags?.brand||'';
+if(!n)return false;
+if(/^ex\s/i.test(n))return false;
+if(el.tags?.disused||el.tags?.abandoned)return false;
+return true;
+}).map(el=>{
+const eLat=el.lat||el.center?.lat,eLng=el.lon||el.center?.lon;
+const dist=haversine(lat,lng,eLat,eLng);
+return{tags:{name:el.tags?.brand||el.tags?.name||'',amenity:el.tags?.amenity||el.tags?.shop||'',
+'addr:street':el.tags?.['addr:street']||'','addr:housenumber':el.tags?.['addr:housenumber']||'',
+'addr:city':el.tags?.['addr:city']||el.tags?.['addr:town']||'',
+phone:el.tags?.phone||el.tags?.['contact:phone']||'',
+opening_hours:el.tags?.opening_hours||'',brand:el.tags?.brand||''},dist,elLat:eLat,elLng:eLng};
+});
+els.sort((a,b)=>a.dist-b.dist);els=els.slice(0,25);
+if(els.length===0&&radius<20000){
+const nr=radius===3000?10000:20000;
+rEl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text2)"><div style="animation:geoPulse 0.8s infinite alternate">&#128269;</div><div style="font-size:13px">Espando ricerca a ${nr/1000}km...</div></div>`;
+await searchWithOverpass(searchTerm,osmTag,rEl,nr);return;
+}
+if(els.length===0){await searchWithNominatim(searchTerm,rEl);}
+else{window._lastSearchResults=els;renderSearchResults(els,searchTerm,radius);}
+}catch(e){await searchWithNominatim(searchTerm,rEl);}
 }
 
-async function executeOverpassSearch(searchTerm, resultsEl) {
-  resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
-    <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🔍</div>
-    <div style="font-size:14px">Ricerca in corso...</div>
-  </div>`;
-
-  // Store context for icon/label fallback
-  const ctx = getContextFromSearch(searchTerm);
-  currentSearchIcon = ctx.icon;
-  currentSearchLabel = ctx.label;
-
-  let osmTag = getOsmQuery(searchTerm);
-
-  // If not in static map → ask AI (only if API available)
-  if (!osmTag && userLocation) {
-    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
-      <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🧠</div>
-      <div style="font-size:14px">MEMORI-AI analizza la ricerca...</div>
-    </div>`;
-    const normalizedTerm = normalizeQuery(searchTerm);
-    const aiResult = await getOsmTagFromAI(normalizedTerm);
-    if (aiResult.found && aiResult.query) {
-      osmTag = aiResult.query;
-    }
-  }
-
-  if (osmTag && userLocation) {
-    await searchWithOverpass(searchTerm, osmTag, resultsEl);
-  } else {
-    await searchWithNominatim(searchTerm, resultsEl);
-  }
+async function searchWithNominatim(searchTerm,rEl){
+try{
+const url=`https://nominatim.openstreetmap.org/search?`+new URLSearchParams({q:searchTerm,format:'json',limit:30,addressdetails:1,extratags:1});
+const r=await fetch(url,{headers:{'User-Agent':'WONDAPP/1.0','Accept-Language':currentLang}});
+if(!r.ok)throw new Error();
+const data=await r.json();
+const els=data.filter(i=>{
+const n=i.display_name.split(',')[0];
+if(/^ex\s/i.test(n))return false;
+if(i.type==='brownfield')return false;
+if(i.class==='landuse'&&i.type!=='commercial')return false;
+return true;
+}).map(i=>{
+const eLat=parseFloat(i.lat),eLng=parseFloat(i.lon);
+const dist=userLocation?haversine(userLocation.lat,userLocation.lng,eLat,eLng):0;
+const a=i.address||{};
+return{tags:{name:i.display_name.split(',')[0],amenity:i.type||i.class,
+'addr:street':a.road||a.pedestrian||'','addr:housenumber':a.house_number||'',
+'addr:city':a.city||a.town||a.village||'',phone:i.extratags?.phone||'',
+opening_hours:i.extratags?.opening_hours||'',brand:i.extratags?.brand||''},dist,elLat:eLat,elLng:eLng};
+});
+if(userLocation)els.sort((a,b)=>a.dist-b.dist);
+window._lastSearchResults=els;renderSearchResults(els,searchTerm);
+}catch(e){
+rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:32px">&#9888;</div><div style="font-size:14px;margin-top:10px">Errore connessione. Riprova.</div></div>`;
+}
 }
 
-async function searchWithOverpass(searchTerm, osmTag, resultsEl, radius = 3000) {
-  const { lat, lng } = userLocation;
-  try {
-    const query = `[out:json][timeout:20];
-(
-  ${osmTag}(around:${radius},${lat},${lng});
-);
-out center 30;`;
-
-    const res = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST', body: query
-    });
-    if (!res.ok) throw new Error('overpass');
-    const data = await res.json();
-
-    let elements = data.elements
-      .filter(el => {
-        const name = el.tags?.name || el.tags?.brand || '';
-        if (!name) return false;
-        if (/^ex\s/i.test(name)) return false;
-        if (el.tags?.disused || el.tags?.abandoned) return false;
-        return true;
-      })
-      .map(el => {
-        const elLat = el.lat || el.center?.lat;
-        const elLng = el.lon || el.center?.lon;
-        const dist = haversine(lat, lng, elLat, elLng);
-        return {
-          tags: {
-            name: el.tags?.brand || el.tags?.name || '',
-            amenity: el.tags?.amenity || el.tags?.shop || '',
-            'addr:street': el.tags?.['addr:street'] || '',
-            'addr:housenumber': el.tags?.['addr:housenumber'] || '',
-            'addr:city': el.tags?.['addr:city'] || el.tags?.['addr:town'] || '',
-            phone: el.tags?.phone || el.tags?.['contact:phone'] || '',
-            opening_hours: el.tags?.opening_hours || '',
-            brand: el.tags?.brand || ''
-          },
-          dist, elLat, elLng
-        };
-      });
-
-    elements.sort((a, b) => a.dist - b.dist);
-    elements = elements.slice(0, 25);
-
-    if (elements.length === 0 && radius < 20000) {
-      // Auto-expand radius
-      const nextRadius = radius === 3000 ? 10000 : 20000;
-      const label = nextRadius === 10000 ? '10km' : '20km';
-      resultsEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text2)">
-        <div style="font-size:20px;margin-bottom:8px;animation:geoPulse 0.8s infinite alternate">🔍</div>
-        <div style="font-size:13px">Nessuno trovato in ${radius/1000}km, espando a ${label}...</div>
-      </div>`;
-      await searchWithOverpass(searchTerm, osmTag, resultsEl, nextRadius);
-      return;
-    }
-
-    if (elements.length === 0) {
-      await searchWithNominatim(searchTerm, resultsEl);
-    } else {
-      window._lastSearchResults = elements;
-      renderSearchResults(elements, searchTerm, radius);
-    }
-  } catch(e) {
-    await searchWithNominatim(searchTerm, resultsEl);
-  }
+function getIconForTags(tags){
+const j=JSON.stringify(tags).toLowerCase();
+if(j.includes('car_wash'))return'&#128663;';
+if(j.includes('restaurant')||j.includes('pizza'))return'&#127869;';
+if(j.includes('pharmacy'))return'&#128138;';
+if(j.includes('fuel'))return'&#9981;';
+if(j.includes('cafe'))return'&#9749;';
+if(j.includes('supermarket'))return'&#128722;';
+if(j.includes('bicycle'))return'&#128690;';
+if(j.includes('florist'))return'&#127800;';
+if(j.includes('hairdresser')||j.includes('barber'))return'&#9986;';
+if(j.includes('laundry'))return'&#128085;';
+if(j.includes('veterinary'))return'&#128062;';
+if(j.includes('bank')||j.includes('atm'))return'&#127970;';
+if(j.includes('tobacco'))return'&#128684;';
+if(j.includes('bakery')||j.includes('pastry'))return'&#129360;';
+if(j.includes('hotel')||j.includes('hostel'))return'&#127976;';
+if(j.includes('dentist'))return'&#129461;';
+if(j.includes('car_repair'))return'&#128295;';
+if(j.includes('post'))return'&#128206;';
+if(j.includes('fitness'))return'&#128170;';
+if(j.includes('books'))return'&#128218;';
+if(j.includes('electronics')||j.includes('mobile'))return'&#128241;';
+if(j.includes('clothes')||j.includes('fashion'))return'&#128099;';
+if(j.includes('optician'))return'&#128083;';
+if(j.includes('pet'))return'&#128054;';
+if(j.includes('fast_food'))return'&#127828;';
+return'&#127978;';
 }
 
-async function searchWithNominatim(searchTerm, resultsEl) {
-  try {
-    const params = {
-      q: searchTerm,
-      format: 'json',
-      limit: 30,
-      addressdetails: 1,
-      extratags: 1
-    };
-
-    const url = `https://nominatim.openstreetmap.org/search?` + new URLSearchParams(params);
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'WONDAPP/1.0', 'Accept-Language': currentLang }
-    });
-    if (!response.ok) throw new Error('Nominatim error');
-    const data = await response.json();
-
-    const elements = data
-      .filter(item => {
-        const name = item.display_name.split(',')[0];
-        if (/^ex\s/i.test(name)) return false;
-        if (item.type === 'brownfield') return false;
-        if (item.class === 'landuse' && item.type !== 'commercial') return false;
-        return true;
-      })
-      .map(item => {
-        const elLat = parseFloat(item.lat);
-        const elLng = parseFloat(item.lon);
-        const dist = userLocation ? haversine(userLocation.lat, userLocation.lng, elLat, elLng) : 0;
-        const addr = item.address || {};
-        return {
-          tags: {
-            name: item.display_name.split(',')[0],
-            amenity: item.type || item.class,
-            'addr:street': addr.road || addr.pedestrian || '',
-            'addr:housenumber': addr.house_number || '',
-            'addr:city': addr.city || addr.town || addr.village || addr.municipality || '',
-            phone: item.extratags?.phone || '',
-            opening_hours: item.extratags?.opening_hours || '',
-            brand: item.extratags?.brand || ''
-          },
-          dist, elLat, elLng
-        };
-      });
-
-    if (userLocation) elements.sort((a, b) => a.dist - b.dist);
-    window._lastSearchResults = elements;
-    renderSearchResults(elements, searchTerm);
-
-  } catch(err) {
-    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
-      <div style="font-size:32px;margin-bottom:10px">⚠️</div>
-      <div style="font-size:14px">Errore connessione. Riprova.</div>
-    </div>`;
-  }
+function renderSearchResults(elements,query,radius=0){
+const rEl=document.getElementById('merchantResults');
+if(elements.length===0){
+rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:10px">&#128269;</div><div style="font-size:14px;color:var(--text2)">Nessun negozio trovato per "<strong style="color:var(--primary)">${query}</strong>"</div></div>`;
+return;
+}
+const nd=elements[0]?.dist||0;
+const pt=nd>10000?'nella tua regione':nd>3000?'nella tua area':'vicino a te';
+const skipT=['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
+rEl.innerHTML=`
+<div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding-left:4px;display:flex;justify-content:space-between;align-items:center">
+<span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${userLocation?' '+pt:''}</span>
+${userLocation?`<span style="color:var(--text3);font-size:11px">&#128205; dal pi\u00f9 vicino</span>`:''}
+</div>
+${elements.map((el,i)=>{
+const tags=el.tags||{};const name=tags.brand||tags.name||'';if(!name)return'';
+const rawI=getIconForTags(tags);const icon=rawI==='&#127978;'?currentSearchIcon:rawI;
+const rawT=(tags.amenity||tags.shop||'').replace(/_/g,' ').trim();
+const showT=skipT.includes(rawT)?currentSearchLabel:(rawT||currentSearchLabel);
+const street=tags['addr:street']?`${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim():'';
+const addr=[street,tags['addr:city']||''].filter(Boolean).join(', ');
+const dist=el.dist||0,distStr=dist>0?`&#128207; ${formatDist(dist)}`:'';
+return`<div class="merchant-card" onclick="openMerchantDetail(${i})">
+<div class="merchant-avatar">${icon}</div>
+<div class="merchant-info">
+<div class="merchant-name">${name}</div>
+${showT?`<div class="merchant-type">${showT}</div>`:''}
+${addr?`<div style="font-size:11px;color:var(--text3);margin-top:2px">&#128205; ${addr}</div>`:''}
+<div class="merchant-meta">
+${distStr?`<span style="font-size:12px;font-weight:700;color:var(--primary)">${distStr}</span>`:''}
+${tags.opening_hours?`<span style="font-size:11px;color:var(--text2)">&#128336; ${tags.opening_hours.split(';')[0]}</span>`:''}
+${tags.phone?`<span style="font-size:11px;color:var(--blue)">&#128222;</span>`:''}
+</div></div>
+<div style="font-size:20px;color:var(--text3)">&#8250;</div>
+</div>`;
+}).filter(Boolean).join('')}`;
 }
 
-function getIconForTags(tags) {
-  const json = JSON.stringify(tags).toLowerCase();
-  if (json.includes('car_wash') || json.includes('autolavaggio')) return '🚗';
-  if (json.includes('restaurant') || json.includes('pizza') || json.includes('food')) return '🍽️';
-  if (json.includes('pharmacy')) return '💊';
-  if (json.includes('fuel')) return '⛽';
-  if (json.includes('cafe')) return '☕';
-  if (json.includes('supermarket')) return '🛒';
-  if (json.includes('bicycle')) return '🚲';
-  if (json.includes('florist')) return '🌸';
-  if (json.includes('hairdresser') || json.includes('barber')) return '✂️';
-  if (json.includes('laundry')) return '👕';
-  if (json.includes('veterinary')) return '🐾';
-  if (json.includes('bank') || json.includes('atm')) return '🏦';
-  if (json.includes('tobacco')) return '🚬';
-  if (json.includes('bakery') || json.includes('pastry')) return '🥐';
-  if (json.includes('hotel') || json.includes('hostel')) return '🏨';
-  if (json.includes('dentist')) return '🦷';
-  if (json.includes('car_repair') || json.includes('mechanic') || json.includes('officina')) return '🔧';
-  if (json.includes('post')) return '📮';
-  if (json.includes('fitness') || json.includes('sport')) return '💪';
-  if (json.includes('books')) return '📚';
-  if (json.includes('electronics') || json.includes('mobile')) return '📱';
-  if (json.includes('clothes') || json.includes('fashion')) return '👗';
-  if (json.includes('hardware')) return '🔨';
-  if (json.includes('optician')) return '👓';
-  if (json.includes('jewelry')) return '💍';
-  if (json.includes('pet')) return '🐶';
-  if (json.includes('fast_food')) return '🍔';
-  return '🏪';
+// MERCHANT MODAL
+let currentMerchantCoords=null,leafletMap=null;
+
+function openMerchantDetail(idx){
+const el=window._lastSearchResults?.[idx];if(!el)return;
+const tags=el.tags||{};
+const name=tags.brand||tags.name||'Negozio';
+const rawI=getIconForTags(tags);const icon=rawI==='&#127978;'?currentSearchIcon:rawI;
+const skipT=['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
+const rawT=(tags.amenity||tags.shop||tags.tourism||'').replace(/_/g,' ').trim();
+const type=skipT.includes(rawT)?currentSearchLabel:(rawT||currentSearchLabel);
+const street=tags['addr:street']?`${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim():'';
+const addr=[street,tags['addr:city']||''].filter(Boolean).join(', ');
+const phone=tags.phone||'',hours=tags.opening_hours||'',dist=el.dist||0;
+const t=T[currentLang];
+currentMerchantCoords={lat:el.elLat,lng:el.elLng,name};
+document.getElementById('modalAvatar').textContent=icon;
+document.getElementById('modalName').textContent=name;
+document.getElementById('modalType').textContent=type;
+const rows=[];
+if(dist>0)rows.push(`<div class="info-row"><div class="info-row-icon">&#128207;</div><div class="info-row-text"><div class="info-row-label">${t.distLabel||'Distanza'}</div><div class="info-row-value">${formatDist(dist)}</div></div></div>`);
+if(addr)rows.push(`<div class="info-row"><div class="info-row-icon">&#128205;</div><div class="info-row-text"><div class="info-row-label">${t.addressLabel||'Indirizzo'}</div><div class="info-row-value">${addr}</div></div></div>`);
+if(phone)rows.push(`<div class="info-row"><div class="info-row-icon">&#128222;</div><div class="info-row-text"><div class="info-row-label">${t.phoneLabel||'Telefono'}</div><div class="info-row-value"><a href="tel:${phone}">${phone}</a></div></div></div>`);
+if(hours)rows.push(`<div class="info-row"><div class="info-row-icon">&#128336;</div><div class="info-row-text"><div class="info-row-label">${t.hoursLabel||'Orari'}</div><div class="info-row-value">${hours}</div></div></div>`);
+document.getElementById('modalInfo').innerHTML=rows.join('')||`<div style="text-align:center;padding:10px;color:var(--text3);font-size:13px">${t.noInfoLabel||'Nessuna info disponibile'}</div>`;
+document.getElementById('merchantModal').classList.add('open');
+document.body.style.overflow='hidden';
+setTimeout(()=>initMerchantMap(el.elLat,el.elLng,name,icon),420);
 }
 
-function renderSearchResults(elements, query, radius = 0) {
-  const resultsEl = document.getElementById('merchantResults');
-
-  if (elements.length === 0) {
-    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)">
-      <div style="font-size:36px;margin-bottom:10px">🔍</div>
-      <div style="font-size:14px;color:var(--text2)">Nessun negozio trovato per "<strong style="color:var(--primary)">${query}</strong>"</div>
-      <div style="font-size:12px;margin-top:6px;color:var(--text3)">Prova a scrivere diversamente o controlla la connessione</div>
-    </div>`;
-    return;
-  }
-
-  const nearestDist = elements[0]?.dist || 0;
-  const proximityText = nearestDist > 10000 ? 'nella tua regione' : nearestDist > 3000 ? 'nella tua area' : 'vicino a te';
-
-  resultsEl.innerHTML = `
-    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding-left:4px;display:flex;justify-content:space-between;align-items:center">
-      <span><strong style="color:var(--primary)">${elements.length}</strong> ${elements.length===1?'negozio trovato':'negozi trovati'}${userLocation?' '+proximityText:''}</span>
-      ${userLocation ? `<span style="color:var(--text3);font-size:11px">📍 dal più vicino</span>` : ''}
-    </div>
-    ${elements.map((el, i) => {
-      const tags = el.tags || {};
-      const name = tags.brand || tags.name || '';
-      if (!name) return '';
-      // Use tag-based icon, fallback to search context icon
-      const rawIcon = getIconForTags(tags);
-      const icon = rawIcon === '🏪' ? currentSearchIcon : rawIcon;
-      const skipTypes = ['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
-      const rawType = (tags.amenity || tags.shop || tags.tourism || tags.leisure || '').replace(/_/g,' ').trim();
-      const showType = skipTypes.includes(rawType) ? currentSearchLabel : (rawType || currentSearchLabel);
-      const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
-      const city = tags['addr:city'] || '';
-      const address = [street, city].filter(Boolean).join(', ');
-      const hours = tags.opening_hours || '';
-      const phone = tags.phone || '';
-      const dist = el.dist || 0;
-      const distStr = dist > 0 ? `📏 ${formatDist(dist)}` : '';
-      return `<div class="merchant-card" onclick="openMerchantDetail(${i})">
-        <div class="merchant-avatar">${icon}</div>
-        <div class="merchant-info">
-          <div class="merchant-name">${name}</div>
-          ${showType ? `<div class="merchant-type">${showType}</div>` : ''}
-          ${address ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">📍 ${address}</div>` : ''}
-          <div class="merchant-meta">
-            ${distStr ? `<span style="font-size:12px;font-weight:700;color:var(--primary)">${distStr}</span>` : ''}
-            ${hours ? `<span style="font-size:11px;color:var(--text2)">🕐 ${hours.split(';')[0]}</span>` : ''}
-            ${phone ? `<span style="font-size:11px;color:var(--blue)">📞</span>` : ''}
-          </div>
-        </div>
-        <div style="font-size:20px;color:var(--text3)">›</div>
-      </div>`;
-    }).filter(Boolean).join('')}
-  `;
+function initMerchantMap(lat,lng,name,icon){
+if(!lat||!lng)return;
+const c=document.getElementById('modalMap');
+if(leafletMap){leafletMap.remove();leafletMap=null;}
+leafletMap=L.map(c,{center:[lat,lng],zoom:16,zoomControl:false,attributionControl:false});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(leafletMap);
+L.control.zoom({position:'bottomright'}).addTo(leafletMap);
+const WC=L.Control.extend({options:{position:'topleft'},onAdd:function(){
+const d=L.DomUtil.create('div');
+d.innerHTML=`<div style="background:rgba(8,8,8,0.88);border:1.5px solid rgba(0,255,136,0.4);border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;backdrop-filter:blur(8px);pointer-events:none;"><span style="font-size:14px;line-height:1;">&#127760;</span><span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.3px;line-height:1;">WOND<span style="color:#00FF88">APP</span></span></div>`;
+return d;}});
+new WC().addTo(leafletMap);
+const wi=L.divIcon({className:'',html:`<div style="position:relative;width:44px;height:52px;"><div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid #00cc6a;"></div><div style="position:absolute;top:0;left:0;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00FF88,#00cc6a);border:3px solid #fff;box-shadow:0 4px 16px rgba(0,255,136,0.55);display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;line-height:1;">&#127760;</span></div></div>`,iconSize:[44,52],iconAnchor:[22,52],popupAnchor:[0,-56]});
+const pop=L.popup({className:'wondapp-popup',closeButton:false,offset:[0,-56]}).setContent(`<div style="background:#080808;border:1.5px solid rgba(0,255,136,0.35);border-radius:10px;padding:8px 14px;text-align:center;min-width:120px;"><div style="font-size:16px;margin-bottom:3px;">${icon}</div><div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;line-height:1.3;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div><div style="font-size:10px;color:#00FF88;font-weight:600;margin-top:3px;letter-spacing:0.5px;">&#9679; WONDAPP</div></div>`);
+L.marker([lat,lng],{icon:wi}).addTo(leafletMap).bindPopup(pop).openPopup();
+setTimeout(()=>{if(leafletMap)leafletMap.invalidateSize();},50);
 }
 
-let currentMerchantCoords = null;
-let leafletMap = null;
-
-function openMerchantDetail(idx) {
-  // Get stored elements from last search
-  const el = window._lastSearchResults?.[idx];
-  if (!el) return;
-
-  const tags = el.tags || {};
-  const name = tags.brand || tags.name || 'Negozio';
-  const rawIcon = getIconForTags(tags);
-  const icon = rawIcon === '🏪' ? currentSearchIcon : rawIcon;
-  const skipTypes = ['roof','yes','building','construction','brownfield','landuse','residential','area','service','unclassified','tertiary','secondary','primary','road'];
-  const rawType = (tags.amenity || tags.shop || tags.tourism || '').replace(/_/g,' ').trim();
-  const type = skipTypes.includes(rawType) ? currentSearchLabel : (rawType || currentSearchLabel);
-  const street = tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber']||''}`.trim() : '';
-  const city = tags['addr:city'] || '';
-  const address = [street, city].filter(Boolean).join(', ');
-  const phone = tags.phone || tags['contact:phone'] || '';
-  const hours = tags.opening_hours || '';
-  const dist = el.dist || 0;
-
-  currentMerchantCoords = { lat: el.elLat, lng: el.elLng, name };
-
-  // Fill modal
-  document.getElementById('modalAvatar').textContent = icon;
-  document.getElementById('modalName').textContent = name;
-  document.getElementById('modalType').textContent = type;
-
-  // Info rows
-  const infoRows = [];
-  if (dist > 0) infoRows.push(`
-    <div class="info-row">
-      <div class="info-row-icon">📏</div>
-      <div class="info-row-text">
-        <div class="info-row-label">Distanza</div>
-        <div class="info-row-value">${formatDist(dist)} da te</div>
-      </div>
-    </div>`);
-  if (address) infoRows.push(`
-    <div class="info-row">
-      <div class="info-row-icon">📍</div>
-      <div class="info-row-text">
-        <div class="info-row-label">Indirizzo</div>
-        <div class="info-row-value">${address}</div>
-      </div>
-    </div>`);
-  if (phone) infoRows.push(`
-    <div class="info-row">
-      <div class="info-row-icon">📞</div>
-      <div class="info-row-text">
-        <div class="info-row-label">Telefono</div>
-        <div class="info-row-value"><a href="tel:${phone}">${phone}</a></div>
-      </div>
-    </div>`);
-  if (hours) infoRows.push(`
-    <div class="info-row">
-      <div class="info-row-icon">🕐</div>
-      <div class="info-row-text">
-        <div class="info-row-label">Orari</div>
-        <div class="info-row-value">${hours}</div>
-      </div>
-    </div>`);
-
-  document.getElementById('modalInfo').innerHTML = infoRows.join('') ||
-    '<div style="text-align:center;padding:10px;color:var(--text3);font-size:13px">Nessuna info aggiuntiva disponibile</div>';
-
-  // Show modal
-  document.getElementById('merchantModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  // Init Leaflet map
-  setTimeout(() => initMerchantMap(el.elLat, el.elLng, name, icon), 420);
+function closeModal(e){if(e.target===document.getElementById('merchantModal'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('merchantModal').classList.remove('open');document.body.style.overflow='';if(leafletMap){leafletMap.remove();leafletMap=null;}}
+function openNav(app){
+if(!currentMerchantCoords)return;
+const{lat,lng}=currentMerchantCoords;
+const urls={gmaps:`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,waze:`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,apple:`http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`};
+window.open(urls[app],'_blank');
 }
 
-function initMerchantMap(lat, lng, name, icon) {
-  if (!lat || !lng) return;
-  const container = document.getElementById('modalMap');
-  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
-
-  leafletMap = L.map(container, {
-    center: [lat, lng], zoom: 16,
-    zoomControl: false, attributionControl: false
-  });
-
-  // Dark map tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19, subdomains: 'abcd'
-  }).addTo(leafletMap);
-
-  // Zoom control - bottom right
-  L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
-
-  // WONDAPP watermark logo — top left corner of map
-  const WondappControl = L.Control.extend({
-    options: { position: 'topleft' },
-    onAdd: function() {
-      const div = L.DomUtil.create('div');
-      div.innerHTML = `
-        <div style="
-          background:rgba(8,8,8,0.88);
-          border:1.5px solid rgba(0,255,136,0.4);
-          border-radius:10px;
-          padding:6px 12px;
-          display:flex;
-          align-items:center;
-          gap:6px;
-          backdrop-filter:blur(8px);
-          pointer-events:none;
-        ">
-          <span style="font-size:14px;line-height:1;">🌍</span>
-          <span style="
-            font-family:'Syne',sans-serif;
-            font-size:13px;
-            font-weight:800;
-            color:#ffffff;
-            letter-spacing:-0.3px;
-            line-height:1;
-          ">WOND<span style="color:#00FF88">APP</span></span>
-        </div>`;
-      return div;
-    }
-  });
-  new WondappControl().addTo(leafletMap);
-
-  // Custom WONDAPP marker — pin shape with globe
-  const wondappIcon = L.divIcon({
-    className: '',
-    html: `
-      <div style="position:relative;width:44px;height:52px;">
-        <div style="
-          position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-          width:0;height:0;
-          border-left:10px solid transparent;
-          border-right:10px solid transparent;
-          border-top:14px solid #00cc6a;
-        "></div>
-        <div style="
-          position:absolute;top:0;left:0;
-          width:44px;height:44px;border-radius:50%;
-          background:linear-gradient(135deg,#00FF88,#00cc6a);
-          border:3px solid #ffffff;
-          box-shadow:0 4px 16px rgba(0,255,136,0.55),0 2px 6px rgba(0,0,0,0.4);
-          display:flex;align-items:center;justify-content:center;
-        ">
-          <span style="font-size:20px;line-height:1;">🌍</span>
-        </div>
-      </div>`,
-    iconSize: [44, 52],
-    iconAnchor: [22, 52],
-    popupAnchor: [0, -56]
-  });
-
-  // Custom popup style
-  const popup = L.popup({
-    className: 'wondapp-popup',
-    closeButton: false,
-    offset: [0, -56]
-  }).setContent(`
-    <div style="
-      background:#080808;
-      border:1.5px solid rgba(0,255,136,0.35);
-      border-radius:10px;
-      padding:8px 14px;
-      text-align:center;
-      min-width:120px;
-    ">
-      <div style="font-size:16px;margin-bottom:3px;">${icon}</div>
-      <div style="
-        font-family:'Syne',sans-serif;
-        font-size:13px;font-weight:700;
-        color:#ffffff;line-height:1.3;
-        max-width:160px;
-        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      ">${name}</div>
-      <div style="
-        font-size:10px;color:#00FF88;font-weight:600;
-        margin-top:3px;letter-spacing:0.5px;
-      ">● WONDAPP</div>
-    </div>`);
-
-  L.marker([lat, lng], { icon: wondappIcon })
-    .addTo(leafletMap)
-    .bindPopup(popup)
-    .openPopup();
-
-  setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 50);
+async function searchByCity(){
+const ci=document.getElementById('manualCity');
+const city=ci?ci.value.trim():'';
+const query=document.getElementById('searchBar')?.value?.trim()||'';
+if(!city)return;
+const rEl=document.getElementById('merchantResults');
+rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">&#127760;</div><div style="font-size:14px">Ricerca di "${city}"...</div></div>`;
+try{
+const gr=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`,{headers:{'User-Agent':'WONDAPP/1.0'}});
+const gd=await gr.json();
+if(!gd.length){rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:32px">&#10060;</div><div style="margin-top:10px">Citt\u00e0 non trovata: "${city}"</div></div>`;return;}
+userLocation={lat:parseFloat(gd[0].lat),lng:parseFloat(gd[0].lon)};
+showToast(`&#128205; ${gd[0].display_name.split(',')[0]}`);
+doSearch(query);
+}catch(e){rEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:32px">&#9888;</div><div style="margin-top:10px">Errore connessione</div></div>`;}
 }
 
-function closeModal(e) {
-  if (e.target === document.getElementById('merchantModal')) closeModalDirect();
-}
-
-function closeModalDirect() {
-  document.getElementById('merchantModal').classList.remove('open');
-  document.body.style.overflow = '';
-  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
-}
-
-function openNav(app) {
-  if (!currentMerchantCoords) return;
-  const { lat, lng } = currentMerchantCoords;
-  const urls = {
-    gmaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-    waze: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
-    apple: `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
-  };
-  window.open(urls[app], '_blank');
-}
-
-async function searchByCity() {
-  const cityInput = document.getElementById('manualCity');
-  const city = cityInput ? cityInput.value.trim() : '';
-  const query = document.getElementById('searchBar')?.value?.trim() || '';
-  if (!city) return;
-
-  const resultsEl = document.getElementById('merchantResults');
-  resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text2)">
-    <div style="font-size:28px;margin-bottom:10px;animation:geoPulse 0.8s infinite alternate">🌍</div>
-    <div style="font-size:14px">Ricerca di "${city}"...</div>
-  </div>`;
-
-  try {
-    const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`, {
-      headers: { 'User-Agent': 'WONDAPP/1.0' }
-    });
-    const geoData = await geoRes.json();
-    if (!geoData.length) {
-      resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:32px">❌</div><div style="margin-top:10px">Città non trovata: "${city}"</div></div>`;
-      return;
-    }
-    userLocation = { lat: parseFloat(geoData[0].lat), lng: parseFloat(geoData[0].lon) };
-    showToast(`📍 ${geoData[0].display_name.split(',')[0]}`);
-    doSearch(query);
-  } catch(e) {
-    resultsEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:32px">⚠️</div><div style="margin-top:10px">Errore connessione</div></div>`;
-  }
-}
-
-
-// ══════════════════════════════════════
 // INIT
-// ══════════════════════════════════════
-function init() {
-  buildLangSelector();
-  applyLang('it');
-  buildCategories();
-  buildProducts(0);
-  buildCompetitors();
-  addAIMessage(T[currentLang].memoriWelcome);
-  updateDashboard();
-  getSilentLocation();
-}
+function init(){buildLangSelector();applyLang('it');buildCategories();buildProducts(0);buildCompetitors();addAIMessage(T[currentLang].memoriWelcome);updateDashboard();getSilentLocation();}
 
-function getSilentLocation() {
-  if (!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(
-    pos => { userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
-    () => { /* silenzioso — nessun messaggio */ },
-    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-  );
-}
-
-// ══════════════════════════════════════
 // LANGUAGE
-// ══════════════════════════════════════
-const langs = ['it','en','es','fr','de','zh','ja'];
-function buildLangSelector() {
-  const el = document.getElementById('langSelector');
-  el.innerHTML = langs.map(l =>
-    `<button class="lang-btn${l===currentLang?' active':''}" onclick="applyLang('${l}')">${l.toUpperCase()}</button>`
-  ).join('');
+const langs=['it','en','es','fr','de','zh','ja'];
+function buildLangSelector(){
+const e=document.getElementById('langSelector');
+e.innerHTML=langs.map(l=>`<button class="lang-btn${l===currentLang?' active':''}" onclick="applyLang('${l}')">${l.toUpperCase()}</button>`).join('');
 }
 
-function applyLang(lang) {
-  currentLang = lang;
-  const t = T[lang];
-  buildLangSelector();
-
-  // Hero
-  document.getElementById('heroTitle').textContent = t.heroTitle;
-  document.getElementById('heroSub').textContent = t.heroSub;
-  // Labels
-  el('catLabel').textContent = t.catLabel;
-  el('prodLabel').textContent = t.prodLabel;
-  el('cartLabel').textContent = t.cartLabel;
-  const cartEmptyEl = el('cartEmpty'); if(cartEmptyEl) cartEmptyEl.textContent = t.cartEmpty;
-  el('totalLabel').textContent = t.totalLabel;
-  el('noteLabel').textContent = t.noteLabel;
-  el('orderNote').placeholder = t.notePlaceholder;
-  el('sendOrderTxt').textContent = t.sendOrderTxt;
-  el('trackingTitle').textContent = t.trackingTitle;
-  el('viewCustomer').querySelector('span').textContent = t.clienteBtn;
-  el('viewMerchant').querySelector('span').textContent = t.merchantBtn;
-  el('noOrderTxt').innerHTML = t.noOrderTxt.replace('\n','<br>');
-  el('incomingLabel').textContent = t.incomingLabel;
-  el('aiStatusTxt').textContent = t.aiStatusTxt;
-  el('chatInput').placeholder = t.chatPlaceholder;
-  el('dashTitle').textContent = t.dashTitle;
-  el('statOrdersLabel').textContent = t.statOrdersLabel;
-  el('statRevenueLabel').textContent = t.statRevenueLabel;
-  el('statTimeLabel').textContent = t.statTimeLabel;
-  el('statRatingLabel').textContent = t.statRatingLabel;
-  el('activeOrdersTitle').textContent = t.activeOrdersTitle;
-  const noActiveEl = el('noActiveOrdersTxt'); if(noActiveEl) noActiveEl.textContent = t.noActiveOrdersTxt;
-  el('completedTitle').textContent = t.completedTitle;
-  el('intelSub').textContent = t.intelSub;
-  el('memoriLang').textContent = lang.toUpperCase();
-
-  // Nav labels
-  document.querySelectorAll('[data-key]').forEach(node => {
-    const key = node.getAttribute('data-key');
-    if (t[key]) node.textContent = t[key];
-  });
-
-  buildCategories();
-  buildProducts(currentCat);
-  renderCart();
-  if (activeOrder) renderTrackingSteps();
-  updateDashboard();
+function applyLang(lang){
+currentLang=lang;const t=T[lang];
+buildLangSelector();
+el('searchBar').placeholder=t.searchPlaceholder;
+el('heroTitle').textContent=t.heroTitle;el('heroSub').textContent=t.heroSub;
+el('catLabel').textContent=t.catLabel;el('prodLabel').textContent=t.prodLabel;
+el('cartLabel').textContent=t.cartLabel;
+const ce=el('cartEmpty');if(ce)ce.textContent=t.cartEmpty;
+el('totalLabel').textContent=t.totalLabel;el('noteLabel').textContent=t.noteLabel;
+el('orderNote').placeholder=t.notePlaceholder;el('sendOrderTxt').textContent=t.sendOrderTxt;
+el('trackingTitle').textContent=t.trackingTitle;
+el('clienteBtn').textContent=t.clienteBtn;
+el('merchantBtn').textContent=t.merchantBtn;
+el('noOrderTxt').innerHTML=t.noOrderTxt.replace(/\n/g,'<br>');
+el('incomingLabel').textContent=t.incomingLabel;
+el('aiStatusTxt').textContent=t.aiStatusTxt;el('chatInput').placeholder=t.chatPlaceholder;
+el('dashTitle').textContent=t.dashTitle;el('statOrdersLabel').textContent=t.statOrdersLabel;
+el('statRevenueLabel').textContent=t.statRevenueLabel;el('statTimeLabel').textContent=t.statTimeLabel;
+el('statRatingLabel').textContent=t.statRatingLabel;el('activeOrdersTitle').textContent=t.activeOrdersTitle;
+const nae=el('noActiveOrdersTxt');if(nae)nae.textContent=t.noActiveOrdersTxt;
+el('completedTitle').textContent=t.completedTitle;el('intelSub').textContent=t.intelSub;
+el('memoriLang').textContent=lang.toUpperCase();
+document.querySelectorAll('[data-key]').forEach(n=>{const k=n.getAttribute('data-key');if(t[k])n.textContent=t[k];});
+buildCategories();buildProducts(currentCat);renderCart();if(activeOrder)renderTrackingSteps();updateDashboard();
 }
 
-function el(id) { return document.getElementById(id); }
+function el(id){return document.getElementById(id);}
 
-// ══════════════════════════════════════
 // CATEGORIES
-// ══════════════════════════════════════
-function buildCategories() {
-  const t = T[currentLang];
-  const grid = el('categoryGrid');
-  grid.innerHTML = t.categories.map((c, i) =>
-    `<div class="cat-btn${i===currentCat?' active':''}" onclick="selectCat(${i})">
-      <span class="cat-icon">${c.split(' ')[0]}</span>
-      ${c.split(' ').slice(1).join(' ')}
-    </div>`
-  ).join('');
+function buildCategories(){
+const t=T[currentLang];const g=el('categoryGrid');
+g.innerHTML=t.categories.map((c,i)=>`<div class="cat-btn${i===currentCat?' active':''}" onclick="selectCat(${i})"><span class="cat-icon">${c.split(' ')[0]}</span>${c.split(' ').slice(1).join(' ')}</div>`).join('');
 }
+function selectCat(i){currentCat=i;buildCategories();buildProducts(i);}
 
-function selectCat(i) {
-  currentCat = i;
-  buildCategories();
-  buildProducts(i);
-}
-
-// ══════════════════════════════════════
 // PRODUCTS
-// ══════════════════════════════════════
-function buildProducts(catIdx) {
-  const list = el('productList');
-  const products = catalog[catIdx];
-  list.innerHTML = products.map((p, i) =>
-    `<div class="product-item" onclick="addToCart(${catIdx},${i})">
-      <div class="product-info">
-        <div class="product-name">${p.name}</div>
-        <div class="product-desc">${p.desc}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="product-price">€${p.price.toFixed(2)}</div>
-        <button class="product-add" onclick="event.stopPropagation();addToCart(${catIdx},${i})">+</button>
-      </div>
-    </div>`
-  ).join('');
+function buildProducts(ci){
+const l=el('productList');const p=catalog[ci];
+l.innerHTML=p.map((p,i)=>`<div class="product-item" onclick="addToCart(${ci},${i})"><div class="product-info"><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div></div><div style="display:flex;align-items:center;gap:8px"><div class="product-price">&euro;${p.price.toFixed(2)}</div><button class="product-add" onclick="event.stopPropagation();addToCart(${ci},${i})">+</button></div></div>`).join('');
 }
 
-// ══════════════════════════════════════
 // CART
-// ══════════════════════════════════════
-function addToCart(catIdx, prodIdx) {
-  const p = catalog[catIdx][prodIdx];
-  const existing = cart.find(c => c.name === p.name);
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({ name: p.name, price: p.price, qty: 1 });
-  }
-  renderCart();
-  showToast(`${p.name.split(' ')[0]} aggiunto ✓`);
+function addToCart(ci,pi){
+const p=catalog[ci][pi];const e=cart.find(c=>c.name===p.name);
+if(e){e.qty++;}else{cart.push({name:p.name,price:p.price,qty:1});}
+renderCart();showToast(`${p.name.split(' ')[0]} aggiunto \u2713`);
 }
 
-function renderCart() {
-  const t = T[currentLang];
-  const itemsEl = el('cartItems');
-  const totalEl = el('cartTotal');
-  const dividerEl = el('cartDivider');
-  const sendBtn = el('sendOrderBtn');
-  if (cart.length === 0) {
-    itemsEl.innerHTML = `<div class="cart-empty" id="cartEmpty">${t.cartEmpty}</div>`;
-    totalEl.style.display = 'none';
-    dividerEl.style.display = 'none';
-    sendBtn.style.display = 'none';
-    return;
-  }
-
-  let total = 0;
-  itemsEl.innerHTML = cart.map((c, i) => {
-    total += c.price * c.qty;
-    return `<div class="cart-item">
-      <div>
-        <div class="cart-item-name">${c.name}</div>
-        <div class="cart-item-qty">x${c.qty} — €${(c.price*c.qty).toFixed(2)}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="cart-item-price">€${(c.price*c.qty).toFixed(2)}</span>
-        <button onclick="removeFromCart(${i})" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  totalEl.style.display = 'flex';
-  dividerEl.style.display = 'block';
-  sendBtn.style.display = 'flex';
-  el('totalAmount').textContent = `€${total.toFixed(2)}`;
+function renderCart(){
+const t=T[currentLang];const iEl=el('cartItems'),tEl=el('cartTotal'),dEl=el('cartDivider'),sBtn=el('sendOrderBtn');
+if(cart.length===0){iEl.innerHTML=`<div class="cart-empty" id="cartEmpty">${t.cartEmpty}</div>`;tEl.style.display='none';dEl.style.display='none';sBtn.style.display='none';return;}
+let total=0;
+iEl.innerHTML=cart.map((c,i)=>{total+=c.price*c.qty;return`<div class="cart-item"><div><div class="cart-item-name">${c.name}</div><div class="cart-item-qty">x${c.qty} &mdash; &euro;${(c.price*c.qty).toFixed(2)}</div></div><div style="display:flex;align-items:center;gap:10px"><span class="cart-item-price">&euro;${(c.price*c.qty).toFixed(2)}</span><button onclick="removeFromCart(${i})" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer">&times;</button></div></div>`;}).join('');
+tEl.style.display='flex';dEl.style.display='block';sBtn.style.display='flex';
+el('totalAmount').textContent=`\u20ac${total.toFixed(2)}`;
 }
 
-function removeFromCart(idx) {
-  cart.splice(idx, 1);
-  renderCart();
+function removeFromCart(idx){cart.splice(idx,1);renderCart();}
+
+function sendOrder(){
+if(cart.length===0)return;
+const t=T[currentLang];
+const id=`WD-${++orderCounter}`,note=el('orderNote').value;
+const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+const items=cart.map(c=>`${c.name} x${c.qty}`).join(', ');
+const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+activeOrder={id,items,total,note,time:now,step:0};
+dashboardOrders.push({id,items,total,note,time:now});
+cart=[];el('orderNote').value='';renderCart();updateDashboard();
+showToast(t.orderSent);
+setTimeout(()=>switchTab('tracking',document.querySelector('[data-tab="tracking"]')),800);
+renderTrackingUI();
 }
 
-function sendOrder() {
-  if (cart.length === 0) return;
-  const t = T[currentLang];
-  const id = `WD-${++orderCounter}`;
-  const note = el('orderNote').value;
-  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
-  const items = cart.map(c => `${c.name} x${c.qty}`).join(', ');
-  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-
-  activeOrder = { id, items, total, note, time: now, step: 0 };
-
-  // Add to dashboard
-  dashboardOrders.push({ id, items, total, note, time: now });
-  cart = [];
-  el('orderNote').value = '';
-  renderCart();
-  updateDashboard();
-
-  showToast(t.orderSent);
-  setTimeout(() => switchTab('tracking', document.querySelector('[data-tab="tracking"]')), 800);
-  renderTrackingUI();
-}
-
-// ══════════════════════════════════════
 // TRACKING
-// ══════════════════════════════════════
-let trackingView = 'customer';
-function setView(v) {
-  trackingView = v;
-  el('viewCustomer').classList.toggle('active', v === 'customer');
-  el('viewMerchant').classList.toggle('active', v === 'merchant');
-  renderTrackingUI();
+let trackingView='customer';
+function setView(v){
+trackingView=v;
+el('viewCustomer').classList.toggle('active',v==='customer');
+el('viewMerchant').classList.toggle('active',v==='merchant');
+renderTrackingUI();
+}
+function renderTrackingUI(){
+if(trackingView==='customer'){
+el('merchantView').style.display='none';
+if(activeOrder){
+el('noActiveOrder').style.display='none';el('trackingOrderInfo').style.display='block';el('trackingSteps').style.display='block';
+el('trackOrderId').textContent=`#${activeOrder.id}`;
+el('trackOrderDetail').textContent=`${activeOrder.items} \u2014 \u20ac${activeOrder.total.toFixed(2)}`;
+renderTrackingSteps();
+}else{el('noActiveOrder').style.display='block';el('trackingOrderInfo').style.display='none';el('trackingSteps').style.display='none';}
+}else{
+el('noActiveOrder').style.display='none';el('trackingOrderInfo').style.display='none';el('trackingSteps').style.display='none';
+el('merchantView').style.display='block';renderMerchantOrders();
+}
+}
+function renderTrackingSteps(){
+const steps=getTrackingSteps(currentLang);const cs=activeOrder?activeOrder.step:0;
+el('trackingStepsList').innerHTML=steps.map((s,i)=>{
+let cls=i<cs?'done':i===cs?'active-step':'';
+return`<div class="step ${cls}"><div class="step-dot">${i<cs?'\u2713':i===cs?'\u25cf':''}</div><div class="step-content"><div class="step-title">${s}</div>${i<=cs?`<div class="step-time">${activeOrder.time}</div>`:''}</div></div>`;
+}).join('');
+}
+function renderMerchantOrders(){
+const t=T[currentLang];const e2=el('merchantOrdersList');
+if(dashboardOrders.length===0){e2.innerHTML=`<div class="empty-state"><div class="empty-icon">&#128333;</div><p>${t.noActiveOrdersTxt}</p></div>`;return;}
+e2.innerHTML=dashboardOrders.map((o,i)=>`<div class="order-card"><div class="order-card-header"><span class="order-card-id">#${o.id}</span><span class="badge badge-orange">&#9203; Nuovo</span></div><div class="order-card-items">${o.items}${o.note?'<br>&#128221; '+o.note:''}</div><div class="order-card-footer"><span class="order-card-total">&euro;${o.total.toFixed(2)}</span><div class="order-actions"><button class="btn btn-red btn-sm" onclick="merchantAction(${i},'reject')">${t.rejectBtn}</button><button class="btn btn-green btn-sm" onclick="merchantAction(${i},'accept')">${t.acceptBtn}</button></div></div></div>`).join('');
+}
+function merchantAction(idx,action){
+const t=T[currentLang];const o=dashboardOrders[idx];
+if(action==='accept'){if(activeOrder&&activeOrder.id===o.id)activeOrder.step=1;statOrderCount++;statRevenue+=o.total;completedToday.push({...o,status:'accepted'});showToast(t.orderAccepted);}
+else{showToast(t.orderRejected);}
+dashboardOrders.splice(idx,1);updateDashboard();renderMerchantOrders();
 }
 
-function renderTrackingUI() {
-  if (trackingView === 'customer') {
-    el('merchantView').style.display = 'none';
-    if (activeOrder) {
-      el('noActiveOrder').style.display = 'none';
-      el('trackingOrderInfo').style.display = 'block';
-      el('trackingSteps').style.display = 'block';
-      el('trackOrderId').textContent = `#${activeOrder.id}`;
-      el('trackOrderDetail').textContent = `${activeOrder.items} — €${activeOrder.total.toFixed(2)}`;
-      renderTrackingSteps();
-    } else {
-      el('noActiveOrder').style.display = 'block';
-      el('trackingOrderInfo').style.display = 'none';
-      el('trackingSteps').style.display = 'none';
-    }
-  } else {
-    el('noActiveOrder').style.display = 'none';
-    el('trackingOrderInfo').style.display = 'none';
-    el('trackingSteps').style.display = 'none';
-    el('merchantView').style.display = 'block';
-    renderMerchantOrders();
-  }
-}
-
-function renderTrackingSteps() {
-  const steps = getTrackingSteps(currentLang);
-  const currentStep = activeOrder ? activeOrder.step : 0;
-  el('trackingStepsList').innerHTML = steps.map((s, i) => {
-    let cls = '';
-    if (i < currentStep) cls = 'done';
-    else if (i === currentStep) cls = 'active-step';
-    return `<div class="step ${cls}">
-      <div class="step-dot">${i < currentStep ? '✓' : i === currentStep ? '●' : ''}</div>
-      <div class="step-content">
-        <div class="step-title">${s}</div>
-        ${i <= currentStep ? `<div class="step-time">${activeOrder.time}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderMerchantOrders() {
-  const t = T[currentLang];
-  const el2 = el('merchantOrdersList');
-  if (dashboardOrders.length === 0) {
-    el2.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>${t.noActiveOrdersTxt}</p></div>`;
-    return;
-  }
-  el2.innerHTML = dashboardOrders.map((o, i) =>
-    `<div class="order-card" id="trackOrder_${i}">
-      <div class="order-card-header">
-        <span class="order-card-id">#${o.id}</span>
-        <span class="badge badge-orange">⏳ Nuovo</span>
-      </div>
-      <div class="order-card-items">${o.items}</div>
-      <div class="order-card-footer">
-        <span class="order-card-total">€${o.total.toFixed(2)}</span>
-        <div class="order-actions">
-          <button class="btn btn-red btn-sm" onclick="merchantAction(${i},'reject')">${t.rejectBtn}</button>
-          <button class="btn btn-green btn-sm" onclick="merchantAction(${i},'accept')">${t.acceptBtn}</button>
-        </div>
-      </div>
-    </div>`
-  ).join('');
-}
-
-function merchantAction(idx, action) {
-  const t = T[currentLang];
-  const order = dashboardOrders[idx];
-  if (action === 'accept') {
-    if (activeOrder && activeOrder.id === order.id) {
-      activeOrder.step = 1;
-    }
-    statOrderCount++;
-    statRevenue += order.total;
-    completedToday.push({...order, status: 'accepted'});
-    showToast(t.orderAccepted);
-  } else {
-    showToast(t.orderRejected);
-  }
-  dashboardOrders.splice(idx, 1);
-  updateDashboard();
-  renderMerchantOrders();
-}
-
-// ══════════════════════════════════════
 // DASHBOARD
-// ══════════════════════════════════════
-function updateDashboard() {
-  const t = T[currentLang];
-  el('statOrders').textContent = statOrderCount;
-  el('statRevenue').textContent = `€${statRevenue.toFixed(0)}`;
-  el('statAvgTime').textContent = statOrderCount > 0 ? '18m' : '—';
-  el('statRating').textContent = statOrderCount > 0 ? '4.8' : '—';
-
-  const dashEl = el('dashboardOrders');
-  if (dashboardOrders.length === 0) {
-    dashEl.innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><p id="noActiveOrdersTxt">${t.noActiveOrdersTxt}</p></div>`;
-  } else {
-    dashEl.innerHTML = dashboardOrders.map((o, i) =>
-      `<div class="order-card">
-        <div class="order-card-header">
-          <span class="order-card-id">#${o.id}</span>
-          <span class="badge badge-orange">⏳ ${o.time}</span>
-        </div>
-        <div class="order-card-items">${o.items}${o.note ? '<br>📝 '+o.note : ''}</div>
-        <div class="order-card-footer">
-          <span class="order-card-total">€${o.total.toFixed(2)}</span>
-          <div class="order-actions">
-            <button class="btn btn-red btn-sm" onclick="dashAction(${i},'reject')">${t.rejectBtn}</button>
-            <button class="btn btn-green btn-sm" onclick="dashAction(${i},'accept')">${t.acceptBtn}</button>
-          </div>
-        </div>
-      </div>`
-    ).join('');
-  }
-
-  const compEl = el('completedOrders');
-  if (completedToday.length === 0) {
-    compEl.innerHTML = '';
-  } else {
-    compEl.innerHTML = completedToday.map(o =>
-      `<div class="order-card" style="opacity:0.7">
-        <div class="order-card-header">
-          <span class="order-card-id">#${o.id}</span>
-          <span class="badge badge-green">✓ Completato</span>
-        </div>
-        <div class="order-card-items">${o.items}</div>
-        <div class="order-card-footer"><span class="order-card-total">€${o.total.toFixed(2)}</span></div>
-      </div>`
-    ).join('');
-  }
+function updateDashboard(){
+const t=T[currentLang];
+el('statOrders').textContent=statOrderCount;el('statRevenue').textContent=`\u20ac${statRevenue.toFixed(0)}`;
+el('statAvgTime').textContent=statOrderCount>0?'18m':'\u2014';el('statRating').textContent=statOrderCount>0?'4.8':'\u2014';
+const dEl=el('dashboardOrders');
+if(dashboardOrders.length===0){dEl.innerHTML=`<div class="empty-state"><div class="empty-icon">&#127881;</div><p id="noActiveOrdersTxt">${t.noActiveOrdersTxt}</p></div>`;}
+else{dEl.innerHTML=dashboardOrders.map((o,i)=>`<div class="order-card"><div class="order-card-header"><span class="order-card-id">#${o.id}</span><span class="badge badge-orange">&#9203; ${o.time}</span></div><div class="order-card-items">${o.items}${o.note?'<br>&#128221; '+o.note:''}</div><div class="order-card-footer"><span class="order-card-total">&euro;${o.total.toFixed(2)}</span><div class="order-actions"><button class="btn btn-red btn-sm" onclick="dashAction(${i},'reject')">${t.rejectBtn}</button><button class="btn btn-green btn-sm" onclick="dashAction(${i},'accept')">${t.acceptBtn}</button></div></div></div>`).join('');}
+const cEl=el('completedOrders');
+cEl.innerHTML=completedToday.length===0?'':completedToday.map(o=>`<div class="order-card" style="opacity:0.7"><div class="order-card-header"><span class="order-card-id">#${o.id}</span><span class="badge badge-green">\u2713 Completato</span></div><div class="order-card-items">${o.items}</div><div class="order-card-footer"><span class="order-card-total">&euro;${o.total.toFixed(2)}</span></div></div>`).join('');
+}
+function dashAction(idx,action){
+const t=T[currentLang];const o=dashboardOrders[idx];
+if(action==='accept'){if(activeOrder&&activeOrder.id===o.id)activeOrder.step=2;statOrderCount++;statRevenue+=o.total;completedToday.push({...o,status:'accepted'});showToast(t.orderAccepted);}
+else{showToast(t.orderRejected);}
+dashboardOrders.splice(idx,1);updateDashboard();
 }
 
-function dashAction(idx, action) {
-  const t = T[currentLang];
-  const order = dashboardOrders[idx];
-  if (action === 'accept') {
-    if (activeOrder && activeOrder.id === order.id) activeOrder.step = 2;
-    statOrderCount++;
-    statRevenue += order.total;
-    completedToday.push({...order, status: 'accepted'});
-    showToast(t.orderAccepted);
-  } else {
-    showToast(t.orderRejected);
-  }
-  dashboardOrders.splice(idx, 1);
-  updateDashboard();
+// INTEL
+function buildCompetitors(){
+const l=el('competitorsList');
+l.innerHTML=competitors.map(c=>{
+const tc=c.threat>80?'badge-red':c.threat>60?'badge-orange':'badge-gold';
+return`<div class="competitor-card"><div class="comp-header"><div class="comp-name-row"><span class="comp-logo">${c.logo}</span><div><div class="comp-name">${c.name}</div><div class="comp-type">${c.type}</div></div></div><span class="badge ${tc}">${c.threat}%</span></div><div class="comp-desc">${c.desc}</div><div class="comp-tags">${c.tags.map(tag=>`<span class="comp-tag">${tag}</span>`).join('')}</div><div class="threat-bar"><div class="threat-label"><span>Threat Level</span><span>${c.threat}%</span></div><div class="threat-track"><div class="threat-fill" style="width:${c.threat}%"></div></div></div></div>`;
+}).join('');
 }
 
-// ══════════════════════════════════════
-// COMPETITORS (INTEL)
-// ══════════════════════════════════════
-function buildCompetitors() {
-  const list = el('competitorsList');
-  list.innerHTML = competitors.map(c => {
-    const threatColor = c.threat > 80 ? 'badge-red' : c.threat > 60 ? 'badge-orange' : 'badge-gold';
-    return `<div class="competitor-card">
-      <div class="comp-header">
-        <div class="comp-name-row">
-          <span class="comp-logo">${c.logo}</span>
-          <div>
-            <div class="comp-name">${c.name}</div>
-            <div class="comp-type">${c.type}</div>
-          </div>
-        </div>
-        <span class="badge ${threatColor}">${c.threat}%</span>
-      </div>
-      <div class="comp-desc">${c.desc}</div>
-      <div class="comp-tags">${c.tags.map(tag => `<span class="comp-tag">${tag}</span>`).join('')}</div>
-      <div class="threat-bar">
-        <div class="threat-label"><span>Threat Level</span><span>${c.threat}%</span></div>
-        <div class="threat-track"><div class="threat-fill" style="width:${c.threat}%"></div></div>
-      </div>
-    </div>`;
-  }).join('');
+// MEMORI-AI
+function addAIMessage(text){
+const msgs=el('chatMessages');const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const d=document.createElement('div');d.className='msg msg-ai';
+d.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
+msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+chatHistory.push({role:'assistant',content:text});
+}
+function addUserMessage(text){
+const msgs=el('chatMessages');const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const d=document.createElement('div');d.className='msg msg-user';
+d.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
+msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+chatHistory.push({role:'user',content:text});
+}
+function showTyping(){
+const msgs=el('chatMessages');const d=document.createElement('div');
+d.className='msg msg-ai';d.id='typingIndicator';
+d.innerHTML=`<div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typingIndicator');if(t)t.remove();}
+function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+async function sendChat(){
+const input=el('chatInput');const text=input.value.trim();if(!text)return;
+input.value='';input.style.height='auto';
+addUserMessage(text);showTyping();
+try{
+const ln={it:'italiano',en:'English',es:'espa\u00f1ol',fr:'fran\u00e7ais',de:'Deutsch',zh:'\u4e2d\u6587',ja:'\u65e5\u672c\u8a9e'}[currentLang]||'italiano';
+const sys=`Sei MEMORI-AI, l'assistente AI integrato in WONDAPP \u2014 una piattaforma universale H24 per ordinare da merchant locali. Rispondi sempre in ${ln}. Sei utile, conciso e conosci tutto su WONDAPP. Tono: amichevole e professionale.`;
+const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:chatHistory.slice(-20).map(m=>({role:m.role,content:m.content}))})});
+const data=await r.json();removeTyping();
+addAIMessage(data.content?.[0]?.text||'Mi dispiace, errore di connessione.');
+}catch(e){removeTyping();addAIMessage('\u26a0\ufe0f Errore di connessione. Riprova tra qualche secondo.');}
 }
 
-// ══════════════════════════════════════
-// MEMORI-AI (Claude API)
-// ══════════════════════════════════════
-function addAIMessage(text) {
-  const msgs = el('chatMessages');
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  const div = document.createElement('div');
-  div.className = 'msg msg-ai';
-  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  chatHistory.push({ role: 'assistant', content: text });
+// TABS
+function switchTab(tabId,btn){
+document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+el('tab-'+tabId).classList.add('active');
+if(btn)btn.classList.add('active');
+if(tabId==='tracking')renderTrackingUI();
+if(tabId==='dashboard')updateDashboard();
 }
 
-function addUserMessage(text) {
-  const msgs = el('chatMessages');
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  const div = document.createElement('div');
-  div.className = 'msg msg-user';
-  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  chatHistory.push({ role: 'user', content: text });
-}
-
-function showTyping() {
-  const msgs = el('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'msg msg-ai'; div.id = 'typingIndicator';
-  div.innerHTML = `<div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function removeTyping() {
-  const typingEl = document.getElementById('typingIndicator');
-  if (typingEl) typingEl.remove();
-}
-
-function handleChatKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-}
-
-async function sendChat() {
-  const input = el('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.style.height = 'auto';
-
-  addUserMessage(text);
-  showTyping();
-
-  try {
-    const langName = { it: 'italiano', en: 'English', es: 'español', fr: 'français', de: 'Deutsch', zh: '中文', ja: '日本語' }[currentLang] || 'italiano';
-    const systemPrompt = `Sei MEMORI-AI, l'assistente AI integrato in WONDAPP — una piattaforma universale H24 per ordinare da merchant locali (ristoranti, farmacie, biciclette, artigiani e altro). Rispondi sempre in ${langName}. Sei utile, conciso, e conosci tutto su WONDAPP. Aiuta i clienti con ordini, tracking, e domande sui merchant. Tono: amichevole e professionale.`;
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: chatHistory.slice(-20).map(m => ({ role: m.role, content: m.content }))
-      })
-    });
-
-    const data = await response.json();
-    removeTyping();
-    const reply = data.content?.[0]?.text || 'Mi dispiace, errore di connessione.';
-    addAIMessage(reply);
-  } catch (err) {
-    removeTyping();
-    addAIMessage('⚠️ Errore di connessione. Riprova tra qualche secondo.');
-  }
-}
-
-// ══════════════════════════════════════
-// TAB NAVIGATION
-// ══════════════════════════════════════
-function switchTab(tabId, btn) {
-  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  el('tab-' + tabId).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (tabId === 'tracking') renderTrackingUI();
-  if (tabId === 'dashboard') updateDashboard();
-}
-
-// ══════════════════════════════════════
 // TOAST
-// ══════════════════════════════════════
-function showToast(msg) {
-  const toastEl = document.getElementById('toast');
-  if (!toastEl) return;
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  setTimeout(() => toastEl.classList.remove('show'), 2500);
+function showToast(msg){
+const t=document.getElementById('toast');if(!t)return;
+t.innerHTML=msg;t.classList.add('show');
+setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ══════════════════════════════════════
-// START
-// ══════════════════════════════════════
 init();
 </script>
 </body>
