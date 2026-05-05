@@ -861,7 +861,7 @@ const street=tags['addr:street']?`${tags['addr:street']} ${tags['addr:housenumbe
 const addr=[street,tags['addr:city']||''].filter(Boolean).join(', ');
 const phone=tags.phone||'',hours=tags.opening_hours||'',dist=el.dist||0;
 const t=T[currentLang];
-currentMerchantCoords={lat:el.elLat,lng:el.elLng,name};
+currentMerchantCoords={lat:el.elLat,lng:el.elLng,name,address:addr};
 document.getElementById('modalAvatar').textContent=icon;
 document.getElementById('modalName').textContent=name;
 document.getElementById('modalType').textContent=type;
@@ -898,11 +898,14 @@ function closeModal(e){if(e.target===document.getElementById('merchantModal'))cl
 function closeModalDirect(){document.getElementById('merchantModal').classList.remove('open');document.body.style.overflow='';if(leafletMap){leafletMap.remove();leafletMap=null;}}
 function openNav(app){
 if(!currentMerchantCoords)return;
-const{lat,lng}=currentMerchantCoords;
+const{lat,lng,name,address}=currentMerchantCoords;
+// Use name+address as destination string for accuracy (avoids wrong OSM node coords)
+const dest=address?`${name}, ${address}`:name||`${lat},${lng}`;
+const destCoords=`${lat},${lng}`;
 const urls={
-  gmaps:`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-  waze:`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
-  apple:`https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
+  gmaps:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&destination_place_id=`,
+  waze:`https://waze.com/ul?q=${encodeURIComponent(dest)}&navigate=yes`,
+  apple:`https://maps.apple.com/?daddr=${encodeURIComponent(dest)}&dirflg=d`
 };
 const a=document.createElement('a');
 a.href=urls[app];a.target='_blank';a.rel='noopener noreferrer';
