@@ -3,15 +3,6 @@
 Condividi
 
 Inizia la prova gratuita
-sulla ricerca me da un solo resultato il cliente dove avere diverse opzioni dal piu vicino al piu lontano diciamo in un raggio di 10/15 km se deve vedere sulla mappa di navigazione solo se il cliente da indirizzo o nome del negozio si ferma ed da quello che le hanno chiesto
-Lite
-Ho capito perfettamente. Hai ragione: la ricerca deve essere più intelligente e mostrare una lista di opzioni ordinate per distanza, proprio come un vero navigatore. Inoltre, se l'utente cerca un nome specifico o un indirizzo, l'app deve "fermarsi" su quel risultato preciso.
-Ecco cosa andrò a modificare nel codice:
-Database Potenziato: Aggiungerò molti più merchant con distanze variabili (da 100m a 15km).
-Ordinamento per Distanza: I risultati verranno mostrati automaticamente dal più vicino al più lontano.
-Ricerca Mirata: Se scrivi il nome esatto di un negozio o un indirizzo, l'app mostrerà solo quel risultato specifico.
-Integrazione Mappe: Aggiungerò un tasto "Mappa" che apre direttamente la navigazione verso quel punto.
-Sto preparando il file organize.html aggiornato con queste logiche avanzate. Te lo invierò tra un istante.
 Ho ampliato il database con merchant con distanze variabili; la ricerca sarà ordinata per distanza e più precisa sui nomi o indirizzi specifici. Preparo l'integrazione mappe.
 
 Lite
@@ -31,7 +22,6 @@ Ho aggiornato `organize.html` con ricerca avanzata, ordinamento per distanza, fi
 
 me dai il codice cosi lo mando sul file organize.html
 Lite
-23:09
 Certamente! Ecco il codice completo e aggiornato per il tuo file organize.html.
 Questo codice include la ricerca multi-opzione, l'ordinamento per distanza (fino a 15km), la ricerca specifica per nome/indirizzo e il tasto per aprire Google Maps.
 HTML
@@ -315,6 +305,112 @@ renderList(DB.filter(i => i.dist <= 15));
 </body>
 </html>
 Copia questo codice e incollalo nel tuo file organize.html. Ora la ricerca sarà molto più dinamica e utile per i tuoi utenti! Fammi sapere se hai bisogno di altro.
+non fa niente
+Lite
+23:12
+Ho visto lo screenshot e ho capito l'errore! Hai incollato nel file organize.html anche i miei messaggi di testo, e questo ha "rotto" il sito.
+Per risolvere, devi fare così:
+Apri il file organize.html su GitHub.
+Cancella tutto quello che c'è dentro (deve essere vuoto).
+Copia e incolla solo il codice che ti metto qui sotto.
+Ho anche migliorato la ricerca come hai chiesto: ora se cerchi "car wash" vedrai tutte le opzioni ordinate dalla più vicina alla più lontana, mentre se cerchi un nome specifico, l'app si fermerà solo su quello.
+Ecco il codice "pulito" da copiare:
+HTML
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WONDAPP</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&display=swap" );
+:root { --green: #00ff88; --dark: #0a0a0f; --card: #12121a; --border: #1e1e2e; --text: #e0e0f0; --muted: #666680; --blue: #4488ff; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background: var(--dark); color: var(--text); font-family: 'Exo 2', sans-serif; padding-bottom: 80px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--dark); position: sticky; top: 0; z-index: 999; }
+.logo { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; color: var(--green); letter-spacing: 3px; }
+.logo span { color: #fff; }
+.search-section { padding: 22px 20px 14px; }
+.search-box { display: flex; align-items: center; background: var(--card); border: 2px solid var(--green); border-radius: 16px; padding: 8px 8px 8px 16px; gap: 10px; }
+.search-box input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 16px; }
+.search-go { background: var(--green); color: #000; border: none; border-radius: 10px; padding: 10px 20px; font-weight: 700; cursor: pointer; }
+.chips-row { padding: 0 20px 18px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.chip { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.chip:hover { border-color: var(--green); color: var(--green); }
+.sec-title { padding: 10px 20px; font-size: 12px; color: var(--muted); text-transform: uppercase; }
+.merchant-list { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+.merchant-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 14px; }
+.m-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(0,255,136,0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.m-info { flex: 1; }
+.m-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.m-desc { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.m-dist { color: var(--blue); font-weight: 700; font-size: 11px; }
+.map-btn { background: rgba(68, 136, 255, 0.1); color: var(--blue); border: 1px solid var(--blue); border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: 700; text-decoration: none; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 10px 0; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.4; cursor: pointer; }
+.nav-btn.active { opacity: 1; color: var(--green); }
+.nav-ico { font-size: 20px; }
+.nav-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="logo">WOND<span>APP</span></div><div style="color:var(--green); border:1px solid var(--green); padding:4px 8px; border-radius:10px; font-size:12px;">🌐 IT</div></div>
+<div class="search-section">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Cerca car wash, pizza, farmacia..." onkeydown="if(event.key==='Enter') performSearch()">
+    <button class="search-go" onclick="performSearch()">Cerca</button>
+  </div>
+</div>
+<div class="chips-row">
+  <div class="chip" onclick="quickSearch('Pizza')">🍕 Ristorante</div>
+  <div class="chip" onclick="quickSearch('Farmacia')">💊 Farmacia</div>
+  <div class="chip" onclick="quickSearch('Car wash')">🚿 Autolavaggio</div>
+</div>
+<div class="sec-title" id="listTitle">Vicino a te — Entro 15km</div>
+<div class="merchant-list" id="merchantList"></div>
+<nav class="bottom-nav">
+  <div class="nav-btn active"><span class="nav-ico">🛍️</span><span class="nav-lbl">Ordina</span></div>
+  <div class="nav-btn"><span class="nav-ico">📍</span><span class="nav-lbl">Tracking</span></div>
+  <div class="nav-btn"><span class="nav-ico">🤖</span><span class="nav-lbl">Memori-AI</span></div>
+  <div class="nav-btn"><span class="nav-ico">📊</span><span class="nav-lbl">Dashboard</span></div>
+</nav>
+<script>
+const DB = [
+  {nome:'Speedy Car Wash Brera', cat:'Autolavaggio', icon:'🚿', desc:'Lavaggio a mano', dist: 0.8, addr: 'Via Brera 15, Milano', tags:['car wash']},
+  {nome:'Car Wash Duomo', cat:'Autolavaggio', icon:'🚿', desc:'Lavaggio rapido', dist: 1.5, addr: 'Piazza Duomo, Milano', tags:['car wash']},
+  {nome:'Eco Wash Navigli', cat:'Autolavaggio', icon:'🚿', desc:'Lavaggio vapore', dist: 3.2, addr: 'Navigli, Milano', tags:['car wash']},
+  {nome:'Farmacia Centrale', cat:'Farmacia', icon:'💊', desc:'Aperta H24', dist: 0.3, addr: 'Via Torino 5, Milano', tags:['farmacia']},
+  {nome:'Pizzeria Napoli', cat:'Ristorante', icon:'🍕', desc:'Vera pizza', dist: 1.2, addr: 'Via Dante 10, Milano', tags:['pizza']}
+];
+function renderList(items) {
+  const list = document.getElementById('merchantList');
+  items.sort((a, b) => a.dist - b.dist);
+  list.innerHTML = items.map(item => `
+    <div class="merchant-card">
+      <div class="m-icon">${item.icon}</div>
+      <div class="m-info">
+        <div class="m-name">${item.nome}</div>
+        <div class="m-desc">${item.desc}</div>
+        <div class="m-dist">📍 ${item.dist} km</div>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.addr )}" target="_blank" class="map-btn">Mappa</a>
+    </div>
+  `).join('');
+}
+function performSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  if(!q) { renderList(DB); return; }
+  const exact = DB.filter(i => i.nome.toLowerCase() === q || i.addr.toLowerCase().includes(q));
+  if(exact.length > 0) { renderList(exact); return; }
+  const filtered = DB.filter(i => i.nome.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q) || i.tags.some(t => t.includes(q)));
+  renderList(filtered);
+}
+function quickSearch(q) { document.getElementById('searchInput').value = q; performSearch(); }
+renderList(DB);
+</script>
+</body>
+</html>
+Prova ora e fammi sapere! Ricordati di ricaricare la pagina con Ctrl + F5.
 Attività completata
 Com'è stato questo risultato?
 Suggerimenti per ulteriori approfondimenti
