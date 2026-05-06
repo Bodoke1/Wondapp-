@@ -3,17 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WONDAPP — Ordina</title>
+<title>WONDAPP</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600;700&display=swap');
   :root {
     --green: #00ff88;
     --green2: #00cc66;
     --dark: #0a0a0f;
     --card: #12121a;
+    --card2: #16161f;
     --border: #1e1e2e;
     --text: #e0e0f0;
     --muted: #666680;
+    --red: #ff4466;
+    --orange: #ff9944;
+    --blue: #4488ff;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -23,16 +27,18 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
+
+  /* ── TOPBAR ── */
   .topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
-    background: rgba(10,10,15,0.95);
+    background: rgba(10,10,15,0.97);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200;
   }
   .logo {
     font-family: 'Orbitron', sans-serif;
@@ -43,6 +49,7 @@
     text-shadow: 0 0 20px rgba(0,255,136,0.5);
   }
   .logo span { color: #fff; }
+  .topbar-right { display:flex; gap:10px; align-items:center; }
   .lang-btn {
     background: var(--border);
     border: 1px solid var(--green);
@@ -52,7 +59,15 @@
     font-family: 'Exo 2', sans-serif;
     font-size: 13px;
     cursor: pointer;
+    transition: all 0.2s;
   }
+  .lang-btn:hover { background: rgba(0,255,136,0.1); }
+
+  /* ── TAB SECTIONS ── */
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  /* ── ORDINA ── */
   .search-section { padding: 24px 20px 16px; }
   .search-label {
     font-size: 13px;
@@ -92,7 +107,9 @@
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
+    transition: all 0.2s;
   }
+  .search-btn:hover { background: var(--green2); }
   .suggestions {
     padding: 0 20px 20px;
     display: flex;
@@ -143,8 +160,7 @@
   .card:hover { border-color: var(--green); transform: translateX(4px); }
   .card:hover::before { opacity: 1; }
   .card-icon {
-    width: 54px;
-    height: 54px;
+    width: 54px; height: 54px;
     border-radius: 14px;
     background: rgba(0,255,136,0.08);
     border: 1px solid rgba(0,255,136,0.2);
@@ -172,13 +188,451 @@
     padding: 3px 10px;
     border-radius: 10px;
   }
+
+  /* ── TRACKING ── */
+  .tracking-wrap { padding: 20px; }
+  .tracking-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  .track-toggle {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .track-toggle-btn {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .track-toggle-btn.active {
+    background: var(--green);
+    color: #000;
+  }
+  .order-track-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+  .order-track-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .order-track-id { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--green); }
+  .order-track-time { font-size: 12px; color: var(--muted); }
+  .order-track-merchant { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .order-track-items { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .track-steps { display: flex; align-items: center; gap: 0; margin-bottom: 16px; }
+  .track-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+  .track-step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 1;
+    transition: all 0.3s;
+  }
+  .track-step.done .track-step-dot {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+  }
+  .track-step.active .track-step-dot {
+    background: var(--dark);
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 12px rgba(0,255,136,0.4);
+  }
+  .track-step-label { font-size: 9px; color: var(--muted); margin-top: 5px; text-align: center; letter-spacing: 0.3px; }
+  .track-step.done .track-step-label, .track-step.active .track-step-label { color: var(--green); }
+  .track-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin-bottom: 22px;
+    transition: background 0.3s;
+  }
+  .track-line.done { background: var(--green); }
+  .eta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ── MEMORI-AI ── */
+  .ai-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 130px);
+  }
+  .ai-header {
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ai-header-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .ai-header-sub { font-size: 12px; color: var(--muted); }
+  .ai-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--green);
+    margin-top: 8px;
+  }
+  .ai-status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 1.5s infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scrollbar-width: none;
+  }
+  .ai-messages::-webkit-scrollbar { display: none; }
+  .msg {
+    max-width: 82%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.55;
+    animation: msg-in 0.3s ease;
+  }
+  @keyframes msg-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg.ai {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    color: var(--text);
+  }
+  .msg.user {
+    background: var(--green);
+    color: #000;
+    font-weight: 600;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+  .msg.typing {
+    background: var(--card);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+  }
+  .typing-dots { display: flex; gap: 4px; align-items: center; }
+  .typing-dots span {
+    width: 7px; height: 7px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: bounce 1s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%,80%,100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+  }
+  .ai-input-area {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .ai-input {
+    flex: 1;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+    max-height: 120px;
+    transition: border-color 0.2s;
+    line-height: 1.4;
+  }
+  .ai-input:focus { border-color: var(--green); }
+  .ai-input::placeholder { color: var(--muted); }
+  .ai-send {
+    width: 46px; height: 46px;
+    background: var(--green);
+    border: none;
+    border-radius: 13px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .ai-send:hover { background: var(--green2); transform: scale(1.05); }
+  .ai-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ── DASHBOARD ── */
+  .dash-wrap { padding: 20px; }
+  .dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .dash-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    color: var(--green);
+    letter-spacing: 2px;
+  }
+  .dash-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--green);
+    background: rgba(0,255,136,0.08);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,255,136,0.2);
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 1.5s infinite;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--green); }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .stat-value { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700; color: var(--green); }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .stat-card.wide { grid-column: span 2; }
+  .orders-live-title {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .order-live-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .order-live-card.new-order {
+    border-color: var(--orange);
+    animation: flash-new 0.5s ease;
+  }
+  @keyframes flash-new {
+    0%,100% { box-shadow: none; }
+    50% { box-shadow: 0 0 20px rgba(255,153,68,0.3); }
+  }
+  .order-live-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .order-live-id { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--green); }
+  .order-live-status {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .status-new { background: rgba(255,153,68,0.15); color: var(--orange); }
+  .status-prep { background: rgba(68,136,255,0.15); color: var(--blue); }
+  .status-done { background: rgba(0,255,136,0.15); color: var(--green); }
+  .order-live-items { font-size: 14px; margin-bottom: 8px; }
+  .order-live-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .order-live-time { font-size: 12px; color: var(--muted); }
+  .order-live-amount { font-size: 16px; font-weight: 700; color: var(--green); }
+  .dash-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .btn-confirm {
+    flex: 1;
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 9px;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-confirm:hover { background: var(--green2); }
+  .btn-reject {
+    flex: 1;
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+    border-radius: 10px;
+    padding: 9px;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reject:hover { background: rgba(255,68,102,0.1); }
+
+  /* ── INTEL ── */
+  .intel-wrap { padding: 20px; }
+  .intel-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .intel-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .intel-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+  .intel-card:hover { border-color: rgba(0,255,136,0.3); }
+  .intel-card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .intel-logo {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .intel-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .intel-cat { font-size: 12px; color: var(--muted); }
+  .intel-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .intel-metric {
+    background: var(--dark);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+  }
+  .intel-metric-val { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+  .intel-metric-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .intel-trend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .trend-up { color: var(--green); }
+  .trend-down { color: var(--red); }
+  .trend-flat { color: var(--muted); }
+  .intel-threat {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .threat-high { background: rgba(255,68,102,0.15); color: var(--red); }
+  .threat-med { background: rgba(255,153,68,0.15); color: var(--orange); }
+  .threat-low { background: rgba(0,255,136,0.1); color: var(--green); }
+
+  /* ── BOTTOM NAV ── */
   .bottom-nav {
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    background: var(--card);
+    background: rgba(18,18,26,0.97);
     border-top: 1px solid var(--border);
     display: flex;
     padding: 10px 0 14px;
+    z-index: 200;
+    backdrop-filter: blur(10px);
   }
   .nav-item {
     flex: 1;
@@ -189,13 +643,17 @@
     cursor: pointer;
     opacity: 0.4;
     transition: opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
   .nav-item.active { opacity: 1; }
-  .nav-item.active .nav-icon { color: var(--green); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px rgba(0,255,136,0.6)); }
   .nav-item.active .nav-label { color: var(--green); }
-  .nav-icon { font-size: 22px; }
-  .nav-label { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .nav-label { font-size: 9px; color: var(--muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
   .spacer { height: 90px; }
+
+  /* ── RIPPLE ── */
   .ripple {
     position: absolute;
     border-radius: 50%;
@@ -205,101 +663,474 @@
     pointer-events: none;
   }
   @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
+
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo">WOND<span>APP</span></div>
-  <button class="lang-btn">🌐 IT</button>
-</div>
-<div class="search-section">
-  <div class="search-label">🔍 Cerca qualsiasi servizio</div>
-  <div class="search-box">
-    <span class="search-icon">🔎</span>
-    <input type="text" placeholder="Hotel, farmacia, idraulico, ristorante…" id="searchInput">
-    <button class="search-btn">Cerca</button>
+  <div class="topbar-right">
+    <button class="lang-btn" onclick="cycleLang()">🌐 <span id="langLabel">IT</span></button>
   </div>
 </div>
-<div class="suggestions">
-  <span class="chip" onclick="setSearch(this)">🏨 Hotel</span>
-  <span class="chip" onclick="setSearch(this)">💊 Farmacia</span>
-  <span class="chip" onclick="setSearch(this)">🍕 Ristorante</span>
-  <span class="chip" onclick="setSearch(this)">🔧 Idraulico</span>
-  <span class="chip" onclick="setSearch(this)">🛒 Supermercato</span>
-  <span class="chip" onclick="setSearch(this)">🏥 Medico</span>
-  <span class="chip" onclick="setSearch(this)">✂️ Parrucchiere</span>
-  <span class="chip" onclick="setSearch(this)">🚗 Meccanico</span>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1 — ORDINA
+══════════════════════════════════════════════ -->
+<div class="tab-section active" id="tab-ordina">
+  <div class="search-section">
+    <div class="search-label">🔍 Cerca qualsiasi servizio</div>
+    <div class="search-box">
+      <span class="search-icon">🔎</span>
+      <input type="text" placeholder="Hotel, farmacia, idraulico, ristorante…" id="searchInput">
+      <button class="search-btn">Cerca</button>
+    </div>
+  </div>
+  <div class="suggestions">
+    <span class="chip" onclick="setSearch(this)">🏨 Hotel</span>
+    <span class="chip" onclick="setSearch(this)">💊 Farmacia</span>
+    <span class="chip" onclick="setSearch(this)">🍕 Ristorante</span>
+    <span class="chip" onclick="setSearch(this)">🔧 Idraulico</span>
+    <span class="chip" onclick="setSearch(this)">🛒 Supermercato</span>
+    <span class="chip" onclick="setSearch(this)">🏥 Medico</span>
+    <span class="chip" onclick="setSearch(this)">✂️ Parrucchiere</span>
+    <span class="chip" onclick="setSearch(this)">🚗 Meccanico</span>
+  </div>
+  <div class="section-title">📍 Vicino a te — Aperti ora</div>
+  <div class="cards">
+    <div class="card" onclick="addRipple(event, this)">
+      <div class="card-icon">🏨</div>
+      <div class="card-info">
+        <div class="card-name">Grand Hotel Central</div>
+        <div class="card-desc">Camere · Spa · Room service H24</div>
+      </div>
+      <div class="card-open">● Aperto</div>
+    </div>
+    <div class="card" onclick="addRipple(event, this)">
+      <div class="card-icon">💊</div>
+      <div class="card-info">
+        <div class="card-name">Farmacia Salute</div>
+        <div class="card-desc">Medicinali · Consegna a domicilio</div>
+      </div>
+      <div class="card-open">● Aperto</div>
+    </div>
+    <div class="card" onclick="addRipple(event, this)">
+      <div class="card-icon">🍕</div>
+      <div class="card-info">
+        <div class="card-name">Pizzeria Napoli DOC</div>
+        <div class="card-desc">Pizza · Consegna · Asporto</div>
+      </div>
+      <div class="card-badge">⭐ Top</div>
+    </div>
+    <div class="card" onclick="addRipple(event, this)">
+      <div class="card-icon">🔧</div>
+      <div class="card-info">
+        <div class="card-name">Idraulico Pronto</div>
+        <div class="card-desc">Emergenze · Intervento rapido H24</div>
+      </div>
+      <div class="card-open">● Aperto</div>
+    </div>
+    <div class="card" onclick="addRipple(event, this)">
+      <div class="card-icon">🛒</div>
+      <div class="card-info">
+        <div class="card-name">Centro Commerciale Nord</div>
+        <div class="card-desc">Oltre 200 negozi · Ordina online</div>
+      </div>
+      <div class="card-badge">Nuovo</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
 </div>
-<div class="section-title">📍 Vicino a te — Aperti ora</div>
-<div class="cards">
-  <div class="card" onclick="addRipple(event, this)">
-    <div class="card-icon">🏨</div>
-    <div class="card-info">
-      <div class="card-name">Grand Hotel Central</div>
-      <div class="card-desc">Camere · Spa · Room service H24</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 2 — TRACKING
+══════════════════════════════════════════════ -->
+<div class="tab-section" id="tab-tracking">
+  <div class="tracking-wrap">
+    <div class="tracking-header">📍 TRACKING ORDINI</div>
+    <div class="track-toggle">
+      <div class="track-toggle-btn active" id="toggleCustomer" onclick="switchTrackView('customer')">👤 Cliente</div>
+      <div class="track-toggle-btn" id="toggleMerchant" onclick="switchTrackView('merchant')">🏪 Merchant</div>
     </div>
-    <div class="card-open">● Aperto</div>
+
+    <!-- VISTA CLIENTE -->
+    <div id="trackCustomerView">
+      <div class="order-track-card">
+        <div class="order-track-top">
+          <div class="order-track-id">#WND-20481</div>
+          <div class="order-track-time">Oggi · 22:14</div>
+        </div>
+        <div class="order-track-merchant">🍕 Pizzeria Napoli DOC</div>
+        <div class="order-track-items">2x Margherita · 1x Fritto misto · Totale €28.50</div>
+        <div class="track-steps">
+          <div class="track-step done">
+            <div class="track-step-dot">✓</div>
+            <div class="track-step-label">Ricevuto</div>
+          </div>
+          <div class="track-line done"></div>
+          <div class="track-step done">
+            <div class="track-step-dot">✓</div>
+            <div class="track-step-label">Confermato</div>
+          </div>
+          <div class="track-line done"></div>
+          <div class="track-step active">
+            <div class="track-step-dot">🔥</div>
+            <div class="track-step-label">In prep.</div>
+          </div>
+          <div class="track-line"></div>
+          <div class="track-step">
+            <div class="track-step-dot">🛵</div>
+            <div class="track-step-label">In consegna</div>
+          </div>
+          <div class="track-line"></div>
+          <div class="track-step">
+            <div class="track-step-dot">🏠</div>
+            <div class="track-step-label">Consegnato</div>
+          </div>
+        </div>
+        <div class="eta-badge">⏱ ETA: ~18 minuti</div>
+      </div>
+
+      <div class="order-track-card">
+        <div class="order-track-top">
+          <div class="order-track-id">#WND-20479</div>
+          <div class="order-track-time">Ieri · 09:32</div>
+        </div>
+        <div class="order-track-merchant">💊 Farmacia Salute</div>
+        <div class="order-track-items">Aspirina · Vitamina C · Totale €12.80</div>
+        <div class="track-steps">
+          <div class="track-step done"><div class="track-step-dot">✓</div><div class="track-step-label">Ricevuto</div></div>
+          <div class="track-line done"></div>
+          <div class="track-step done"><div class="track-step-dot">✓</div><div class="track-step-label">Confermato</div></div>
+          <div class="track-line done"></div>
+          <div class="track-step done"><div class="track-step-dot">✓</div><div class="track-step-label">In prep.</div></div>
+          <div class="track-line done"></div>
+          <div class="track-step done"><div class="track-step-dot">✓</div><div class="track-step-label">In consegna</div></div>
+          <div class="track-line done"></div>
+          <div class="track-step done"><div class="track-step-dot">✓</div><div class="track-step-label">Consegnato</div></div>
+        </div>
+        <div class="eta-badge" style="background:rgba(0,255,136,0.06);border-color:rgba(0,255,136,0.15);">✅ Consegnato con successo</div>
+      </div>
+    </div>
+
+    <!-- VISTA MERCHANT -->
+    <div id="trackMerchantView" style="display:none;">
+      <div class="order-track-card" style="border-color:var(--orange);">
+        <div class="order-track-top">
+          <div class="order-track-id">#WND-20481</div>
+          <div class="order-live-status status-new">NUOVO</div>
+        </div>
+        <div class="order-track-merchant">👤 Mario Rossi</div>
+        <div class="order-track-items">2x Margherita · 1x Fritto misto · €28.50 · Via Roma 12</div>
+        <div class="dash-actions" style="margin-top:0;">
+          <button class="btn-confirm" onclick="confirmOrder(this)">✅ Conferma</button>
+          <button class="btn-reject" onclick="rejectOrder(this)">✗ Rifiuta</button>
+        </div>
+      </div>
+      <div class="order-track-card">
+        <div class="order-track-top">
+          <div class="order-track-id">#WND-20477</div>
+          <div class="order-live-status status-prep">IN PREP.</div>
+        </div>
+        <div class="order-track-merchant">👤 Giulia Bianchi</div>
+        <div class="order-track-items">1x Quattro formaggi · 2x Tiramisù · €22.00 · Via Dante 5</div>
+        <div class="eta-badge" style="margin-top:8px;">⏱ Pronto in ~10 min</div>
+      </div>
+    </div>
   </div>
-  <div class="card" onclick="addRipple(event, this)">
-    <div class="card-icon">💊</div>
-    <div class="card-info">
-      <div class="card-name">Farmacia Salute</div>
-      <div class="card-desc">Medicinali · Consegna a domicilio</div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 3 — MEMORI-AI
+══════════════════════════════════════════════ -->
+<div class="tab-section" id="tab-memori">
+  <div class="ai-wrap">
+    <div class="ai-header">
+      <div class="ai-header-title">🤖 MEMORI-AI</div>
+      <div class="ai-header-sub">Assistente H24 · Risponde in 5+ lingue</div>
+      <div class="ai-status"><div class="ai-status-dot"></div> Online — Claude AI</div>
     </div>
-    <div class="card-open">● Aperto</div>
-  </div>
-  <div class="card" onclick="addRipple(event, this)">
-    <div class="card-icon">🍕</div>
-    <div class="card-info">
-      <div class="card-name">Pizzeria Napoli DOC</div>
-      <div class="card-desc">Pizza · Consegna · Asporto</div>
+    <div class="ai-messages" id="aiMessages">
+      <div class="msg ai">
+        Ciao! Sono MEMORI-AI, il tuo assistente H24 di WONDAPP. 🌟<br><br>
+        Posso aiutarti con ordini, informazioni sui merchant, tracciamento consegne e molto altro. Come posso aiutarti?
+      </div>
     </div>
-    <div class="card-badge">⭐ Top</div>
-  </div>
-  <div class="card" onclick="addRipple(event, this)">
-    <div class="card-icon">🔧</div>
-    <div class="card-info">
-      <div class="card-name">Idraulico Pronto</div>
-      <div class="card-desc">Emergenze · Intervento rapido H24</div>
+    <div class="ai-input-area">
+      <textarea class="ai-input" id="aiInput" placeholder="Scrivi un messaggio…" rows="1"
+        onkeydown="handleAiKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="ai-send" id="aiSendBtn" onclick="sendAiMessage()">➤</button>
     </div>
-    <div class="card-open">● Aperto</div>
-  </div>
-  <div class="card" onclick="addRipple(event, this)">
-    <div class="card-icon">🛒</div>
-    <div class="card-info">
-      <div class="card-name">Centro Commerciale Nord</div>
-      <div class="card-desc">Oltre 200 negozi · Ordina online</div>
-    </div>
-    <div class="card-badge">Nuovo</div>
   </div>
 </div>
-<div class="spacer"></div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 4 — DASHBOARD
+══════════════════════════════════════════════ -->
+<div class="tab-section" id="tab-dashboard">
+  <div class="dash-wrap">
+    <div class="dash-header">
+      <div class="dash-title">📊 DASHBOARD</div>
+      <div class="dash-live"><div class="live-dot"></div>Live</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Ordini oggi</div>
+        <div class="stat-value" id="statOrders">24</div>
+        <div class="stat-sub">↑ +3 ultima ora</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Incasso oggi</div>
+        <div class="stat-value" id="statRevenue">€612</div>
+        <div class="stat-sub">↑ +€48 ultima ora</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">In corso</div>
+        <div class="stat-value" id="statActive">3</div>
+        <div class="stat-sub">Ordini attivi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rating</div>
+        <div class="stat-value">4.8⭐</div>
+        <div class="stat-sub">128 recensioni</div>
+      </div>
+      <div class="stat-card wide">
+        <div class="stat-label">Tempo medio consegna</div>
+        <div class="stat-value">22<span style="font-size:14px;color:var(--muted)"> min</span></div>
+        <div class="stat-sub">Target: &lt; 30 min — ✅ On target</div>
+      </div>
+    </div>
+    <div class="orders-live-title">🔔 Ordini in tempo reale</div>
+    <div id="liveOrdersList">
+      <div class="order-live-card new-order" id="order-1">
+        <div class="order-live-top">
+          <div class="order-live-id">#WND-20481</div>
+          <div class="order-live-status status-new">NUOVO</div>
+        </div>
+        <div class="order-live-items">🍕 2x Margherita · 1x Fritto misto</div>
+        <div class="order-live-footer">
+          <div class="order-live-time">⏱ 22:14 · Mario Rossi</div>
+          <div class="order-live-amount">€28.50</div>
+        </div>
+        <div class="dash-actions">
+          <button class="btn-confirm" onclick="confirmOrder(this)">✅ Conferma</button>
+          <button class="btn-reject" onclick="rejectOrder(this)">✗ Rifiuta</button>
+        </div>
+      </div>
+      <div class="order-live-card" id="order-2">
+        <div class="order-live-top">
+          <div class="order-live-id">#WND-20480</div>
+          <div class="order-live-status status-prep">IN PREP.</div>
+        </div>
+        <div class="order-live-items">🍕 1x Quattro formaggi · 2x Tiramisù</div>
+        <div class="order-live-footer">
+          <div class="order-live-time">⏱ 22:02 · Giulia Bianchi</div>
+          <div class="order-live-amount">€22.00</div>
+        </div>
+      </div>
+      <div class="order-live-card" id="order-3">
+        <div class="order-live-top">
+          <div class="order-live-id">#WND-20479</div>
+          <div class="order-live-status status-done">CONSEGNATO</div>
+        </div>
+        <div class="order-live-items">💊 Aspirina · Vitamina C</div>
+        <div class="order-live-footer">
+          <div class="order-live-time">⏱ 21:48 · Luca Verdi</div>
+          <div class="order-live-amount">€12.80</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 5 — INTEL
+══════════════════════════════════════════════ -->
+<div class="tab-section" id="tab-intel">
+  <div class="intel-wrap">
+    <div class="intel-header">🧠 INTEL — Radar Competitor</div>
+    <div class="intel-sub">Monitoraggio in tempo reale dei principali attori globali</div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(0,0,0,0.3);font-size:20px;">🛵</div>
+        <div>
+          <div class="intel-name">Uber Eats</div>
+          <div class="intel-cat">Food delivery · 45 paesi</div>
+        </div>
+        <div class="intel-threat threat-high" style="margin-left:auto;">⚠ Alta</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">$10.9B</div><div class="intel-metric-lbl">Revenue</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">700M+</div><div class="intel-metric-lbl">Utenti</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">45</div><div class="intel-metric-lbl">Paesi</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-up">↑ +18%</span> crescita YoY · Focus: food & grocery</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(255,153,0,0.15);">📦</div>
+        <div>
+          <div class="intel-name">Amazon</div>
+          <div class="intel-cat">E-commerce · Delivery same-day</div>
+        </div>
+        <div class="intel-threat threat-high" style="margin-left:auto;">⚠ Alta</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">$574B</div><div class="intel-metric-lbl">Revenue</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">310M+</div><div class="intel-metric-lbl">Clienti</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">21</div><div class="intel-metric-lbl">Paesi</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-up">↑ +11%</span> · Espansione delivery locale in corso</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(68,136,255,0.12);">🤖</div>
+        <div>
+          <div class="intel-name">ChatGPT / OpenAI</div>
+          <div class="intel-cat">AI Assistente · Ordini conversazionali</div>
+        </div>
+        <div class="intel-threat threat-med" style="margin-left:auto;">◎ Media</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">$2B+</div><div class="intel-metric-lbl">ARR</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">180M+</div><div class="intel-metric-lbl">Utenti</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">161</div><div class="intel-metric-lbl">Paesi</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-up">↑ +120%</span> · Integrazione shopping in sviluppo</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(255,68,102,0.12);">🎵</div>
+        <div>
+          <div class="intel-name">TikTok Shop</div>
+          <div class="intel-cat">Social commerce · Live selling</div>
+        </div>
+        <div class="intel-threat threat-med" style="margin-left:auto;">◎ Media</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">$20B</div><div class="intel-metric-lbl">GMV</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">1B+</div><div class="intel-metric-lbl">Utenti</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">16</div><div class="intel-metric-lbl">Mercati</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-up">↑ +215%</span> · Explosion in Southeast Asia</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(0,255,136,0.08);">🟢</div>
+        <div>
+          <div class="intel-name">Glovo</div>
+          <div class="intel-cat">Quick commerce · Europa & Africa</div>
+        </div>
+        <div class="intel-threat threat-high" style="margin-left:auto;">⚠ Alta</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">€2.2B</div><div class="intel-metric-lbl">GMV</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">13M+</div><div class="intel-metric-lbl">Utenti</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">25</div><div class="intel-metric-lbl">Paesi</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-up">↑ +34%</span> · Forte in Italia · Diretto competitor</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(68,136,255,0.1);">💬</div>
+        <div>
+          <div class="intel-name">WhatsApp Business</div>
+          <div class="intel-cat">Ordering via chat · 180+ paesi</div>
+        </div>
+        <div class="intel-threat threat-low" style="margin-left:auto;">● Bassa</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">200M+</div><div class="intel-metric-lbl">Business</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">2B+</div><div class="intel-metric-lbl">Utenti</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">180+</div><div class="intel-metric-lbl">Paesi</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-flat">→ Stabile</span> · Manca automazione H24</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-logo" style="background:rgba(150,80,255,0.12);">🔮</div>
+        <div>
+          <div class="intel-name">Shopify</div>
+          <div class="intel-cat">E-commerce SaaS · Merchant tools</div>
+        </div>
+        <div class="intel-threat threat-med" style="margin-left:auto;">◎ Media</div>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric"><div class="intel-metric-val">$7.1B</div><div class="intel-metric-lbl">Revenue</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">4.4M</div><div class="intel-metric-lbl">Merchant</div></div>
+        <div class="intel-metric"><div class="intel-metric-val">175</div><div class="intel-metric-lbl">Paesi</div></div>
+      </div>
+      <div class="intel-trend"><span class="trend-up">↑ +26%</span> · Focus SaaS per negozi locali</div>
+    </div>
+
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     BOTTOM NAV
+══════════════════════════════════════════════ -->
 <div class="bottom-nav">
-  <div class="nav-item active">
+  <div class="nav-item active" id="nav-ordina" onclick="showTab('ordina')">
     <div class="nav-icon">🛍️</div>
     <div class="nav-label">ORDINA</div>
   </div>
-  <div class="nav-item">
+  <div class="nav-item" id="nav-tracking" onclick="showTab('tracking')">
     <div class="nav-icon">📍</div>
     <div class="nav-label">TRACKING</div>
   </div>
-  <div class="nav-item">
+  <div class="nav-item" id="nav-memori" onclick="showTab('memori')">
     <div class="nav-icon">🤖</div>
     <div class="nav-label">MEMORI-AI</div>
   </div>
-  <div class="nav-item">
+  <div class="nav-item" id="nav-dashboard" onclick="showTab('dashboard')">
     <div class="nav-icon">📊</div>
     <div class="nav-label">DASHBOARD</div>
   </div>
-  <div class="nav-item">
+  <div class="nav-item" id="nav-intel" onclick="showTab('intel')">
     <div class="nav-icon">🧠</div>
     <div class="nav-label">INTEL</div>
   </div>
 </div>
+
 <script>
+/* ════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════ */
+const TABS = ['ordina','tracking','memori','dashboard','intel'];
+
+function showTab(name) {
+  TABS.forEach(t => {
+    document.getElementById('tab-' + t).classList.remove('active');
+    document.getElementById('nav-' + t).classList.remove('active');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ════════════════════════════════════
+   ORDINA
+════════════════════════════════════ */
 function setSearch(el) {
   document.getElementById('searchInput').value = el.textContent.trim();
 }
+
 function addRipple(e, el) {
   const ripple = document.createElement('span');
   ripple.classList.add('ripple');
@@ -310,6 +1141,138 @@ function addRipple(e, el) {
   ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
   el.appendChild(ripple);
   setTimeout(() => ripple.remove(), 600);
+}
+
+/* ════════════════════════════════════
+   TRACKING
+════════════════════════════════════ */
+function switchTrackView(view) {
+  const isCustomer = view === 'customer';
+  document.getElementById('trackCustomerView').style.display = isCustomer ? 'block' : 'none';
+  document.getElementById('trackMerchantView').style.display = isCustomer ? 'none' : 'block';
+  document.getElementById('toggleCustomer').classList.toggle('active', isCustomer);
+  document.getElementById('toggleMerchant').classList.toggle('active', !isCustomer);
+}
+
+/* ════════════════════════════════════
+   DASHBOARD — Order actions
+════════════════════════════════════ */
+function confirmOrder(btn) {
+  const card = btn.closest('.order-live-card, .order-track-card');
+  const statusEl = card.querySelector('.order-live-status');
+  if (statusEl) {
+    statusEl.textContent = 'IN PREP.';
+    statusEl.className = 'order-live-status status-prep';
+  }
+  card.style.borderColor = 'var(--border)';
+  const actions = card.querySelector('.dash-actions');
+  if (actions) actions.remove();
+  // update live counter
+  const active = document.getElementById('statActive');
+  if (active) active.textContent = parseInt(active.textContent) + 1;
+}
+
+function rejectOrder(btn) {
+  const card = btn.closest('.order-live-card, .order-track-card');
+  card.style.opacity = '0';
+  card.style.transition = 'opacity 0.4s';
+  setTimeout(() => card.remove(), 400);
+}
+
+/* ════════════════════════════════════
+   MEMORI-AI — Claude API
+════════════════════════════════════ */
+const aiHistory = [];
+let aiTyping = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleAiKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendAiMessage();
+  }
+}
+
+async function sendAiMessage() {
+  if (aiTyping) return;
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+
+  appendMsg('user', text);
+  aiHistory.push({ role: 'user', content: text });
+
+  aiTyping = true;
+  document.getElementById('aiSendBtn').disabled = true;
+
+  const typingEl = appendTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Sei MEMORI-AI, l'assistente virtuale H24 di WONDAPP — una piattaforma universale di ordinazione e servizi per merchant locali (ristoranti, farmacie, artigiani, meccanici, hotel e altro). 
+Rispondi in modo conciso, utile e amichevole. Supporti 7 lingue (IT, EN, ES, ZH, JA, FR, DE). 
+Puoi aiutare con: informazioni su ordini, merchant vicini, tracking consegne, pagamenti, fatture PDF, notifiche push, e qualsiasi domanda sull'uso di WONDAPP.
+Tono: professionale ma caldo. Max 3-4 frasi per risposta standard.`,
+        messages: aiHistory
+      })
+    });
+
+    const data = await res.json();
+    typingEl.remove();
+
+    const reply = data.content?.[0]?.text || 'Scusa, non ho ricevuto risposta. Riprova.';
+    aiHistory.push({ role: 'assistant', content: reply });
+    appendMsg('ai', reply);
+
+  } catch (err) {
+    typingEl.remove();
+    appendMsg('ai', '⚠️ Connessione non disponibile. Verifica la tua rete e riprova.');
+  }
+
+  aiTyping = false;
+  document.getElementById('aiSendBtn').disabled = false;
+}
+
+function appendMsg(role, text) {
+  const msgs = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = text.replace(/\n/g, '<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const msgs = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'msg typing';
+  div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+/* ════════════════════════════════════
+   LINGUA
+════════════════════════════════════ */
+const langs = ['IT','EN','ES','ZH','JA','FR','DE'];
+let langIdx = 0;
+function cycleLang() {
+  langIdx = (langIdx + 1) % langs.length;
+  document.getElementById('langLabel').textContent = langs[langIdx];
 }
 </script>
 </body>
